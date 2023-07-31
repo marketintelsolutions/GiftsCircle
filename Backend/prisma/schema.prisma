@@ -7,8 +7,135 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model user {
+  id                    String                  @id @default(uuid())
+  firstname             String                  @db.VarChar(255)
+  lastname              String                  @db.VarChar(255)
+  gender                String?                 @db.VarChar(255)
+  placeOfResidence      String?                 @db.VarChar(255)
+  tel                   String?                 @db.VarChar(255)
+  state                 String?                 @db.VarChar(255)
+  dob                   String?                 @db.VarChar(255)
+  emailVerified         Boolean?
+  password              String                  @db.VarChar(255)
+  role                  Role                    @default(USER)
+  created_at            DateTime                @default(now())
+  updated_at            DateTime?               @updatedAt
+  deleted_at            DateTime?
+  event                 event[]
+  giftTransaction       giftTransaction[]
+  marketGiftTransaction marketGiftTransaction[]
+  asoebiTransaction     asoebiTransaction[]
+  Media                 Media[]
+  ComplimentaryMessage  ComplimentaryMessage[]
+  deliveryTransactions  deliveryTransactions[]
+  Guests                Guests[]
+  Notifications         Notifications[]
+}
+
+model giftitem {
+  id         String    @id @default(uuid())
+  title      String?   @db.VarChar(255)
+  category   String    @db.VarChar(255)
+  image      String?   @db.VarChar(255)
+  details    String?   @db.VarChar(255)
+  amount     Int
+  weight     Int
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
+  created_by String?   @db.VarChar(255)
+  updated_by String?   @db.VarChar(255)
+  deleted_by String?   @db.VarChar(255)
+  gift       gift[]
+}
+
+model asoebiitem {
+  id                String              @id @default(uuid())
+  title             String?             @db.VarChar(255)
+  category          String              @db.VarChar(255)
+  image             String?             @db.VarChar(255)
+  details           String?             @db.VarChar
+  amount            Int
+  created_at        DateTime            @default(now())
+  updated_at        DateTime?           @updatedAt
+  deleted_at        DateTime?
+  created_by        String?             @db.VarChar(255)
+  updated_by        String?             @db.VarChar(255)
+  deleted_by        String?             @db.VarChar(255)
+  asoebiTransaction asoebiTransaction[]
+}
+
+model sourvenirItem {
+  id         String      @id @default(uuid())
+  title      String?     @db.VarChar(255)
+  category   String      @db.VarChar(255)
+  image      String?     @db.VarChar(255)
+  details    String?     @db.VarChar
+  amount     Int
+  weight     Int
+  created_at DateTime    @default(now())
+  updated_at DateTime?   @updatedAt
+  deleted_at DateTime?
+  created_by String?     @db.VarChar(255)
+  updated_by String?     @db.VarChar(255)
+  deleted_by String?     @db.VarChar(255)
+  sourvenir  sourvenir[]
+}
+
+model event {
+  id              String        @id @default(uuid())
+  title           String?       @db.VarChar(255)
+  category        String        @db.VarChar(255)
+  venue           String        @db.VarChar(255)
+  date            DateTime
+  start_time      String
+  end_time        String
+  timezone        String?       @db.VarChar(255)
+  image           String?       @db.VarChar(255)
+  descCeleb       String?       @db.VarChar
+  summary         String?       @db.VarChar
+  descSummary     String?       @db.VarChar
+  published       Boolean
+  applyDonation   Boolean
+  percentDonation Float
+  coHostCode      String        @db.VarChar(6)
+  coHostLink      String        @db.VarChar(100)
+  eventLink       String        @db.VarChar(100)
+  guestCode       String        @db.VarChar(6)
+  user            user          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  created_at      DateTime      @default(now())
+  host            String        @db.VarChar(255)
+  updated_at      DateTime?     @updatedAt
+  deleted_at      DateTime?
+  created_by      String?       @db.VarChar(255)
+  updated_by      String?       @db.VarChar(255)
+  deleted_by      String?       @db.VarChar(255)
+  userId          String
+  gift            gift[]
+  Guests          Guests[]
+  FundRaising     FundRaising[]
+
+  @@index([host], map: "Event_userId_fkey")
+}
+
+model Guests {
+  id         String    @id @default(uuid())
+  eventId    String    @db.VarChar(50)
+  coHost     Boolean
+  user       user      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String    @db.VarChar(255)
+  event      event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
+  created_by String?   @db.VarChar(255)
+  updated_by String?   @db.VarChar(255)
+  deleted_by String?   @db.VarChar(255)
+}
+
 model delivery {
-  id         String    @id @db.VarChar(255)
+  id         String    @id @default(uuid())
   firstname  String    @db.VarChar(255)
   lastname   String    @db.VarChar(255)
   address    String    @db.VarChar
@@ -30,10 +157,10 @@ model delivery {
 }
 
 model deliveryTransactions {
-  id           String         @id @db.VarChar(255)
+  id           String         @id @default(uuid())
   item         String         @db.VarChar
   userId       String         @db.VarChar(255)
-  user         user           @relation(fields: [userId], references: [id])
+  user         user           @relation(fields: [userId], references: [id], onDelete: Cascade)
   status       DeliveryStatus
   deliveryFee  Int
   expectedDate DateTime
@@ -47,45 +174,45 @@ model deliveryTransactions {
   @@index([userId], map: "DeliveryTransaction_userId_fkey")
 }
 
-model event {
-  id              String        @id @db.VarChar(255)
-  title           String?       @db.VarChar(255)
-  category        String        @db.VarChar(255)
-  venue           String        @db.VarChar(255)
-  date            DateTime
-  start_time      String
-  end_time        String
-  timezone        String?       @db.VarChar(255)
-  image           String?       @db.VarChar(255)
-  descCeleb       String?       @db.VarChar
-  summary         String?       @db.VarChar
-  descSummary     String?       @db.VarChar
-  published       Boolean
-  applyDonation   Boolean
-  percentDonation Float
-  coHostCode      String        @db.VarChar(6)
-  coHostLink      String        @db.VarChar(100)
-  eventLink       String        @db.VarChar(100)
-  guestCode       String        @db.VarChar(6)
-  user_id         String
-  created_at      DateTime      @default(now())
-  host            String        @db.VarChar(255)
-  updated_at      DateTime?     @updatedAt
-  deleted_at      DateTime?
-  created_by      String?       @db.VarChar(255)
-  updated_by      String?       @db.VarChar(255)
-  deleted_by      String?       @db.VarChar(255)
-  gifts           gift[]
-  co_hosts        user[]
-  Guests          Guests[]
-  FundRaising     FundRaising[]
+model FundRaising {
+  id                  String                @id @default(uuid())
+  eventId             String                @db.VarChar(50)
+  event               event                 @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  amount              Int
+  amountPaid          Int
+  active              Boolean
+  title               String                @db.VarChar(255)
+  description         String                @db.VarChar
+  image               String                @db.VarChar(255)
+  created_at          DateTime              @default(now())
+  updated_at          DateTime?             @updatedAt
+  deleted_at          DateTime?
+  created_by          String?               @db.VarChar(255)
+  updated_by          String?               @db.VarChar(255)
+  deleted_by          String?               @db.VarChar(255)
+  FundRaisingDonation FundRaisingDonation[]
+}
 
-  @@index([host], map: "Event_userId_fkey")
+model FundRaisingDonation {
+  id         String      @id @default(uuid())
+  fundId     String      @db.VarChar(50)
+  fund       FundRaising @relation(fields: [fundId], references: [id], onDelete: Cascade)
+  firstName  String      @db.VarChar(50)
+  lastName   String      @db.VarChar(50)
+  email      String      @db.VarChar(50)
+  phone      String      @db.VarChar(50)
+  amount     Int
+  created_at DateTime    @default(now())
+  updated_at DateTime?   @updatedAt
+  deleted_at DateTime?
+  created_by String?     @db.VarChar(255)
+  updated_by String?     @db.VarChar(255)
+  deleted_by String?     @db.VarChar(255)
 }
 
 model gift {
-  id                 String            @id @db.VarChar(255)
-  giftItemId         String            @db.VarChar(255)
+  id                 String            @id @default(uuid())
+  giftItem           giftitem          @relation(fields: [giftitemId], references: [id], onDelete: Cascade)
   enableContribution Boolean
   purchased          Boolean
   quantity           Int
@@ -101,15 +228,14 @@ model gift {
   updated_by         String?           @db.VarChar(255)
   deleted_by         String?           @db.VarChar(255)
   event              event?            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  giftitemId         String
   giftTransaction    giftTransaction[]
 
   @@index([eventId], map: "Gift_eventId_fkey")
-  @@index([giftItemId], map: "Gift_giftItemId_fkey")
-  @@index([purchasedBy], map: "Gift_purchasedBy_fkey")
 }
 
 model giftTransaction {
-  id                  String             @id @db.VarChar(50)
+  id                  String             @id @default(uuid())
   gift                gift?              @relation(fields: [giftId], references: [id], onDelete: SetNull)
   complimentaryGift   complimentarygift? @relation(fields: [complimentarygiftId], references: [id], onDelete: SetNull)
   amount              Int
@@ -129,41 +255,8 @@ model giftTransaction {
   deleted_by          String?            @db.VarChar(255)
 }
 
-model marketGiftTransaction {
-  id          String         @id @db.VarChar(255)
-  ItemId      String         @db.VarChar(255)
-  quantity    Int
-  purchasedBy user           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  status      Status
-  amountPaid  Int
-  date        DateTime       @default(now())
-  category    MarketCategory
-  userId      String         @db.VarChar(255)
-  created_at  DateTime       @default(now())
-  updated_at  DateTime?      @updatedAt
-  deleted_at  DateTime?
-  created_by  String?        @db.VarChar(255)
-  updated_by  String?        @db.VarChar(255)
-  deleted_by  String?        @db.VarChar(255)
-}
-
-model giftitem {
-  id         String    @id @db.VarChar(255)
-  title      String?   @db.VarChar(255)
-  category   String    @db.VarChar(255)
-  image      String?   @db.VarChar(255)
-  details    String?   @db.VarChar(255)
-  amount     Int
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
-  deleted_at DateTime?
-  created_by String?   @db.VarChar(255)
-  updated_by String?   @db.VarChar(255)
-  deleted_by String?   @db.VarChar(255)
-}
-
 model complimentarygift {
-  id              String            @id @db.VarChar(255)
+  id              String            @id @default(uuid())
   title           String?           @db.VarChar(255)
   category        String            @db.VarChar(255)
   image           String?           @db.VarChar(255)
@@ -178,114 +271,25 @@ model complimentarygift {
   deleted_by      String?           @db.VarChar(255)
 }
 
-model user {
-  id                    String                  @id @db.VarChar(255)
-  firstname             String                  @db.VarChar(255)
-  lastname              String                  @db.VarChar(255)
-  gender                String?                 @db.VarChar(255)
-  placeOfResidence      String?                 @db.VarChar(255)
-  tel                   String?                 @db.VarChar(255)
-  state                 String?                 @db.VarChar(255)
-  dob                   String?                 @db.VarChar(255)
-  emailVerified         Boolean?
-  email                 String                  @unique
-  password              String                  @db.VarChar(255)
-  role                  Role                    @default(USER)
-  created_at            DateTime                @default(now())
-  updated_at            DateTime?               @updatedAt
-  deleted_at            DateTime?
-  Media                 Media[]
-  ComplimentaryMessage  ComplimentaryMessage[]
-  Guests                Guests[]
-  asoebiTransaction     asoebiTransaction[]
-  giftTransaction       giftTransaction[]
-  marketGiftTransaction marketGiftTransaction[]
-  Notifications         Notifications[]
-  event                 event?                  @relation(fields: [eventId], references: [id], onDelete: SetNull)
-  eventId               String?                 @db.VarChar(255)
-  deliveryTransacations deliveryTransactions[]
-}
-
-model otp {
-  id         String    @id @db.VarChar(50)
-  code       String    @db.VarChar(5)
-  expires    DateTime
-  user       String    @db.VarChar(100)
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
-  deleted_at DateTime?
-  created_by String?   @db.VarChar(255)
-}
-
-model Guests {
-  id          String    @id @db.VarChar(50)
-  eventId     String    @db.VarChar(50)
-  coHost      Boolean
-  user        user      @relation(fields: [userId], references: [id])
-  userId      String    @db.VarChar(255)
-  event       event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  date_joined DateTime  @default(now())
-  updated_at  DateTime? @updatedAt
+model marketGiftTransaction {
+  id          String         @id @default(uuid())
+  ItemId      String         @db.VarChar(255)
+  quantity    Int
+  purchasedBy user           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status      Status
+  amountPaid  Int
+  category    MarketCategory
+  userId      String         @db.VarChar(255)
+  created_at  DateTime       @default(now())
+  updated_at  DateTime?      @updatedAt
   deleted_at  DateTime?
-  created_by  String?   @db.VarChar(255)
-  updated_by  String?   @db.VarChar(255)
-  deleted_by  String?   @db.VarChar(255)
-}
-
-model FundRaising {
-  id                  String                @id @db.VarChar(50)
-  eventId             String                @db.VarChar(50)
-  event               event                 @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  amount              Int
-  amountPaid          Int
-  active              Boolean
-  title               String                @default("") @db.VarChar(255)
-  description         String                @default("") @db.VarChar
-  image               String                @default("") @db.VarChar(255)
-  created_at          DateTime              @default(now())
-  updated_at          DateTime?             @updatedAt
-  deleted_at          DateTime?
-  created_by          String?               @db.VarChar(255)
-  updated_by          String?               @db.VarChar(255)
-  deleted_by          String?               @db.VarChar(255)
-  FundRaisingDonation FundRaisingDonation[]
-}
-
-model FundRaisingDonation {
-  id         String      @id @db.VarChar(50)
-  fundId     String      @db.VarChar(50)
-  fund       FundRaising @relation(fields: [fundId], references: [id])
-  firstName  String      @db.VarChar(50)
-  lastName   String      @db.VarChar(50)
-  email      String      @db.VarChar(50)
-  phone      String      @db.VarChar(50)
-  amount     Int
-  date       DateTime    @default(now())
-  updated_at DateTime?   @updatedAt
-  deleted_at DateTime?
-  created_by String?     @db.VarChar(255)
-  updated_by String?     @db.VarChar(255)
-  deleted_by String?     @db.VarChar(255)
-}
-
-model asoebiitem {
-  id                String              @id @db.VarChar(255)
-  title             String?             @db.VarChar(255)
-  category          String              @db.VarChar(255)
-  image             String?             @db.VarChar(255)
-  details           String?             @db.VarChar
-  amount            Int
-  created_at        DateTime            @default(now())
-  updated_at        DateTime?           @updatedAt
-  deleted_at        DateTime?
-  created_by        String?             @db.VarChar(255)
-  updated_by        String?             @db.VarChar(255)
-  deleted_by        String?             @db.VarChar(255)
-  asoebiTransaction asoebiTransaction[]
+  created_by  String?        @db.VarChar(255)
+  updated_by  String?        @db.VarChar(255)
+  deleted_by  String?        @db.VarChar(255)
 }
 
 model asoebi {
-  id                String              @id @db.VarChar(255)
+  id                String              @id @default(uuid())
   asoebiItem        String              @db.VarChar(255)
   quantity          Int
   amountPaid        Int
@@ -303,18 +307,18 @@ model asoebi {
 }
 
 model asoebiTransaction {
-  id           String      @id @db.VarChar(50)
-  aseobi       asoebi      @relation(fields: [asoebiId], references: [id])
+  id           String      @id @default(uuid())
+  aseobi       asoebi      @relation(fields: [asoebiId], references: [id], onDelete: Cascade)
   amount       Int
-  date         DateTime    @default(now())
   asoebiId     String      @db.VarChar(255)
-  purchasedBy  user        @relation(fields: [userId], references: [id])
+  purchasedBy  user        @relation(fields: [userId], references: [id], onDelete: Cascade)
   quantity     Int
   delivered    Boolean     @default(false)
   eventId      String      @db.VarChar(50)
   asoebiitem   asoebiitem? @relation(fields: [asoebiitemId], references: [id], onDelete: SetNull)
   asoebiitemId String?     @db.VarChar(255)
   userId       String      @db.VarChar(255)
+  created_at   DateTime    @default(now())
   updated_at   DateTime?   @updatedAt
   deleted_at   DateTime?
   created_by   String?     @db.VarChar(255)
@@ -322,24 +326,8 @@ model asoebiTransaction {
   deleted_by   String?     @db.VarChar(255)
 }
 
-model sourvenirItem {
-  id         String      @id @db.VarChar(255)
-  title      String?     @db.VarChar(255)
-  category   String      @db.VarChar(255)
-  image      String?     @db.VarChar(255)
-  details    String?     @db.VarChar
-  amount     Int
-  created_at DateTime    @default(now())
-  updated_at DateTime?   @updatedAt
-  deleted_at DateTime?
-  created_by String?     @db.VarChar(255)
-  updated_by String?     @db.VarChar(255)
-  deleted_by String?     @db.VarChar(255)
-  sourvenir  sourvenir[]
-}
-
 model sourvenir {
-  id              String        @id @db.VarChar(255)
+  id              String        @id @default(uuid())
   sourvenirItem   sourvenirItem @relation(fields: [sourvenirItemId], references: [id], onDelete: Cascade)
   quantity        Int
   purchased       Boolean       @default(false)
@@ -355,12 +343,12 @@ model sourvenir {
 }
 
 model Media {
-  id         String    @id @db.VarChar(255)
+  id         String    @id @default(uuid())
   eventId    String    @db.VarChar(255)
   url        String    @db.VarChar(255)
-  user       user      @relation(fields: [userId], references: [id])
+  user       user      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     String    @db.VarChar(255)
-  date       DateTime  @default(now())
+  created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
   deleted_at DateTime?
   created_by String?   @db.VarChar(255)
@@ -371,12 +359,12 @@ model Media {
 }
 
 model ComplimentaryMessage {
-  id         String    @id @db.VarChar(255)
+  id         String    @id @default(uuid())
   eventId    String    @db.VarChar(255)
-  user       user      @relation(fields: [userId], references: [id])
+  user       user      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     String    @db.VarChar(255)
-  date       DateTime  @default(now())
   message    String    @db.VarChar
+  created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
   deleted_at DateTime?
   created_by String?   @db.VarChar(255)
@@ -387,18 +375,29 @@ model ComplimentaryMessage {
 model Notifications {
   id             String       @id @default(uuid())
   type           NOTIFICATION
-  author         user         @relation(fields: [userId], references: [id])
+  author         user         @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId         String       @db.VarChar(255)
-  eventId        String?      @db.VarChar
-  created_at     DateTime     @default(now())
+  eventId        String?      @db.VarChar(10)
   referenceEvent String?
   read           Boolean      @default(false)
   message        String       @db.VarChar
+  created_at     DateTime     @default(now())
   updated_at     DateTime?    @updatedAt
   deleted_at     DateTime?
   created_by     String?      @db.VarChar(255)
   updated_by     String?      @db.VarChar(255)
   deleted_by     String?      @db.VarChar(255)
+}
+
+model otp {
+  id         String    @id @default(uuid())
+  code       String    @db.VarChar(5)
+  expires    DateTime
+  user       String    @db.VarChar(100)
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
+  created_by String?   @db.VarChar(255)
 }
 
 model Sms {

@@ -86,7 +86,6 @@ const Create = async (data) => {
 
   if (user) {
     const coHostId = data.coHost ? CreateCoHostId() : "";
-    console.log(coHostId);
     let event = await prisma.event.create({
       data: {
         id: CreateEventId(),
