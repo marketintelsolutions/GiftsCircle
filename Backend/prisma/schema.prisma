@@ -15,6 +15,7 @@ model user {
   placeOfResidence      String?                 @db.VarChar(255)
   tel                   String?                 @db.VarChar(255)
   state                 String?                 @db.VarChar(255)
+  email                 String? @db.VarChar(255)
   dob                   String?                 @db.VarChar(255)
   emailVerified         Boolean?
   password              String                  @db.VarChar(255)
