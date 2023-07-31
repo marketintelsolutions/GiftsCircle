@@ -17,10 +17,7 @@
   "schemes": ["http", "https"],
   "consumes": ["application/json"],
   "produces": ["application/json"],
-  "servers": [
-    "http://localhost:4000",
-    "https://gift-circle-server.onrender.com"
-  ],
+  "servers": ["http://localhost:4000", "https://gifts-circle.herokuapp.com"],
   "tags": [
     {
       "name": "Auth",
@@ -776,7 +773,7 @@
             "required": true,
             "type": "string"
           },
-{
+          {
             "name": "userId",
             "in": "path",
             "required": true,
@@ -2620,7 +2617,8 @@
           "complimentaryGift": {
             "type": "string",
             "required": true
-          },"created_by": {
+          },
+          "created_by": {
             "type": "string",
             "required": true
           }
