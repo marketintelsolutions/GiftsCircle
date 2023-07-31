@@ -16,6 +16,7 @@ const {
   Buy,
   GetEventGiftTransactions,
   GetUserEventPurchasedGifts,
+  GetEventGiftsByHost,
 } = require("../Services/Gift");
 const EnsureAuthenticated = require("../Utils/EnsureAuthenticated");
 
@@ -46,9 +47,9 @@ router.get("/Get/All", EnsureAuthenticated, async (req, res) => {
   }
 });
 
-router.get("/Get/EventGifts/:id/:userId", EnsureAuthenticated, async (req, res) => {
+router.get("/Get/EventGifts/:id", EnsureAuthenticated, async (req, res) => {
   try {
-    let data = await GetEventGifts(req.params.id, req.params.userId);
+    let data = await GetEventGifts(req.params.id);
     return res.status(200).send(data);
   } catch (err) {
     console.log(err);
@@ -56,6 +57,21 @@ router.get("/Get/EventGifts/:id/:userId", EnsureAuthenticated, async (req, res) 
     return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
   }
 });
+
+router.get(
+  "/Get/EventGifts/:id/:userId",
+  EnsureAuthenticated,
+  async (req, res) => {
+    try {
+      let data = await GetEventGiftsByHost(req.params.id, req.params.userId);
+      return res.status(200).send(data);
+    } catch (err) {
+      console.log(err);
+      await prisma.$disconnect();
+      return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
+    }
+  }
+);
 
 router.get(
   "/Get/EventGiftsTrans/:id",
