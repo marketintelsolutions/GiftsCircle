@@ -37,7 +37,7 @@ router.post("/create", upload.single("image"), async (req, res) => {
   try {
     const file = dataUri(req).content;
     const response = await cloudinary.uploader.upload(file, {
-      folder: "eventcircle",
+      folder: "eventcircle/gifts",
     });
     let data = await Create(req.body, response.url);
 
