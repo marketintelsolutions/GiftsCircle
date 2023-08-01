@@ -126,7 +126,7 @@ const Create = async (data) => {
       quantity: data.quantity ? data.quantity : 1,
       status: "UnPaid",
       amountPaid: 0,
-      giftitemId: data.giftItemId,
+      giftitemId: data.giftitemId,
       complimentaryGift: data.complimentaryGift,
     },
   });
@@ -142,9 +142,8 @@ const CreateMany = async (data) => {
       (element.status = "UnPaid"),
       (element.amountPaid = 0);
     element.purchasedBy = "";
-    element.giftitemId = element.giftItemId;
+    element.giftitemId = element.giftitemId;
 
-    delete element.giftItemId;
     return element;
   });
   await prisma.gift.createMany({
@@ -167,7 +166,7 @@ const EnableContribution = async (data, id) => {
   } else {
     gift = await prisma.gift.findFirst({
       where: {
-        giftitemId: data.giftItemId,
+        giftitemId: data.giftitemId,
         eventId: data.eventId,
       },
     });

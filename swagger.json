@@ -2540,7 +2540,7 @@
             "type": "string",
             "required": true
           },
-          "giftItemId": {
+          "giftitemId": {
             "type": "string",
             "required": true
           }
@@ -2637,7 +2637,7 @@
             "type": "number",
             "required": true
           },
-          "giftItemId": {
+          "giftitemId": {
             "type": "string",
             "required": true
           },
