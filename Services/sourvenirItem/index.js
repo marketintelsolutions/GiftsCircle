@@ -27,6 +27,7 @@ const Create = async (data, image) => {
       details: data.details,
       amount: parseInt(data.amount),
       image: image,
+      weight: parseInt(data.weight),
     },
   });
 
