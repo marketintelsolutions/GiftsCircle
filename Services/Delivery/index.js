@@ -128,7 +128,7 @@ const CreateDeliveryTrans = async (data, id) => {
   const message = `Delivery: Your deliveries has been created`;
   const notification = await prisma.notifications.create({
     data: {
-      userId: data.userId,
+      userId: id,
       type: "DELIVERY",
       message: message,
     },

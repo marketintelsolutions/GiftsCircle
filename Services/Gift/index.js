@@ -216,7 +216,6 @@ const Buy = async (data) => {
     delete element.giftItemAmount;
     delete element.deliveryAmount;
 
-    element.id = uuidv4();
     element.quantity = 1;
     return element;
   });

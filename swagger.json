@@ -822,6 +822,40 @@
         }
       }
     },
+    "/Get/UserEventGiftsTrans/{id}/{userId}": {
+      "get": {
+        "description": "",
+        "tags": ["Gift"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+
     "/gift/Get/EventGiftsTrans/{id}": {
       "get": {
         "description": "",

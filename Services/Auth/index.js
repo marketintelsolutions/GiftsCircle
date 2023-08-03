@@ -97,18 +97,9 @@ const VerifyOtp = async (data) => {
             emailVerified: true,
           },
         });
-        await prisma.otp.delete({
-          where: {
-            id: otp.id,
-          },
-        });
+
         return ResponseDTO("Success", "Email has been verified");
       } else {
-        await prisma.otp.delete({
-          where: {
-            id: otp.id,
-          },
-        });
         return ResponseDTO("Failed", "Otp has Expired");
       }
     } catch (error) {
