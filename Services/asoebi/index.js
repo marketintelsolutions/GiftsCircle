@@ -61,8 +61,8 @@ const CreateMany = async (data) => {
   const message = `Asoebis has been added for guest`;
   const notification = await prisma.notifications.create({
     data: {
-      userId: data.userId,
-      type: "ASOEBI_ADDITION",
+      userId: data[0].userId,
+      type: "ASOEBI",
       message: message,
       referenceEvent: data.eventId,
     },
@@ -157,7 +157,7 @@ const GetAsoebiBuyers = async (id) => {
         },
       },
       id: true,
-      date: true,
+      created_at: true,
     },
   });
 

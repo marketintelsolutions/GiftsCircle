@@ -118,6 +118,7 @@ const Donate = async (data) => {
         phone: data.tel,
         amount: parseInt(data.amount),
         fundId: data.fundId,
+        created_by: data.userId
       },
     });
 
@@ -168,7 +169,7 @@ const GetFundDonors = async (id) => {
       lastName: true,
       amount: true,
       id: true,
-      date: true,
+      created_at: true,
     },
   });
 
