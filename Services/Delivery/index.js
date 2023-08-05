@@ -49,33 +49,36 @@ const GetUserDeliveryTrans = async (userId) => {
 
 const Create = async (data) => {
   console.log(data, data.eventId);
-  const delivery = await prisma.delivery.findFirst({
-    where: {
-      eventId: data.eventId ? data.eventId : null,
-    },
-  });
+  if (data.eventId) {
+    const delivery = await prisma.delivery.findFirst({
+      where: {
+        eventId: data.eventId,
+      },
+    });
 
-  if (delivery) {
+    if (delivery) {
+      await prisma.$disconnect();
+      return delivery;
+    }
+  } else {
+    const Data = await prisma.delivery.create({
+      data: {
+        firstname: data.firstname,
+        lastname: data.lastname,
+        address: data.address,
+        info: data.info,
+        lga: data.lga,
+        state: data.state,
+        tel: data.tel,
+        tel2: data.tel2 ? data.tel2 : "",
+        userId: data.userId,
+        eventId: data.eventId,
+      },
+    });
+
     await prisma.$disconnect();
-    return delivery;
+    return Data;
   }
-  const Data = await prisma.delivery.create({
-    data: {
-      firstname: data.firstname,
-      lastname: data.lastname,
-      address: data.address,
-      info: data.info,
-      lga: data.lga,
-      state: data.state,
-      tel: data.tel,
-      tel2: data.tel2 ? data.tel2 : "",
-      userId: data.userId,
-      eventId: data.eventId,
-    },
-  });
-
-  await prisma.$disconnect();
-  return Data;
 };
 
 const Update = async (id, data) => {
