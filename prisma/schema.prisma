@@ -375,7 +375,7 @@ model Notifications {
   id             String       @id @default(uuid())
   type           NOTIFICATION
   userId         String       @db.VarChar(255)
-  eventId        String?      @db.VarChar(10)
+  eventId        String?      @db.VarChar(255)
   referenceEvent String?
   read           Boolean      @default(false)
   message        String       @db.VarChar

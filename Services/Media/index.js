@@ -106,8 +106,7 @@ const CreateMany = async (data, url) => {
       uploadedBy: data.uploadedBy,
     },
   });
-
-  await prisma.$disconnect();
+    await prisma.$disconnect();
   return { Data };
 };
 
