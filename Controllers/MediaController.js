@@ -133,7 +133,7 @@ router.post(
         const message = `Media : ${user.firstname} sent you some media files`;
         const notification = await prisma.notifications.create({
           data: {
-            userId: event.user_id,
+            userId: event.userId,
             type: "MEDIA",
             message: message,
             referenceEvent: event.id,
@@ -146,7 +146,7 @@ router.post(
         const message = `Media : Host has uploaded some media files for ${event.title}`;
         const notification = await prisma.notifications.create({
           data: {
-            userId: event.user_id,
+            userId: event.userId,
             eventId: event.id,
             type: "MEDIA",
             message: message,
