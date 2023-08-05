@@ -15,7 +15,7 @@ const {
 const EnsureAuthenticated = require("../Utils/EnsureAuthenticated");
 const prisma = new PrismaClient();
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", EnsureAuthenticated, async (req, res) => {
   try {
     let data = await Get(req.params.id);
     return res.status(200).send(data);
@@ -26,7 +26,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.get("/EventDetails/:id", async (req, res) => {
+router.get("/EventDetails/:id", EnsureAuthenticated, async (req, res) => {
   try {
     let data = await GetEventDeliveryDetails(req.params.id);
     return res.status(200).send(data);
@@ -37,7 +37,7 @@ router.get("/EventDetails/:id", async (req, res) => {
   }
 });
 
-router.get("/deliveryTrans/:id", async (req, res) => {
+router.get("/deliveryTrans/:id", EnsureAuthenticated, async (req, res) => {
   try {
     let data = await GetDeliveryTrans(req.params.id);
     return res.status(200).send(data);
@@ -48,7 +48,7 @@ router.get("/deliveryTrans/:id", async (req, res) => {
   }
 });
 
-router.get("/:userId/deliveryTrans", async (req, res) => {
+router.get("/:userId/deliveryTrans", EnsureAuthenticated, async (req, res) => {
   try {
     let data = await GetUserDeliveryTrans(req.params.userId);
     return res.status(200).send(data);

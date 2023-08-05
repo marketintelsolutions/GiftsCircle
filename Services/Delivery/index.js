@@ -48,6 +48,7 @@ const GetUserDeliveryTrans = async (userId) => {
 };
 
 const Create = async (data) => {
+  console.log(data, data.eventId);
   const delivery = await prisma.delivery.findFirst({
     where: {
       eventId: data.eventId ? data.eventId : null,
