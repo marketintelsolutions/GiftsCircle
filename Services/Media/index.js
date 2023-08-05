@@ -93,11 +93,27 @@ const GetComplimentaryMessage = async (eventId) => {
   return messages;
 };
 
+const CreateMany = async (data, url) => {
+  const Data = await prisma.media.create({
+    data: {
+      user: {
+        connect: {
+          id: data.userId,
+        },
+      },
+      eventId: data.eventId,
+      url: url,
+      uploadedBy: data.uploadedBy,
+    },
+  });
+
+  await prisma.$disconnect();
+  return { Data };
+};
+
 const Create = async (data, url) => {
-  let id = uuidv4();
   let Data = await prisma.media.create({
     data: {
-      id: id,
       user: {
         connect: {
           id: data.userId,
@@ -151,10 +167,8 @@ const UpdateVisibility = async (id, data) => {
 };
 
 const CreateComplimentaryMessage = async (data) => {
-  let id = uuidv4();
-  let Data = await prisma.complimentaryMessage.create({
+  const Data = await prisma.complimentaryMessage.create({
     data: {
-      id: id,
       userId: data.userId,
       eventId: data.eventId,
       message: data.message,
@@ -203,6 +217,7 @@ module.exports = {
   GetEventGuestMedia,
   GetComplimentaryMessage,
   Create,
+  CreateMany,
   CreateComplimentaryMessage,
   UpdateVisibility,
   Delete,

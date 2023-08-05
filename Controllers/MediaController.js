@@ -14,6 +14,7 @@ const {
   GetComplimentaryMessage,
   UpdateVisibility,
   GetUserUploadedMedia,
+  CreateMany,
 } = require("../Services/Media");
 const prisma = new PrismaClient();
 
@@ -118,16 +119,16 @@ router.post(
             folder: "eventcircle/media",
           })
           .then((response) => {
-            Create(req.body, response.url);
+            CreateMany(req.body, response.url);
           })
           .catch((err) => console.log(err));
       });
       const event = await prisma.event.findFirst({
-        where: { id: data.eventId },
+        where: { id: req.body.eventId },
       });
       if (req.body.uploadedBy === "GUEST") {
         const user = await prisma.user.findFirst({
-          where: { id: data.userId },
+          where: { id: req.body.userId },
         });
 
         const message = `Media : ${user.firstname} sent you some media files`;
