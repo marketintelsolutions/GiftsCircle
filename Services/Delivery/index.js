@@ -58,6 +58,23 @@ const Create = async (data) => {
     if (delivery) {
       await prisma.$disconnect();
       return delivery;
+    } else {
+      const Data = await prisma.delivery.create({
+        data: {
+          firstname: data.firstname,
+          lastname: data.lastname,
+          address: data.address,
+          info: data.info,
+          lga: data.lga,
+          state: data.state,
+          tel: data.tel,
+          tel2: data.tel2 ? data.tel2 : "",
+          userId: data.userId,
+          eventId: data.eventId,
+        },
+      });
+      await prisma.$disconnect();
+      return Data;
     }
   } else {
     const Data = await prisma.delivery.create({
@@ -74,9 +91,6 @@ const Create = async (data) => {
         eventId: data.eventId,
       },
     });
-
-    await prisma.$disconnect();
-    return Data;
   }
 };
 

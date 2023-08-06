@@ -64,10 +64,11 @@ router.post("/create", EnsureAuthenticated, async (req, res) => {
     let data = await Create(req.body);
     if (data) {
       return res.status(200).send(data);
+    } else {
+      return res
+        .status(400)
+        .send(ResponseDTO("Failed", "Delivery Details already Exists"));
     }
-    return res
-      .status(400)
-      .send(ResponseDTO("Failed", "Delivery Details already Exists"));
   } catch (err) {
     console.log(err);
     await prisma.$disconnect();
