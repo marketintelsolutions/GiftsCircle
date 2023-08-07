@@ -58,6 +58,9 @@ const GetUserEvents = async (id) => {
           image: true,
           userId: true,
           host: true,
+          applyDonation: true,
+          published: true,
+          percentDonation: true,
           gift: {
             select: {
               giftitemId: true,
@@ -161,7 +164,7 @@ const Update2 = async (data, image) => {
       data: {
         image: image,
         descSummary: data.desc_summary,
-        summary: data.summary
+        summary: data.summary,
       },
     });
 
