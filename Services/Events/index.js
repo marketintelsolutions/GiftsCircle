@@ -387,6 +387,7 @@ const GetEventGuests = async (id) => {
     const data = await prisma.guests.findMany({
       where: {
         eventId: id,
+coHost: false
       },
       include: {
         user: {
