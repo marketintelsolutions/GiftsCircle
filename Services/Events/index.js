@@ -61,6 +61,8 @@ const GetUserEvents = async (id) => {
           applyDonation: true,
           published: true,
           percentDonation: true,
+          guestCode: true,
+          coHostCode: true,
           gift: {
             select: {
               giftitemId: true,
@@ -259,6 +261,9 @@ const AddGuest = async (data) => {
   });
 
   if (guest) {
+    if(guest.coHost === true){
+      return ResponseDTO("Failed", "Event CoHost can't join as Guest");
+    }
     return ResponseDTO("Success", guest);
   }
 
