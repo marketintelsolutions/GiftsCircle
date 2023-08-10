@@ -31,40 +31,6 @@ const GetEventGifts = async (id) => {
   return gifts;
 };
 
-// const GetEventGifts = async (id) => {
-//   const gifts = await prisma.gift.groupBy({
-//     by: ["giftitemId"],
-//     where: {
-//       eventId: id,
-//     },
-//   });
-//   const Data = [];
-//   for (let index = 0; index < gifts.length; index++) {
-//     const Id = gifts[index].giftitemId;
-//     const data = await prisma.gift.findMany({
-//       where: { giftitemId: Id, eventId: id },
-//     });
-//     const users = [];
-//     for (let i = 0; i < data.length; i++) {
-//       const user = await prisma.user.findUnique({
-//         where: { id: data[i].created_by },
-//         select: { firstname: true, lastname: true, id: true },
-//       });
-//       users.push(user);
-//     }
-
-//     Data.push({
-//       gift: {
-//         data: data,
-//         users: users,
-//       },
-//     });
-//   }
-//   console.log(Data.length)
-//   await prisma.$disconnect();
-//   return Data;
-// };
-
 const GetEventGiftsByHost = async (id, userId) => {
   const gifts = await prisma.gift.findMany({
     where: {

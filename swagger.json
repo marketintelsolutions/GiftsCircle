@@ -445,9 +445,63 @@
         }
       }
     },
+    "/event/guests/{id}": {
+      "get": {
+        "description": "Gets the details of the guest",
+        "tags": ["Event"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
     "/event/{id}/guests": {
       "get": {
-        "description": "",
+        "description": "Gets all the guests in the event",
+        "tags": ["Event"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/event/GetCoHostGuesCode/{eventId}/{userId}": {
+      "get": {
+        "description": "Gets the guest code of a particular coHost",
         "tags": ["Event"],
         "parameters": [
           {
@@ -478,7 +532,13 @@
         "tags": ["Event"],
         "parameters": [
           {
-            "name": "id",
+            "name": "eventId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userId",
             "in": "path",
             "required": true,
             "type": "string"

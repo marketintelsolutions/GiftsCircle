@@ -14,6 +14,8 @@ const {
   GetEventGuests,
   GetEventCoHosts,
   AddCoHost,
+  GetCoHostGuestCode,
+  GetGuestDetails,
 } = require("../Services/Events");
 const router = express.Router();
 const EnsureAuthenticated = require("../Utils/EnsureAuthenticated");
@@ -62,6 +64,17 @@ router.get("/UserEvents/:id", EnsureAuthenticated, async (req, res) => {
   }
 });
 
+router.get("/guests/:id", EnsureAuthenticated, async (req, res) => {
+  try {
+    const data = await GetGuestDetails(req.params.id);
+    return res.status(200).send(data);
+  } catch (err) {
+    console.log(err);
+    await prisma.$disconnect();
+    return res.status(400).send(ResponseDTO("Failed", "Event Not Found"));
+  }
+});
+
 router.get("/:id/guests", EnsureAuthenticated, async (req, res) => {
   try {
     const data = await GetEventGuests(req.params.id);
@@ -83,6 +96,24 @@ router.get("/:id/cohosts", EnsureAuthenticated, async (req, res) => {
     return res.status(400).send(ResponseDTO("Failed", "Event Not Found"));
   }
 });
+
+router.get(
+  "/GetCoHostGuesCode/:eventId/:userId",
+  EnsureAuthenticated,
+  async (req, res) => {
+    try {
+      const data = await GetCoHostGuestCode(
+        req.params.userId,
+        req.params.userId
+      );
+      return res.status(200).send(data);
+    } catch (err) {
+      console.log(err);
+      await prisma.$disconnect();
+      return res.status(400).send(ResponseDTO("Failed", "Event Not Found"));
+    }
+  }
+);
 
 router.post("/", EnsureAuthenticated, async (req, res) => {
   try {

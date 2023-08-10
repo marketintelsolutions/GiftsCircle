@@ -120,6 +120,16 @@ model event {
   @@index([host], map: "Event_userId_fkey")
 }
 
+model CoHostCodes {
+  id         String    @id @default(uuid())
+  eventId    String    @db.VarChar(50)
+  userId     String    @db.VarChar(50)
+  code       String    @db.VarChar(6)
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
+}
+
 model Guests {
   id         String    @id @default(uuid())
   eventId    String    @db.VarChar(50)
@@ -127,6 +137,7 @@ model Guests {
   user       user      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     String    @db.VarChar(255)
   event      event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  coHostId   String?   @db.VarChar(50)
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
   deleted_at DateTime?

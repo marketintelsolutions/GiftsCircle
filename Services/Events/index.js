@@ -1,7 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const { CreateEventId, CreateCoHostId, CreateGuestId } = require("./service");
 const prisma = new PrismaClient();
-const { v4: uuidv4 } = require("uuid");
 const ResponseDTO = require("../../DTO/Response");
 const {
   SendEventPublishEmail,
@@ -82,6 +81,18 @@ const GetUserEvents = async (id) => {
   return data;
 };
 
+const GetCoHostGuestCode = async (eventId, userId) => {
+  const code = await prisma.coHostCodes.findFirst({
+    where: {
+      eventId: eventId,
+      userId: userId,
+    },
+  });
+
+  await prisma.$disconnect();
+  return code;
+};
+
 const Create = async (data) => {
   const user = await prisma.user.findUnique({
     where: {
@@ -91,6 +102,7 @@ const Create = async (data) => {
 
   if (user) {
     const coHostId = data.coHost ? CreateCoHostId() : "";
+    const guestCode = CreateGuestId();
     let event = await prisma.event.create({
       data: {
         id: CreateEventId(),
@@ -108,9 +120,17 @@ const Create = async (data) => {
         applyDonation: false,
         coHostCode: coHostId,
         coHostLink: "",
-        guestCode: CreateGuestId(),
+        guestCode: guestCode,
         eventLink: "",
         percentDonation: 0,
+      },
+    });
+
+    await prisma.coHostCodes.create({
+      data: {
+        userId: data.userId,
+        eventId: event.id,
+        code: guestCode,
       },
     });
 
@@ -257,11 +277,12 @@ const AddGuest = async (data) => {
     where: {
       eventId: data.eventId,
       userId: data.userId,
+      coHost: false,
     },
   });
 
   if (guest) {
-    if(guest.coHost === true){
+    if (guest.coHost === true) {
       return ResponseDTO("Failed", "Event CoHost can't join as Guest");
     }
     return ResponseDTO("Success", guest);
@@ -272,9 +293,15 @@ const AddGuest = async (data) => {
       id: data.eventId,
     },
   });
+  const cohostCode = await prisma.coHostCodes.findFirst({
+    where: {
+      eventId: event.id,
+      code: data.guestCode,
+    },
+  });
 
   if (event) {
-    if (event.guestCode === data.guestCode) {
+    if (cohostCode) {
       if (data.userId !== event.userId) {
         let Data = await prisma.guests.create({
           data: {
@@ -289,6 +316,7 @@ const AddGuest = async (data) => {
               },
             },
             coHost: false,
+            coHostId: cohostCode.userId,
           },
         });
 
@@ -352,6 +380,13 @@ const AddCoHost = async (data) => {
             coHost: true,
           },
         });
+        await prisma.coHostCodes.create({
+          data: {
+            userId: data.userId,
+            eventId: event.id,
+            code: CreateGuestId(),
+          },
+        });
 
         const message = `Event: Your Co Host joined ${event.title} event`;
         const notification = await prisma.notifications.create({
@@ -376,6 +411,16 @@ const AddCoHost = async (data) => {
   }
 };
 
+const GetGuestDetails = async (id) => {
+  const guest = await prisma.guests.findFirst({
+    where: {
+      userId: id,
+    },
+  });
+
+  return guest;
+};
+
 const GetEventGuests = async (id) => {
   const event = await prisma.event.findUnique({
     where: {
@@ -387,7 +432,7 @@ const GetEventGuests = async (id) => {
     const data = await prisma.guests.findMany({
       where: {
         eventId: id,
-coHost: false
+        coHost: false,
       },
       include: {
         user: {
@@ -445,4 +490,6 @@ module.exports = {
   GetEventGuests,
   AddCoHost,
   GetEventCoHosts,
+  GetCoHostGuestCode,
+  GetGuestDetails,
 };
