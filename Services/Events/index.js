@@ -301,7 +301,7 @@ const AddGuest = async (data) => {
   });
 
   if (event) {
-    if (cohostCode) {
+    if (cohostCode || data.guestCode === event.guestCode) {
       if (data.userId !== event.userId) {
         let Data = await prisma.guests.create({
           data: {
