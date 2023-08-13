@@ -103,7 +103,7 @@ router.get(
   async (req, res) => {
     try {
       const data = await GetCoHostGuestCode(
-        req.params.userId,
+        req.params.eventId,
         req.params.userId
       );
       return res.status(200).send(data);
