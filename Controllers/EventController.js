@@ -98,7 +98,7 @@ router.get("/:id/cohosts", EnsureAuthenticated, async (req, res) => {
 });
 
 router.get(
-  "/GetCoHostGuesCode/:eventId/:userId",
+  "/GetCoHostGuestCode/:eventId/:userId",
   EnsureAuthenticated,
   async (req, res) => {
     try {
