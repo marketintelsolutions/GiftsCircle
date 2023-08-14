@@ -16,6 +16,7 @@ const {
   AddCoHost,
   GetCoHostGuestCode,
   GetGuestDetails,
+  GetCoHostGuests,
 } = require("../Services/Events");
 const router = express.Router();
 const EnsureAuthenticated = require("../Utils/EnsureAuthenticated");
@@ -78,6 +79,17 @@ router.get("/guests/:id", EnsureAuthenticated, async (req, res) => {
 router.get("/:id/guests", EnsureAuthenticated, async (req, res) => {
   try {
     const data = await GetEventGuests(req.params.id);
+    return res.status(200).send(data);
+  } catch (err) {
+    console.log(err);
+    await prisma.$disconnect();
+    return res.status(400).send(ResponseDTO("Failed", "Event Not Found"));
+  }
+});
+
+router.get("/:id/:coHostId/guests", EnsureAuthenticated, async (req, res) => {
+  try {
+    const data = await GetCoHostGuests(req.params.id, req.params.coHostId);
     return res.status(200).send(data);
   } catch (err) {
     console.log(err);

@@ -505,7 +505,13 @@
         "tags": ["Event"],
         "parameters": [
           {
-            "name": "id",
+            "name": "eventId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userId",
             "in": "path",
             "required": true,
             "type": "string"
@@ -539,6 +545,39 @@
           },
           {
             "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/event/{id}/{coHostId}/guests": {
+      "get": {
+        "description": "",
+        "tags": ["Event"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "coHostId",
             "in": "path",
             "required": true,
             "type": "string"

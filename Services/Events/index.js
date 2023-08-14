@@ -477,6 +477,34 @@ const GetEventCoHosts = async (id) => {
   }
 };
 
+const GetCoHostGuests = async (id, coHostId) => {
+  const event = await prisma.event.findUnique({
+    where: {
+      id: id,
+    },
+  });
+
+  if (event) {
+    const data = await prisma.guests.findMany({
+      where: {
+        eventId: id,
+        coHostId: coHostId,
+      },
+      include: {
+        user: {
+          select: {
+            firstname: true,
+            lastname: true,
+          },
+        },
+      },
+    });
+    return data;
+  } else {
+    return null;
+  }
+};
+
 module.exports = {
   Create,
   Update1,
@@ -492,4 +520,5 @@ module.exports = {
   GetEventCoHosts,
   GetCoHostGuestCode,
   GetGuestDetails,
+  GetCoHostGuests,
 };
