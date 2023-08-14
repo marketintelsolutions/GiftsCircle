@@ -538,13 +538,7 @@
         "tags": ["Event"],
         "parameters": [
           {
-            "name": "eventId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "userId",
+            "name": "id",
             "in": "path",
             "required": true,
             "type": "string"
