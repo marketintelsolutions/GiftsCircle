@@ -110,12 +110,12 @@ router.get("/:id/cohosts", EnsureAuthenticated, async (req, res) => {
 });
 
 router.get(
-  "/GetCoHostGuesCode/:eventId/:userId",
+  "/GetCoHostGuestCode/:eventId/:userId",
   EnsureAuthenticated,
   async (req, res) => {
     try {
       const data = await GetCoHostGuestCode(
-        req.params.userId,
+        req.params.eventId,
         req.params.userId
       );
       return res.status(200).send(data);

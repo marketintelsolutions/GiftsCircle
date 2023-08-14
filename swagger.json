@@ -499,7 +499,7 @@
         }
       }
     },
-    "/event/GetCoHostGuesCode/{eventId}/{userId}": {
+    "/event/GetCoHostGuestCode/{eventId}/{userId}": {
       "get": {
         "description": "Gets the guest code of a particular coHost",
         "tags": ["Event"],
