@@ -882,7 +882,7 @@
         }
       }
     },
-    "/gift/Get/EventGifts/{id}/{userId}": {
+    "/gift/Get/EventGifts/{id}/{cohostId}": {
       "get": {
         "description": "",
         "tags": ["Gift"],
@@ -894,7 +894,7 @@
             "type": "string"
           },
           {
-            "name": "userId",
+            "name": "cohostId",
             "in": "path",
             "required": true,
             "type": "string"
