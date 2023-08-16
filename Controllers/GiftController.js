@@ -60,11 +60,11 @@ router.get("/Get/EventGifts/:id", EnsureAuthenticated, async (req, res) => {
 });
 
 router.get(
-  "/Get/EventGifts/:id/:userId",
+  "/Get/EventGifts/:id/:hostId",
   EnsureAuthenticated,
   async (req, res) => {
     try {
-      let data = await GetEventGiftsByHost(req.params.id, req.params.userId);
+      let data = await GetEventGiftsByHost(req.params.id, req.params.hostId);
       return res.status(200).send(data);
     } catch (err) {
       console.log(err);
