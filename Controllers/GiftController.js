@@ -17,6 +17,7 @@ const {
   GetEventGiftTransactions,
   GetUserEventPurchasedGifts,
   GetEventGiftsByHost,
+  GetCoHostEventGiftTransactions,
 } = require("../Services/Gift");
 const EnsureAuthenticated = require("../Utils/EnsureAuthenticated");
 
@@ -95,6 +96,24 @@ router.get(
     try {
       let data = await GetUserEventPurchasedGifts(
         req.params.id,
+        req.params.eventId
+      );
+      return res.status(200).send(data);
+    } catch (err) {
+      console.log(err);
+      await prisma.$disconnect();
+      return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
+    }
+  }
+);
+
+router.get(
+  "/Get/CoHostEventGiftsTrans/:userId/:eventId",
+  EnsureAuthenticated,
+  async (req, res) => {
+    try {
+      let data = await GetCoHostEventGiftTransactions(
+        req.params.userId,
         req.params.eventId
       );
       return res.status(200).send(data);

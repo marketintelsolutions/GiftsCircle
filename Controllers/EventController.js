@@ -40,7 +40,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.get("/Events/GetAll", EnsureAuthenticated, async (req, res) => {
+router.get("/Events/GetAll", async (req, res) => {
   try {
     let data = await GetAllEvents();
     return res.status(200).send(data);
@@ -65,9 +65,9 @@ router.get("/UserEvents/:id", EnsureAuthenticated, async (req, res) => {
   }
 });
 
-router.get("/guests/:id", EnsureAuthenticated, async (req, res) => {
+router.get("/guests/:id/:eventId", EnsureAuthenticated, async (req, res) => {
   try {
-    const data = await GetGuestDetails(req.params.id);
+    const data = await GetGuestDetails(req.params.id, req.params.eventId);
     return res.status(200).send(data);
   } catch (err) {
     console.log(err);
@@ -223,7 +223,7 @@ router.delete("/:id", EnsureAuthenticated, async (req, res) => {
   }
 });
 
-router.post("/addGuest", EnsureAuthenticated, async (req, res) => {
+router.post("/addGuest", async (req, res) => {
   try {
     const data = await AddGuest(req.body);
     if (data.status === "Failed") {
@@ -241,7 +241,7 @@ router.post("/addGuest", EnsureAuthenticated, async (req, res) => {
   }
 });
 
-router.post("/addCoHost", EnsureAuthenticated, async (req, res) => {
+router.post("/addCoHost", async (req, res) => {
   try {
     const data = await AddCoHost(req.body);
     if (data.status === "Failed") {

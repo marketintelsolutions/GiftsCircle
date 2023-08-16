@@ -18,7 +18,7 @@ const GetEvent = async (id) => {
 };
 
 const GetAllEvents = async () => {
-  const events = await prisma.event.findMany({});
+  const events = await prisma.guests.findMany({});
 
   await prisma.$disconnect();
   return events;
@@ -299,6 +299,7 @@ const AddGuest = async (data) => {
       code: data.guestCode,
     },
   });
+  console.log(cohostCode);
 
   if (event) {
     if (cohostCode || data.guestCode === event.guestCode) {
@@ -411,10 +412,11 @@ const AddCoHost = async (data) => {
   }
 };
 
-const GetGuestDetails = async (id) => {
+const GetGuestDetails = async (id, eventId) => {
   const guest = await prisma.guests.findFirst({
     where: {
       userId: id,
+      eventId: eventId,
     },
   });
 

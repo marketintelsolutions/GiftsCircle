@@ -445,7 +445,7 @@
         }
       }
     },
-    "/event/guests/{id}": {
+    "/event/guests/{id}/{eventId}": {
       "get": {
         "description": "Gets the details of the guest",
         "tags": ["Event"],
@@ -455,8 +455,15 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "eventId",
+            "in": "path",
+            "required": true,
+            "type": "string"
           }
         ],
+
         "security": [
           {
             "apiKeyAuth": []
@@ -956,6 +963,39 @@
         "parameters": [
           {
             "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "gift/Get/CoHostEventGiftsTrans/{userId}/{eventId}": {
+      "get": {
+        "description": "",
+        "tags": ["Gift"],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "eventId",
             "in": "path",
             "required": true,
             "type": "string"
