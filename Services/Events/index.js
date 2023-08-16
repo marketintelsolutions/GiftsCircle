@@ -62,6 +62,7 @@ const GetUserEvents = async (id) => {
           percentDonation: true,
           guestCode: true,
           coHostCode: true,
+created_at: true,
           gift: {
             select: {
               giftitemId: true,
