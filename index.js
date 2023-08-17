@@ -38,6 +38,9 @@ app.use(
       "http://localhost:3000",
       "http://localhost:3001",
       "https://giftscircle.netlify.app",
+      "https://demo.twilio.com",
+      "http://localhost:5173",
+      "https://finddmee.netlify.app"
     ],
   })
 );

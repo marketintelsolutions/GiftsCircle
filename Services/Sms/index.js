@@ -9,7 +9,6 @@ const GetLocationData = async () => {
 
 const CreateLocation = async (data) => {
   const coordinates = data.Body.split(",");
-  console.log(data.From, coordinates);
 
   let Data = await prisma.sms.create({
     data: {
