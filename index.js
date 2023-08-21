@@ -111,11 +111,7 @@ app.use(
 app.use("/api/admin/", require("./Controllers/Admin/AuthController"));
 
 app.use("/api/docs/", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-// app.use(
-//   "/api/admin/docs/",
-//   swaggerUi.serve,
-//   swaggerUi.setup(AdminSwaggerDocument)
-// );
+
 const PORT = process.env.PORT || 4000;
 
 server.listen(PORT, () => {
