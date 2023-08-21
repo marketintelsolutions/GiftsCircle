@@ -300,7 +300,6 @@ const AddGuest = async (data) => {
       code: data.guestCode,
     },
   });
-  console.log(cohostCode);
 
   if (event) {
     if (cohostCode || data.guestCode === event.guestCode) {
