@@ -483,6 +483,7 @@ model otp {
   created_by String?   @db.VarChar(255)
 
   @@index([code])
+   @@index([id])
 }
 
 model Sms {
