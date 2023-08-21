@@ -3,7 +3,6 @@ const nodemailer = require("nodemailer");
 const path = require("path");
 const moment = require("moment");
 
-// initialize nodemailer
 var transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {

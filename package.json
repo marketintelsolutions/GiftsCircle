@@ -28,7 +28,6 @@
     "nodemailer": "^6.9.1",
     "nodemailer-express-handlebars": "^6.1.0",
     "otp-generator": "^4.0.0",
-    "prisma": "^5.1.0",
     "socket.io": "^4.6.2",
     "swagger-autogen": "^2.23.0",
     "swagger-jsdoc": "^6.2.8",
@@ -36,7 +35,8 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.20"
+    "nodemon": "^2.0.20",
+    "prisma": "^5.1.1"
   },
   "engines": {
     "node": ">=14"
