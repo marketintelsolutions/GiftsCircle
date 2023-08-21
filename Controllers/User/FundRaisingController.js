@@ -1,8 +1,7 @@
 const { PrismaClient } = require("@prisma/client");
 const express = require("express");
-const ResponseDTO = require("../DTO/Response");
+const ResponseDTO = require("../../DTO/Response");
 const router = express.Router();
-const EnsureAuthenticated = require("../Utils/EnsureAuthenticated");
 const {
   GetFundRaising,
   Create,
@@ -11,9 +10,13 @@ const {
   Donate,
   GetFundDonors,
   DeleteFundRaising,
-} = require("../Services/FundRaising");
-const cloudinary = require("../config/Cloudinary");
-const { upload, dataUri } = require("../config/multer");
+} = require("../../Services/FundRaising");
+const cloudinary = require("../../config/Cloudinary");
+const { upload, dataUri } = require("../../config/multer");
+const {
+  EnsureAuthenticated,
+  UserAuthenticated,
+} = require("../../Utils/EnsureAuthenticated");
 const prisma = new PrismaClient();
 
 router.get("/:id", EnsureAuthenticated, async (req, res) => {
@@ -32,7 +35,7 @@ router.get("/:id", EnsureAuthenticated, async (req, res) => {
 router.post(
   "/create",
   upload.single("image"),
-  EnsureAuthenticated,
+  UserAuthenticated,
   async (req, res) => {
     try {
       const file = dataUri(req).content;
@@ -53,7 +56,7 @@ router.post(
   }
 );
 
-router.put("/UpdateAmount", EnsureAuthenticated, async (req, res) => {
+router.put("/UpdateAmount", UserAuthenticated, async (req, res) => {
   try {
     let data = await UpdateAmount(req.body);
     if (data) {
@@ -69,7 +72,7 @@ router.put("/UpdateAmount", EnsureAuthenticated, async (req, res) => {
   }
 });
 
-router.put("/UpdateStatus", EnsureAuthenticated, async (req, res) => {
+router.put("/UpdateStatus", UserAuthenticated, async (req, res) => {
   try {
     let data = await UpdateStatus(req.body);
     if (data) {
@@ -85,7 +88,7 @@ router.put("/UpdateStatus", EnsureAuthenticated, async (req, res) => {
   }
 });
 
-router.post("/Donate", EnsureAuthenticated, async (req, res) => {
+router.post("/Donate", UserAuthenticated, async (req, res) => {
   try {
     let data = await Donate(req.body);
     if (data) {
@@ -115,7 +118,7 @@ router.get("/GetFundDonors/:id", EnsureAuthenticated, async (req, res) => {
   }
 });
 
-router.delete("/:id", EnsureAuthenticated, async (req, res) => {
+router.delete("/:id", UserAuthenticated, async (req, res) => {
   try {
     await DeleteFundRaising(req.params.id);
     return res

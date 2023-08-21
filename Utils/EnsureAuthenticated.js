@@ -11,11 +11,55 @@ const EnsureAuthenticated = (req, res, next) => {
       VerifyToken(token);
       next();
     } catch (err) {
+      console.log(err)
       res.sendStatus(403);
     }
   } else {
     res.sendStatus(403);
-  } //56ebdd0a-e340-486a-a918-fb7452bdfe4a
+  }
 };
 
-module.exports = EnsureAuthenticated;
+const UserAuthenticated = (req, res, next) => {
+  const header = req.headers["authorization"];
+
+  if (typeof header !== "undefined") {
+    const bearer = header.split(" ");
+    const token = bearer[1];
+
+    try {
+      let payload = VerifyToken(token);
+      if (payload.role === "USER") {
+        next();
+      } else {
+        res.sendStatus(403);
+      }
+    } catch (err) {
+      res.sendStatus(403);
+    }
+  } else {
+    res.sendStatus(403);
+  }
+};
+
+const AdminAuthenticated = (req, res, next) => {
+  const header = req.headers["authorization"];
+
+  if (typeof header !== "undefined") {
+    const bearer = header.split(" ");
+    const token = bearer[1];
+
+    try {
+      let payload = VerifyToken(token);
+      if (payload.role === "ADMIN") {
+        next();
+      } else {
+        res.sendStatus(403);
+      }
+    } catch (err) {
+      res.sendStatus(403);
+    }
+  } else {
+    res.sendStatus(403);
+  }
+};
+module.exports = { EnsureAuthenticated, UserAuthenticated, AdminAuthenticated };

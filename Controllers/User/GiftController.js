@@ -1,25 +1,22 @@
 const { PrismaClient } = require("@prisma/client");
 const express = require("express");
-const ResponseDTO = require("../DTO/Response");
+const ResponseDTO = require("../../DTO/Response");
 const router = express.Router();
 const {
   Get,
-  GetAll,
   Create,
   Delete,
   GetEventGifts,
   CreateMany,
   EnableContribution,
   GetUserPurchasedGifts,
-  BuyMarketGift,
-  GetUserGifts,
   Buy,
   GetEventGiftTransactions,
   GetUserEventPurchasedGifts,
   GetEventGiftsByHost,
   GetCoHostEventGiftTransactions,
-} = require("../Services/Gift");
-const EnsureAuthenticated = require("../Utils/EnsureAuthenticated");
+} = require("../../Services/Gift");
+const {EnsureAuthenticated, UserAuthenticated} = require("../../Utils/EnsureAuthenticated");
 
 const prisma = new PrismaClient();
 
@@ -30,17 +27,6 @@ router.get("/:id", EnsureAuthenticated, async (req, res) => {
       return res.status(200).send(data);
     }
     return res.status(400).send(ResponseDTO("Failed", "Gift not found"));
-  } catch (err) {
-    console.log(err);
-    await prisma.$disconnect();
-    return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
-  }
-});
-
-router.get("/Get/All", EnsureAuthenticated, async (req, res) => {
-  try {
-    let data = await GetAll();
-    return res.status(200).send(data);
   } catch (err) {
     console.log(err);
     await prisma.$disconnect();
@@ -136,7 +122,7 @@ router.get("/Get/PurchasedBy/:id", EnsureAuthenticated, async (req, res) => {
   }
 });
 
-router.post("/create", EnsureAuthenticated, async (req, res) => {
+router.post("/create", UserAuthenticated, async (req, res) => {
   try {
     let data = await Create(req.body);
     return res.status(200).send(data);
@@ -147,7 +133,7 @@ router.post("/create", EnsureAuthenticated, async (req, res) => {
   }
 });
 
-router.post("/createMany", EnsureAuthenticated, async (req, res) => {
+router.post("/createMany", UserAuthenticated, async (req, res) => {
   try {
     let data = await CreateMany(req.body);
     return res.status(200).send(data);
@@ -158,7 +144,7 @@ router.post("/createMany", EnsureAuthenticated, async (req, res) => {
   }
 });
 
-router.post("/Buy", EnsureAuthenticated, async (req, res) => {
+router.post("/Buy", UserAuthenticated, async (req, res) => {
   try {
     let data = await Buy(req.body);
     if (data) {
@@ -176,7 +162,7 @@ router.post("/Buy", EnsureAuthenticated, async (req, res) => {
   }
 });
 
-router.put("/EnableContribution", EnsureAuthenticated, async (req, res) => {
+router.put("/EnableContribution", UserAuthenticated, async (req, res) => {
   try {
     let data = await EnableContribution(req.body);
     if (data) {
@@ -190,7 +176,7 @@ router.put("/EnableContribution", EnsureAuthenticated, async (req, res) => {
   }
 });
 
-router.put("/EnableContribution/:id", EnsureAuthenticated, async (req, res) => {
+router.put("/EnableContribution/:id", UserAuthenticated, async (req, res) => {
   try {
     let data = await EnableContribution(req.body, req.params.id);
     if (data) {
@@ -204,7 +190,7 @@ router.put("/EnableContribution/:id", EnsureAuthenticated, async (req, res) => {
   }
 });
 
-router.delete("/:id", EnsureAuthenticated, async (req, res) => {
+router.delete("/:id", UserAuthenticated, async (req, res) => {
   try {
     await Delete(req.params.id);
     return res

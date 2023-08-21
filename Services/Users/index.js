@@ -43,10 +43,10 @@ const Create = async (data) => {
   const user = await prisma.user.findFirst({
     where: {
       email: data.email,
+      role: "USER",
     },
   });
 
-  const id = uuidv4();
   if (!user) {
     await prisma.user.create({
       data: {
@@ -55,7 +55,7 @@ const Create = async (data) => {
         lastname: data.lastname,
         firstname: data.firstname,
         emailVerified: false,
-        id: id,
+        role: "USER",
       },
     });
 

@@ -16,7 +16,7 @@ const Login = async (data) => {
     let checkPasssword = await comparePassword(data.password, user.password);
     if (checkPasssword) {
       await prisma.$disconnect();
-      let token = GenerateToken(data.email, "4h");
+      let token = GenerateToken(data.email, "USER", "4h");
       return { token, user };
     }
 
@@ -33,7 +33,7 @@ const GoogleSignIn = async (data) => {
   });
 
   if (user) {
-    let token = GenerateToken(user.email, "4h");
+    let token = GenerateToken(user.email, "USER", "4h");
     await prisma.$disconnect();
     return { token, user };
   }
@@ -119,7 +119,7 @@ const SendResetPasswordEmail = async (email) => {
 
   if (user) {
     try {
-      let token = GenerateToken(email, "30m");
+      let token = GenerateToken(email, "USER", "30m");
       let url =
         process.env.env === "development"
           ? "http://localhost:3000"

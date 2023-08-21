@@ -40,7 +40,7 @@ app.use(
       "https://giftscircle.netlify.app",
       "https://demo.twilio.com",
       "http://localhost:5173",
-      "https://finddmee.netlify.app"
+      "https://finddmee.netlify.app",
     ],
   })
 );
@@ -49,24 +49,65 @@ app.get("/", async (req, res) => {
   return res.json({ msg: "hello world" });
 });
 // app.use('/images', express.static('images'))
-app.use("/api/user/", require("./Controllers/UserController"));
-app.use("/api/event/", require("./Controllers/EventController"));
-app.use("/api/giftItem/", require("./Controllers/GiftItemController"));
-app.use("/api/asoebiItem/", require("./Controllers/AsoebiItemController"));
+app.use("/api/user/", require("./Controllers/User/UserController"));
+app.use("/api/event/", require("./Controllers/User/EventController"));
+app.use("/api/giftItem/", require("./Controllers/User/GiftItemController"));
+app.use("/api/asoebiItem/", require("./Controllers/User/AsoebiItemController"));
 app.use(
   "/api/sourvenirItem/",
-  require("./Controllers/SourvenirItemController")
+  require("./Controllers/User/SourvenirItemController")
 );
-app.use("/api/marketPlace/", require("./Controllers/MarketplaceController"));
-app.use("/api/media/", require("./Controllers/MediaController"));
-app.use("/api/complimentaryGift/", require("./Controllers/ComplimentaryGift"));
-app.use("/api/gift/", require("./Controllers/GiftController"));
-app.use("/api/asoebi/", require("./Controllers/AsoebiController"));
-app.use("/api/sms/", require("./Controllers/SmsController"));
-app.use("/api/sourvenir/", require("./Controllers/SourvenirController"));
-app.use("/api/delivery/", require("./Controllers/DeliveryController"));
-app.use("/api/fundRaising/", require("./Controllers/FundRaisingController"));
-app.use("/api/", require("./Controllers/AuthController"));
+app.use(
+  "/api/marketPlace/",
+  require("./Controllers/User/MarketplaceController")
+);
+app.use("/api/media/", require("./Controllers/User/MediaController"));
+app.use(
+  "/api/complimentaryGift/",
+  require("./Controllers/User/ComplimentaryGift")
+);
+app.use("/api/gift/", require("./Controllers/User/GiftController"));
+app.use("/api/asoebi/", require("./Controllers/User/AsoebiController"));
+app.use("/api/sms/", require("./Controllers/User/SmsController"));
+app.use("/api/sourvenir/", require("./Controllers/User/SourvenirController"));
+app.use("/api/delivery/", require("./Controllers/User/DeliveryController"));
+app.use(
+  "/api/fundRaising/",
+  require("./Controllers/User/FundRaisingController")
+);
+app.use("/api/", require("./Controllers/User/AuthController"));
+
+//apis for admin
+app.use("/api/admin/user/", require("./Controllers/Admin/UserController"));
+app.use("/api/admin/event/", require("./Controllers/Admin/EventController"));
+app.use(
+  "/api/admin/giftItem/",
+  require("./Controllers/Admin/GiftItemController")
+);
+app.use(
+  "/api/admin/asoebiItem/",
+  require("./Controllers/Admin/AsoebiItemController")
+);
+app.use(
+  "/api/admin/sourvenirItem/",
+  require("./Controllers/Admin/SourvenirItemController")
+);
+app.use(
+  "/api/admin/marketPlace/",
+  require("./Controllers/Admin/MarketplaceController")
+);
+app.use(
+  "/api/admin/complimentaryGift/",
+  require("./Controllers/Admin/ComplimentaryGift")
+);
+app.use("/api/admin/gift/", require("./Controllers/Admin/GiftController"));
+app.use("/api/admin/asoebi/", require("./Controllers/Admin/AsoebiController"));
+app.use("/api/admin/sms/", require("./Controllers/User/SmsController"));
+app.use(
+  "/api/admin/sourvenir/",
+  require("./Controllers/Admin/SourvenirController")
+);
+app.use("/api/admin/", require("./Controllers/Admin/AuthController"));
 
 app.use("/api/docs/", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // app.use(

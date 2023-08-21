@@ -1,6 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const express = require("express");
-const ResponseDTO = require("../DTO/Response");
+const ResponseDTO = require("../../DTO/Response");
 const {
   Create,
   Update1,
@@ -17,11 +17,11 @@ const {
   GetCoHostGuestCode,
   GetGuestDetails,
   GetCoHostGuests,
-} = require("../Services/Events");
+} = require("../../Services/Events");
 const router = express.Router();
-const EnsureAuthenticated = require("../Utils/EnsureAuthenticated");
-const cloudinary = require("../config/Cloudinary");
-const { upload, dataUri } = require("../config/multer");
+const cloudinary = require("../../config/Cloudinary");
+const { upload, dataUri } = require("../../config/multer");
+const { EnsureAuthenticated, UserAuthenticated } = require("../../Utils/EnsureAuthenticated");
 
 // const upload = new Multer.memoryStorage();
 const prisma = new PrismaClient();
@@ -33,17 +33,6 @@ router.get("/:id", async (req, res) => {
       return res.status(200).send(data);
     }
     return res.status(400).send(ResponseDTO("Failed", "Event not found"));
-  } catch (err) {
-    console.log(err);
-    await prisma.$disconnect();
-    return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
-  }
-});
-
-router.get("/Events/GetAll", async (req, res) => {
-  try {
-    let data = await GetAllEvents();
-    return res.status(200).send(data);
   } catch (err) {
     console.log(err);
     await prisma.$disconnect();
@@ -127,7 +116,7 @@ router.get(
   }
 );
 
-router.post("/", EnsureAuthenticated, async (req, res) => {
+router.post("/", UserAuthenticated, async (req, res) => {
   try {
     let data = await Create(req.body);
     if (data) {
@@ -141,7 +130,7 @@ router.post("/", EnsureAuthenticated, async (req, res) => {
   }
 });
 
-router.put("/create", EnsureAuthenticated, async (req, res) => {
+router.put("/create", UserAuthenticated, async (req, res) => {
   try {
     let data = await Update1(req.body);
     if (data) {
@@ -158,7 +147,7 @@ router.put("/create", EnsureAuthenticated, async (req, res) => {
 router.post(
   "/create2",
   upload.single("image"),
-  EnsureAuthenticated,
+  UserAuthenticated,
   async (req, res) => {
     try {
       if (req.file) {
@@ -187,7 +176,7 @@ router.post(
   }
 );
 
-router.post("/create3", EnsureAuthenticated, async (req, res) => {
+router.post("/create3", UserAuthenticated, async (req, res) => {
   try {
     let data = await Update3(req.body);
     if (data) {
@@ -202,7 +191,7 @@ router.post("/create3", EnsureAuthenticated, async (req, res) => {
   }
 });
 
-router.delete("/:id", EnsureAuthenticated, async (req, res) => {
+router.delete("/:id", UserAuthenticated, async (req, res) => {
   try {
     const data = await DeleteEvent(req.params.id);
     if (data.notification) {

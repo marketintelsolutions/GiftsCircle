@@ -1,8 +1,8 @@
 const { PrismaClient } = require("@prisma/client");
 const express = require("express");
-const ResponseDTO = require("../DTO/Response");
-const EnsureAuthenticated = require("../Utils/EnsureAuthenticated");
-const { GetLocationData, CreateLocation } = require("../Services/Sms");
+const ResponseDTO = require("../../DTO/Response");
+const EnsureAuthenticated = require("../../Utils/EnsureAuthenticated");
+const { GetLocationData, CreateLocation } = require("../../Services/Sms");
 const router = express.Router();
 const prisma = new PrismaClient();
 

@@ -1,10 +1,13 @@
 const { PrismaClient } = require("@prisma/client");
 const express = require("express");
-const ResponseDTO = require("../DTO/Response");
+const ResponseDTO = require("../../DTO/Response");
 const router = express.Router();
-const cloudinary = require("../config/Cloudinary");
-const { upload, dataUri, dataUriMultiple } = require("../config/multer");
-const EnsureAuthenticated = require("../Utils/EnsureAuthenticated");
+const cloudinary = require("../../config/Cloudinary");
+const { upload, dataUri, dataUriMultiple } = require("../../config/multer");
+const {
+  EnsureAuthenticated,
+  UserAuthenticated,
+} = require("../../Utils/EnsureAuthenticated");
 const {
   Create,
   GetEventGuestMedia,
@@ -15,7 +18,7 @@ const {
   UpdateVisibility,
   GetUserUploadedMedia,
   CreateMany,
-} = require("../Services/Media");
+} = require("../../Services/Media");
 const prisma = new PrismaClient();
 
 router.get(
@@ -107,7 +110,7 @@ router.post(
 router.post(
   "/UploadImages",
   upload.array("images"),
-  EnsureAuthenticated,
+  UserAuthenticated,
   async (req, res) => {
     try {
       let data = req.files;
@@ -167,7 +170,7 @@ router.post(
   }
 );
 
-router.post("/UploadVideo", EnsureAuthenticated, async (req, res) => {
+router.post("/UploadVideo", UserAuthenticated, async (req, res) => {
   try {
     let data = await Create(req.body, req.body.files);
     req.io.emit(data.guestNotification.userId, data.guestNotification);
@@ -180,7 +183,7 @@ router.post("/UploadVideo", EnsureAuthenticated, async (req, res) => {
   }
 });
 
-router.post("/UploadMessage", EnsureAuthenticated, async (req, res) => {
+router.post("/UploadMessage", UserAuthenticated, async (req, res) => {
   try {
     let data = await CreateComplimentaryMessage(req.body);
     req.io.emit(data.guestNotification.userId, data.guestNotification);
@@ -193,7 +196,7 @@ router.post("/UploadMessage", EnsureAuthenticated, async (req, res) => {
   }
 });
 
-router.put("/UpdateVisibility/:id", EnsureAuthenticated, async (req, res) => {
+router.put("/UpdateVisibility/:id", UserAuthenticated, async (req, res) => {
   try {
     let Data = await UpdateVisibility(req.params.id, req.body);
     return res.status(200).send(Data);
@@ -204,7 +207,7 @@ router.put("/UpdateVisibility/:id", EnsureAuthenticated, async (req, res) => {
   }
 });
 
-router.delete("/:id", EnsureAuthenticated, async (req, res) => {
+router.delete("/:id", UserAuthenticated, async (req, res) => {
   try {
     await Delete(req.params.id);
     return res

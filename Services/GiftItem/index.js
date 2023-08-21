@@ -53,6 +53,7 @@ const Update = async (id, data, image) => {
         details: data.details ? data.details : giftItem.details,
         category: data.category ? data.category : giftItem.category,
         title: data.title ? data.title : giftItem.title,
+        weight: data.weight ? data.weight : giftItem.weight
       },
     });
 

@@ -38,7 +38,7 @@ const UpdateTransaction = async (id, data) => {
       id: id,
     },
     data: {
-      status: data.status
+      status: data.status,
     },
   });
 
@@ -46,20 +46,8 @@ const UpdateTransaction = async (id, data) => {
   return trans;
 };
 
-const Delete = async (id) => {
-  let media = await prisma.marketGiftTransaction.delete({
-    where: {
-      id: id,
-    },
-  });
-
-  await prisma.$disconnect();
-  return media;
-};
-
 module.exports = {
   GetMarketTransactions,
   BuyMarketItems,
   UpdateTransaction,
-  Delete,
 };

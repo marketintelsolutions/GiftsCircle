@@ -12,7 +12,7 @@
       "name": "authorization"
     }
   },
-  "host": "gifts-circle.herokuapp.com",
+  "host": "localhost:4000",
   "basePath": "/api",
   "schemes": ["http", "https"],
   "consumes": ["application/json"],
@@ -24,56 +24,112 @@
       "description": "Apis handling authentication"
     },
     {
+      "name": "Admin_Auth",
+      "description": "Apis handling admin authentication"
+    },
+    {
       "name": "User",
       "description": "Apis handling User Actions"
+    },
+    {
+      "name": "Admin_User",
+      "description": "Apis handling Admin User Actions"
     },
     {
       "name": "Event",
       "description": "Apis handling Event Actions"
     },
     {
+      "name": "Admin_Event",
+      "description": "Apis handling Admin Event Actions"
+    },
+    {
       "name": "GiftItem",
       "description": "Apis handling GiftItems"
+    },
+    {
+      "name": "Admin_GiftItem",
+      "description": "Apis handling Admin GiftItems enpoints"
     },
     {
       "name": "Gift",
       "description": "Apis handling Gift"
     },
     {
+      "name": "Admin_Gift",
+      "description": "Apis handling Admin Gift endpoints"
+    },
+    {
       "name": "Delivery",
       "description": "Apis handling Delivery"
+    },
+    {
+      "name": "Admin_Delivery",
+      "description": "Apis handling Admin Delivery endpoints"
     },
     {
       "name": "FundRaising",
       "description": "Apis handling FundRaising"
     },
     {
+      "name": "Admin_FundRaising",
+      "description": "Apis handling Admin FundRaising endpoints"
+    },
+    {
       "name": "ComplimentaryGift",
       "description": "Apis handling ComplimentaryGift"
+    },
+    {
+      "name": "Admin_ComplimentaryGift",
+      "description": "Apis handling Admin ComplimentaryGift endpoints"
     },
     {
       "name": "AsoebiItem",
       "description": "Apis handling AsoebiItem"
     },
     {
+      "name": "Admin_AsoebiItem",
+      "description": "Apis handling Admin AsoebiItem endpoints"
+    },
+    {
       "name": "Asoebi",
       "description": "Apis handling Asoebi"
+    },
+    {
+      "name": "Admin_Asoebi",
+      "description": "Apis handling Admin Asoebi endpoints"
     },
     {
       "name": "SourvenirItem",
       "description": "Apis handling SourvenirItem"
     },
     {
+      "name": "Admin_SourvenirItem",
+      "description": "Apis handling Admin SourvenirItem endpoints"
+    },
+    {
       "name": "Sourvenir",
       "description": "Apis handling Sourvenir"
+    },
+    {
+      "name": "Admin_Sourvenir",
+      "description": "Apis handling Admin Sourvenir endpoints"
     },
     {
       "name": "Media",
       "description": "Apis handling Media"
     },
     {
+      "name": "Admin_Media",
+      "description": "Apis handling Admin Media endpoints"
+    },
+    {
       "name": "MarketPlace",
       "description": "Apis handling Marketplace"
+    },
+    {
+      "name": "Admin_MarketPlace",
+      "description": "Apis handling Admin Marketplace endpoints"
     }
   ],
   "paths": {
@@ -253,6 +309,182 @@
         }
       }
     },
+    "/admin/login": {
+      "post": {
+        "description": "",
+        "tags": ["Admin_Auth"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/schema/Login" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/register": {
+      "post": {
+        "description": "",
+        "tags": ["Admin_Auth"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/schema/Register" }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/googleSignin": {
+      "post": {
+        "description": "",
+        "tags": ["Admin_Auth"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/schema/GoogleSignin" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/setPassword": {
+      "post": {
+        "description": "",
+        "tags": ["Admin_Auth"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/schema/Setpassword" }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/resetPassword": {
+      "post": {
+        "description": "",
+        "tags": ["Admin_Auth"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/schema/Setpassword" }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/verifyEmail": {
+      "post": {
+        "description": "",
+        "tags": ["Admin_Auth"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/schema/VerifyEmail" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/sendVerifyEmail": {
+      "post": {
+        "description": "",
+        "tags": ["Admin_Auth"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/schema/GoogleSignin" }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/sendResetEmail": {
+      "post": {
+        "description": "",
+        "tags": ["Admin_Auth"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/schema/GoogleSignin" }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
 
     "/user/{id}": {
       "get": {
@@ -378,6 +610,59 @@
             "in": "path",
             "required": true,
             "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/users/GetAll": {
+      "get": {
+        "description": "",
+        "tags": ["Admin_User"],
+        "parameters": [],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/user/{id}": {
+      "delete": {
+        "description": "",
+        "tags": ["Admin_User"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
           }
         ],
         "responses": {
@@ -792,6 +1077,26 @@
         }
       }
     },
+    "/admin/event/GetAll": {
+      "get": {
+        "description": "",
+        "tags": ["Admin_Event"],
+        "parameters": [],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
 
     "/giftItem/{id}": {
       "get": {
@@ -824,6 +1129,98 @@
       "get": {
         "description": "",
         "tags": ["GiftItem"],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/giftItem/create": {
+      "post": {
+        "description": "",
+        "tags": ["Admin_GiftItem"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/schema/GiftItem" }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/giftItem/{id}": {
+      "put": {
+        "description": "",
+        "tags": ["Admin_GiftItem"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/schema/GiftItem" }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/giftItem//{id}": {
+      "delete": {
+        "description": "",
+        "tags": ["Admin_GiftItem"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -955,7 +1352,6 @@
         }
       }
     },
-
     "/gift/Get/EventGiftsTrans/{id}": {
       "get": {
         "description": "",
@@ -1126,7 +1522,6 @@
         }
       }
     },
-
     "/gift/Buy": {
       "post": {
         "description": "",
@@ -1222,6 +1617,26 @@
             "type": "string"
           }
         ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/gift/GetAll": {
+      "get": {
+        "description": "",
+        "tags": ["Admin_Gift"],
+        "parameters": [],
         "security": [
           {
             "apiKeyAuth": []
@@ -1346,7 +1761,6 @@
         }
       }
     },
-
     "/delivery/create": {
       "post": {
         "description": "",
@@ -1442,7 +1856,6 @@
         }
       }
     },
-
     "/delivery///{id}": {
       "delete": {
         "description": "",
@@ -1715,6 +2128,71 @@
       "get": {
         "description": "",
         "tags": ["ComplimentaryGift"],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/complimentaryGift/create": {
+      "post": {
+        "description": "",
+        "tags": ["Admin_ComplimentaryGift"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/schema/ComplimentaryGift" }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/complimentaryGift/{id}": {
+      "put": {
+        "description": "",
+        "tags": ["Admin_ComplimentaryGift"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/schema/ComplimentaryGift" }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -1757,6 +2235,98 @@
       "get": {
         "description": "",
         "tags": ["AsoebiItem"],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/asoebiItem/create": {
+      "post": {
+        "description": "",
+        "tags": ["Admin_AsoebiItem"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/schema/AsoebiItem" }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/asoebiItem/{id}": {
+      "put": {
+        "description": "",
+        "tags": ["Admin_AsoebiItem"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/schema/AsoebiItem" }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/asoebiItem//{id}": {
+      "delete": {
+        "description": "",
+        "tags": ["Admin_AsoebiItem"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -1960,6 +2530,26 @@
         }
       }
     },
+    "/admin/asoebi/GetAll": {
+      "get": {
+        "description": "",
+        "tags": ["Admin_Asoebi"],
+        "parameters": [],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
 
     "/sourvenirItem/{id}": {
       "get": {
@@ -1992,6 +2582,98 @@
       "get": {
         "description": "",
         "tags": ["SourvenirItem"],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/sourvenirItem/create": {
+      "post": {
+        "description": "",
+        "tags": ["Admin_SourvenirItem"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/schema/AsoebiItem" }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/sourvenirItem/{id}": {
+      "put": {
+        "description": "",
+        "tags": ["Admin_SourvenirItem"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/schema/AsoebiItem" }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/sourvenirItem//{id}": {
+      "delete": {
+        "description": "",
+        "tags": ["Admin_SourvenirItem"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -2195,6 +2877,7 @@
         }
       }
     },
+
     "/media/Get/EventMediaFiles/{id}": {
       "get": {
         "description": "Get Media files uploaded host for the event",
@@ -2420,7 +3103,6 @@
         }
       }
     },
-
     "/media/UpdateVisibility/{id}": {
       "put": {
         "description": "Two options are PRIVATE or PUBLIC or HOST",
@@ -2481,6 +3163,7 @@
         }
       }
     },
+
     "/marketPlace/Get/All/{id}": {
       "get": {
         "description": "",
@@ -2519,6 +3202,40 @@
             "required": true,
             "type": "array",
             "schema": { "$ref": "#/definitions/schema/Marketplace" }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/marketPlace/{id}": {
+      "put": {
+        "description": "",
+        "tags": ["Admin_MarketPlace"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "type": "array",
+            "schema": { "$ref": "#/definitions/schema/MarketplaceTransUpdate" }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
           }
         ],
         "security": [
@@ -3167,6 +3884,94 @@
             "required": true
           },
           "category": {
+            "type": "string",
+            "required": true
+          }
+        }
+      },
+      "GiftItem": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "required": true
+          },
+          "image": {
+            "type": "object",
+            "required": true
+          },
+          "category": {
+            "type": "string",
+            "required": true
+          },
+          "details": {
+            "type": "string",
+            "required": true
+          },
+          "amount": {
+            "type": "number",
+            "required": true
+          },
+          "weight": {
+            "type": "number",
+            "required": true
+          }
+        }
+      },
+      "ComplimentaryGift": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "required": true
+          },
+          "image": {
+            "type": "object",
+            "required": true
+          },
+          "category": {
+            "type": "string",
+            "required": true
+          },
+          "details": {
+            "type": "string",
+            "required": true
+          },
+          "amount": {
+            "type": "number",
+            "required": true
+          }
+        }
+      },
+      "AsoebiItem": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "required": true
+          },
+          "image": {
+            "type": "object",
+            "required": true
+          },
+          "category": {
+            "type": "string",
+            "required": true
+          },
+          "details": {
+            "type": "string",
+            "required": true
+          },
+          "amount": {
+            "type": "number",
+            "required": true
+          }
+        }
+      },
+      "MarketplaceTransUpdate": {
+        "type": "object",
+        "properties": {
+          "status": {
             "type": "string",
             "required": true
           }

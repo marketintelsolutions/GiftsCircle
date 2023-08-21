@@ -8,8 +8,8 @@ const comparePassword = async (password, hashedPassword) => {
   return result;
 };
 
-const GenerateToken = (email, duration) => {
-  const token = jwt.sign({ email }, process.env.JWT_KEY, {
+const GenerateToken = (email, role,  duration) => {
+  const token = jwt.sign({ email, role: role}, process.env.JWT_KEY, {
     algorithm: "HS256",
     expiresIn: duration,
   });
