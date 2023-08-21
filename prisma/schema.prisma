@@ -1,0 +1,548 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+model user {
+  id                    String                  @id @default(uuid())
+  email                 String                  @db.VarChar(255)
+  firstname             String                  @db.VarChar(255)
+  lastname              String                  @db.VarChar(255)
+  gender                String?                 @db.VarChar(255)
+  placeOfResidence      String?                 @db.VarChar(255)
+  tel                   String?                 @db.VarChar(255)
+  state                 String?                 @db.VarChar(255)
+  email                 String? @db.VarChar(255)
+  dob                   String?                 @db.VarChar(255)
+  emailVerified         Boolean?
+  password              String                  @db.VarChar(255)
+  role                  Role                    @default(USER)
+  created_at            DateTime                @default(now())
+  updated_at            DateTime?               @updatedAt
+  deleted_at            DateTime?
+  event                 event[]
+  giftTransaction       giftTransaction[]
+  marketGiftTransaction marketGiftTransaction[]
+  asoebiTransaction     asoebiTransaction[]
+  Media                 Media[]
+  ComplimentaryMessage  ComplimentaryMessage[]
+  deliveryTransactions  deliveryTransactions[]
+  Guests                Guests[]
+  gift                  gift[]
+
+  @@index([id], type: SpGist)
+  @@index([email, role])
+}
+
+model giftitem {
+  id         String    @id @default(uuid())
+  title      String?   @db.VarChar(255)
+  category   String    @db.VarChar(255)
+  image      String?   @db.VarChar(255)
+  details    String?   @db.VarChar(255)
+  amount     Int
+  weight     Int
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
+  created_by String?   @db.VarChar(255)
+  updated_by String?   @db.VarChar(255)
+  deleted_by String?   @db.VarChar(255)
+  gift       gift[]
+
+  @@index([id], type: SpGist)
+}
+
+model asoebiitem {
+  id                String              @id @default(uuid())
+  title             String?             @db.VarChar(255)
+  category          String              @db.VarChar(255)
+  image             String?             @db.VarChar(255)
+  details           String?             @db.VarChar
+  amount            Int
+  created_at        DateTime            @default(now())
+  updated_at        DateTime?           @updatedAt
+  deleted_at        DateTime?
+  created_by        String?             @db.VarChar(255)
+  updated_by        String?             @db.VarChar(255)
+  deleted_by        String?             @db.VarChar(255)
+  asoebiTransaction asoebiTransaction[]
+
+  @@index([id], type: SpGist)
+}
+
+model sourvenirItem {
+  id         String      @id @default(uuid())
+  title      String?     @db.VarChar(255)
+  category   String      @db.VarChar(255)
+  image      String?     @db.VarChar(255)
+  details    String?     @db.VarChar
+  amount     Int
+  weight     Int
+  created_at DateTime    @default(now())
+  updated_at DateTime?   @updatedAt
+  deleted_at DateTime?
+  created_by String?     @db.VarChar(255)
+  updated_by String?     @db.VarChar(255)
+  deleted_by String?     @db.VarChar(255)
+  sourvenir  sourvenir[]
+
+  @@index([id], type: SpGist)
+}
+
+model event {
+  id              String        @id @default(uuid())
+  title           String?       @db.VarChar(255)
+  category        String        @db.VarChar(255)
+  venue           String        @db.VarChar(255)
+  date            DateTime
+  start_time      String
+  end_time        String
+  timezone        String?       @db.VarChar(255)
+  image           String?       @db.VarChar(255)
+  descCeleb       String?       @db.VarChar
+  summary         String?       @db.VarChar
+  descSummary     String?       @db.VarChar
+  published       Boolean
+  applyDonation   Boolean
+  percentDonation Float
+  coHostCode      String        @db.VarChar(6)
+  coHostLink      String        @db.VarChar(100)
+  eventLink       String        @db.VarChar(100)
+  guestCode       String        @db.VarChar(6)
+  user            user          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  created_at      DateTime      @default(now())
+  host            String        @db.VarChar(255)
+  updated_at      DateTime?     @updatedAt
+  deleted_at      DateTime?
+  created_by      String?       @db.VarChar(255)
+  updated_by      String?       @db.VarChar(255)
+  deleted_by      String?       @db.VarChar(255)
+  userId          String
+  gift            gift[]
+  Guests          Guests[]
+  FundRaising     FundRaising[]
+
+  @@index([host], map: "Event_userId_fkey")
+  @@index([id], type: SpGist)
+  @@index([userId], type: SpGist)
+}
+
+model CoHostCodes {
+  id         String    @id @default(uuid())
+  eventId    String    @db.VarChar(50)
+  userId     String    @db.VarChar(50)
+  code       String    @db.VarChar(6)
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
+
+  @@index([id], type: SpGist)
+  @@index([eventId, userId])
+}
+
+model Guests {
+  id         String    @id @default(uuid())
+  eventId    String    @db.VarChar(50)
+  coHost     Boolean
+  user       user      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String    @db.VarChar(255)
+  event      event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  coHostId   String?   @db.VarChar(50)
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
+  created_by String?   @db.VarChar(255)
+  updated_by String?   @db.VarChar(255)
+  deleted_by String?   @db.VarChar(255)
+
+  @@index([id], type: SpGist)
+  @@index([eventId, userId, coHost])
+  @@index([eventId, userId])
+}
+
+model delivery {
+  id         String    @id @default(uuid())
+  firstname  String    @db.VarChar(255)
+  lastname   String    @db.VarChar(255)
+  address    String    @db.VarChar
+  info       String?   @db.VarChar
+  lga        String    @db.VarChar(255)
+  state      String    @db.VarChar(255)
+  tel        String    @db.VarChar(255)
+  tel2       String?   @db.VarChar(255)
+  userId     String    @db.VarChar(255)
+  eventId    String?   @db.VarChar(255)
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
+  created_by String?   @db.VarChar(255)
+  updated_by String?   @db.VarChar(255)
+  deleted_by String?   @db.VarChar(255)
+
+  @@index([userId], map: "Delivery_userId_fkey")
+  @@index([id], type: SpGist)
+  @@index([eventId], type: SpGist)
+}
+
+model deliveryTransactions {
+  id           String         @id @default(uuid())
+  item         String         @db.VarChar
+  userId       String         @db.VarChar(255)
+  user         user           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status       DeliveryStatus
+  deliveryFee  Int
+  expectedDate DateTime
+  created_at   DateTime       @default(now())
+  updated_at   DateTime?      @updatedAt
+  deleted_at   DateTime?
+  created_by   String?        @db.VarChar(255)
+  updated_by   String?        @db.VarChar(255)
+  deleted_by   String?        @db.VarChar(255)
+
+  @@index([userId], map: "DeliveryTransaction_userId_fkey")
+  @@index([id], type: SpGist)
+}
+
+model FundRaising {
+  id                  String                @id @default(uuid())
+  eventId             String                @db.VarChar(50)
+  event               event                 @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  amount              Int
+  amountPaid          Int
+  active              Boolean
+  title               String                @db.VarChar(255)
+  description         String                @db.VarChar
+  image               String                @db.VarChar(255)
+  created_at          DateTime              @default(now())
+  updated_at          DateTime?             @updatedAt
+  deleted_at          DateTime?
+  created_by          String?               @db.VarChar(255)
+  updated_by          String?               @db.VarChar(255)
+  deleted_by          String?               @db.VarChar(255)
+  FundRaisingDonation FundRaisingDonation[]
+
+  @@index([id], type: SpGist)
+  @@index([eventId], type: SpGist)
+}
+
+model FundRaisingDonation {
+  id         String      @id @default(uuid())
+  fundId     String      @db.VarChar(50)
+  fund       FundRaising @relation(fields: [fundId], references: [id], onDelete: Cascade)
+  firstName  String      @db.VarChar(50)
+  lastName   String      @db.VarChar(50)
+  email      String      @db.VarChar(50)
+  phone      String      @db.VarChar(50)
+  amount     Int
+  created_at DateTime    @default(now())
+  updated_at DateTime?   @updatedAt
+  deleted_at DateTime?
+  created_by String?     @db.VarChar(255)
+  updated_by String?     @db.VarChar(255)
+  deleted_by String?     @db.VarChar(255)
+
+  @@index([id], type: SpGist)
+  @@index([fundId], type: SpGist)
+}
+
+model gift {
+  id                 String            @id @default(uuid())
+  giftItem           giftitem          @relation(fields: [giftitemId], references: [id], onDelete: Cascade)
+  enableContribution Boolean
+  purchased          Boolean
+  quantity           Int
+  status             String            @db.VarChar(255)
+  complimentaryGift  String            @db.VarChar(255)
+  amountPaid         Int
+  eventId            String?           @db.VarChar(255)
+  created_by         String            @db.VarChar(255)
+  created_at         DateTime          @default(now())
+  updated_at         DateTime?         @updatedAt
+  deleted_at         DateTime?
+  updated_by         String?           @db.VarChar(255)
+  deleted_by         String?           @db.VarChar(255)
+  event              event?            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  giftitemId         String
+  giftTransaction    giftTransaction[]
+  user               user?             @relation(fields: [userId], references: [id])
+  userId             String?
+
+  @@index([eventId], map: "Gift_eventId_fkey")
+  @@index([id], type: SpGist)
+  @@index([eventId, created_by])
+  @@index([eventId, userId])
+  @@index([userId])
+}
+
+model giftTransaction {
+  id                  String             @id @default(uuid())
+  gift                gift?              @relation(fields: [giftId], references: [id], onDelete: SetNull)
+  complimentaryGift   complimentarygift? @relation(fields: [complimentarygiftId], references: [id], onDelete: SetNull)
+  amount              Int
+  giftId              String?            @db.VarChar(255)
+  purchasedBy         user               @relation(fields: [userId], references: [id])
+  quantity            Int
+  delivered           Boolean            @default(false)
+  eventId             String             @db.VarChar(50)
+  userId              String             @db.VarChar(255)
+  complimentarygiftId String?            @db.VarChar(255)
+  created_at          DateTime           @default(now())
+  updated_at          DateTime?          @updatedAt
+  deleted_at          DateTime?
+  updated_by          String?            @db.VarChar(255)
+  deleted_by          String?            @db.VarChar(255)
+
+  @@index([id], type: SpGist)
+  @@index([eventId, userId])
+  @@index([eventId], type: SpGist)
+  @@index([userId], type: SpGist)
+}
+
+model complimentarygift {
+  id              String            @id @default(uuid())
+  title           String?           @db.VarChar(255)
+  category        String            @db.VarChar(255)
+  image           String?           @db.VarChar(255)
+  details         String?           @db.VarChar(255)
+  amount          Int
+  giftTransaction giftTransaction[]
+  created_at      DateTime          @default(now())
+  updated_at      DateTime?         @updatedAt
+  deleted_at      DateTime?
+  created_by      String?           @db.VarChar(255)
+  updated_by      String?           @db.VarChar(255)
+  deleted_by      String?           @db.VarChar(255)
+
+  @@index([id], type: SpGist)
+}
+
+model marketGiftTransaction {
+  id          String         @id @default(uuid())
+  ItemId      String         @db.VarChar(255)
+  quantity    Int
+  purchasedBy user           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status      Status
+  amountPaid  Int
+  category    MarketCategory
+  userId      String         @db.VarChar(255)
+  created_at  DateTime       @default(now())
+  updated_at  DateTime?      @updatedAt
+  deleted_at  DateTime?
+  created_by  String?        @db.VarChar(255)
+  updated_by  String?        @db.VarChar(255)
+  deleted_by  String?        @db.VarChar(255)
+
+  @@index([id], type: SpGist)
+  @@index([userId], type: SpGist)
+  @@index([status])
+}
+
+model asoebi {
+  id                String              @id @default(uuid())
+  asoebiItem        String              @db.VarChar(255)
+  quantity          Int
+  amountPaid        Int
+  eventId           String?             @db.VarChar(255)
+  userId            String?             @db.VarChar(255)
+  increment         Int
+  purchasedByHost   Boolean             @default(false)
+  created_at        DateTime            @default(now())
+  updated_at        DateTime?           @updatedAt
+  deleted_at        DateTime?
+  created_by        String?             @db.VarChar(255)
+  updated_by        String?             @db.VarChar(255)
+  deleted_by        String?             @db.VarChar(255)
+  asoebiTransaction asoebiTransaction[]
+
+  @@index([eventId], type: SpGist)
+  @@index([userId], type: SpGist)
+  @@index([id], type: SpGist)
+  @@index([eventId, userId])
+}
+
+model asoebiTransaction {
+  id           String      @id @default(uuid())
+  aseobi       asoebi      @relation(fields: [asoebiId], references: [id], onDelete: Cascade)
+  amount       Int
+  asoebiId     String      @db.VarChar(255)
+  purchasedBy  user        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quantity     Int
+  delivered    Boolean     @default(false)
+  eventId      String      @db.VarChar(50)
+  asoebiitem   asoebiitem? @relation(fields: [asoebiitemId], references: [id], onDelete: SetNull)
+  asoebiitemId String?     @db.VarChar(255)
+  userId       String      @db.VarChar(255)
+  created_at   DateTime    @default(now())
+  updated_at   DateTime?   @updatedAt
+  deleted_at   DateTime?
+  created_by   String?     @db.VarChar(255)
+  updated_by   String?     @db.VarChar(255)
+  deleted_by   String?     @db.VarChar(255)
+
+  @@index([eventId], type: SpGist)
+  @@index([userId], type: SpGist)
+  @@index([id], type: SpGist)
+  @@index([eventId, userId])
+}
+
+model sourvenir {
+  id              String        @id @default(uuid())
+  sourvenirItem   sourvenirItem @relation(fields: [sourvenirItemId], references: [id], onDelete: Cascade)
+  quantity        Int
+  purchased       Boolean       @default(false)
+  eventId         String?       @default("") @db.VarChar(255)
+  userId          String?       @db.VarChar(255)
+  sourvenirItemId String        @db.VarChar(255)
+  created_at      DateTime      @default(now())
+  updated_at      DateTime?     @updatedAt
+  deleted_at      DateTime?
+  created_by      String?       @db.VarChar(255)
+  updated_by      String?       @db.VarChar(255)
+  deleted_by      String?       @db.VarChar(255)
+
+  @@index([eventId], type: SpGist)
+  @@index([userId], type: SpGist)
+  @@index([id], type: SpGist)
+  @@index([eventId, userId])
+}
+
+model Media {
+  id         String    @id @default(uuid())
+  eventId    String    @db.VarChar(255)
+  url        String    @db.VarChar(255)
+  user       user      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String    @db.VarChar(255)
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
+  created_by String?   @db.VarChar(255)
+  updated_by String?   @db.VarChar(255)
+  deleted_by String?   @db.VarChar(255)
+  uploadedBy USERTYPE
+  visibility VISBILITY @default(PRIVATE)
+
+  @@index([eventId], type: SpGist)
+  @@index([userId], type: SpGist)
+  @@index([id], type: SpGist)
+  @@index([eventId, userId])
+}
+
+model ComplimentaryMessage {
+  id         String    @id @default(uuid())
+  eventId    String    @db.VarChar(255)
+  user       user      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String    @db.VarChar(255)
+  message    String    @db.VarChar
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
+  created_by String?   @db.VarChar(255)
+  updated_by String?   @db.VarChar(255)
+  deleted_by String?   @db.VarChar(255)
+
+  @@index([eventId], type: SpGist)
+  @@index([userId], type: SpGist)
+  @@index([id], type: SpGist)
+  @@index([eventId, userId])
+}
+
+model Notifications {
+  id             String       @id @default(uuid())
+  type           NOTIFICATION
+  userId         String       @db.VarChar(255)
+  eventId        String?      @db.VarChar(255)
+  referenceEvent String?
+  read           Boolean      @default(false)
+  message        String       @db.VarChar
+  created_at     DateTime     @default(now())
+  updated_at     DateTime?    @updatedAt
+  deleted_at     DateTime?
+  created_by     String?      @db.VarChar(255)
+  updated_by     String?      @db.VarChar(255)
+  deleted_by     String?      @db.VarChar(255)
+
+  @@index([eventId], type: SpGist)
+  @@index([userId], type: SpGist)
+  @@index([id], type: SpGist)
+  @@index([userId, referenceEvent])
+  @@index([read, userId])
+}
+
+model otp {
+  id         String    @id @default(uuid())
+  code       String    @db.VarChar(5)
+  expires    DateTime
+  user       String    @db.VarChar(100)
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
+  created_by String?   @db.VarChar(255)
+
+  @@index([code])
+}
+
+model Sms {
+  id         String   @id @default(uuid())
+  latitude   String   @db.VarChar
+  longitude  String   @db.VarChar
+  sender     String   @db.VarChar(20)
+  created_at DateTime @default(now())
+
+  @@index([sender])
+}
+
+enum Status {
+  PAID
+  COMPLETED
+  PARTIAL
+  DELIVERED
+  UNPAID
+}
+
+enum DeliveryStatus {
+  DELIVERED
+  FAILED
+  PENDING
+}
+
+enum MarketCategory {
+  ASOEBI
+  GIFT
+  SOURVENIR
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum VISBILITY {
+  PUBLIC
+  PRIVATE
+  HOST
+}
+
+enum USERTYPE {
+  GUEST
+  HOST
+}
+
+enum NOTIFICATION {
+  JOIN
+  EVENTCREATION
+  EVENTEDIT
+  EVENTDELETION
+  GUESTJOIN
+  COHOSTJOIN
+  FUNDRAISING
+  PURCHASE
+  USER_EDIT
+  MEDIA
+  DELIVERY
+  ASOEBI
+}
