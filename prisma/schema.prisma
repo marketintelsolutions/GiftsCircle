@@ -7,6 +7,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model admin {
+  id         String    @id @default(uuid())
+  email      String    @unique @db.VarChar(255)
+  firstname  String    @db.VarChar(255)
+  lastname   String    @db.VarChar(255)
+  password   String    @db.VarChar(255)
+  image      String    @db.VarChar(255)
+  updated_at DateTime? @updatedAt
+  created_at DateTime? @default(now())
+
+  role AdminRole @default(ADMIN)
+
+  @@index([id], type: SpGist)
+  @@index([email])
+}
+
 model user {
   id                    String                  @id @default(uuid())
   email                 String                  @db.VarChar(255)
@@ -34,7 +50,7 @@ model user {
   gift                  gift[]
 
   @@index([id], type: SpGist)
-  @@index([email, role])
+  @@index([email])
 }
 
 model giftitem {
@@ -483,7 +499,7 @@ model otp {
   created_by String?   @db.VarChar(255)
 
   @@index([code])
-   @@index([id])
+  @@index([id])
 }
 
 model Sms {
@@ -518,7 +534,11 @@ enum MarketCategory {
 
 enum Role {
   USER
+}
+
+enum AdminRole {
   ADMIN
+  SUPERADMIN
 }
 
 enum VISBILITY {
