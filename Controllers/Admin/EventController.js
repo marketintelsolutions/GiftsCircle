@@ -1,7 +1,7 @@
 const { PrismaClient } = require("@prisma/client");
 const express = require("express");
 const ResponseDTO = require("../../DTO/Response");
-const { GetAllEvents } = require("../../Services/Events");
+const { GetAllEvents } = require("../../Services/Admin/event");
 const router = express.Router();
 const { AdminAuthenticated } = require("../../Utils/EnsureAuthenticated");
 

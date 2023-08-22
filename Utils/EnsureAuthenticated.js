@@ -50,7 +50,7 @@ const AdminAuthenticated = (req, res, next) => {
 
     try {
       let payload = VerifyToken(token);
-      if (payload.role === "ADMIN") {
+      if (payload.role === "ADMIN" || payload.role === "SUPERADMIN") {
         next();
       } else {
         res.sendStatus(403);

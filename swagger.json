@@ -608,7 +608,7 @@
         }
       }
     },
-    "/admin/users/GetAll": {
+    "/admin/user/users/GetAll": {
       "get": {
         "description": "",
         "tags": ["Admin_User"],
