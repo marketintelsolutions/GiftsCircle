@@ -1,5 +1,5 @@
 const { PrismaClient } = require("@prisma/client");
-const { CreateEventId, CreateCoHostId, CreateGuestId } = require("./service");
+const { CreateEventId, CreateCoHostId, CreateGuestId } = require("../../Utils/HelperFunctions");
 const prisma = new PrismaClient();
 const ResponseDTO = require("../../DTO/Response");
 const {

@@ -4,8 +4,8 @@ const {
   comparePassword,
   GenerateOtp,
   VerifyToken,
-} = require("../Auth/services");
-const { hashPassword } = require("./service");
+  hashPassword
+} = require("../../Utils/HelperFunctions");
 const { v4: uuidv4 } = require("uuid");
 const prisma = new PrismaClient();
 
@@ -43,7 +43,6 @@ const Create = async (data) => {
   const user = await prisma.user.findFirst({
     where: {
       email: data.email,
-      role: "USER",
     },
   });
 
@@ -55,7 +54,6 @@ const Create = async (data) => {
         lastname: data.lastname,
         firstname: data.firstname,
         emailVerified: false,
-        role: "USER",
       },
     });
 
