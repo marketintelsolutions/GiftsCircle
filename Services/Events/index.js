@@ -17,13 +17,6 @@ const GetEvent = async (id) => {
   return event;
 };
 
-const GetAllEvents = async () => {
-  const events = await prisma.guests.findMany({});
-
-  await prisma.$disconnect();
-  return events;
-};
-
 const GetUserEvents = async (id) => {
   const events = await prisma.event.findMany({
     where: {
@@ -513,7 +506,6 @@ module.exports = {
   Update2,
   Update3,
   GetEvent,
-  GetAllEvents,
   GetUserEvents,
   DeleteEvent,
   AddGuest,
