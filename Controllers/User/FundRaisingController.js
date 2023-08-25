@@ -41,6 +41,8 @@ router.get("/:eventId/:coHostId", EnsureAuthenticated, async (req, res) => {
     );
     if (data) {
       return res.status(200).send(data);
+    } else {
+      return res.status(400).send(ResponseDTO("Failed", "Not found"));
     }
   } catch (err) {
     console.log(err);
@@ -61,8 +63,11 @@ router.post(
       });
       let data = await Create(req.body, response.url);
       if (data) {
-        req.io.emit(data.notification.userId, data.notification);
-        return res.status(200).send(data.fundRaising);
+        if (data.notification) {
+          req.io.emit(data.notification.userId, data.notification);
+          return res.status(200).send(data.fundRaising);
+        }
+        return res.status(200).send(data);
       }
       return res.status(400).send(ResponseDTO("Failed", "Event not found"));
     } catch (err) {
@@ -123,10 +128,9 @@ router.post("/Donate", UserAuthenticated, async (req, res) => {
   }
 });
 
-router.get("/GetFundDonors/:id", EnsureAuthenticated, async (req, res) => {
+router.get("/CoHost/GetFundDonors/:id", EnsureAuthenticated, async (req, res) => {
   try {
     let data = await GetFundDonors(req.params.id);
-
     return res.status(200).send(data);
   } catch (err) {
     console.log(err);

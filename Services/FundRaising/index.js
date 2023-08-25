@@ -12,13 +12,14 @@ const GetFundRaising = async (id) => {
 };
 
 const GetCoHostFundRaising = async (eventId, coHostId) => {
-  const fundRaising = await prisma.fundRaising.findMany({
+  const fundRaising = await prisma.fundRaising.findFirst({
     where: {
       eventId: eventId,
       created_by: coHostId,
     },
   });
   await prisma.$disconnect();
+  
   return fundRaising;
 };
 
@@ -29,20 +30,14 @@ const Create = async (data, image) => {
     },
   });
 
-  const coHost = await prisma.guests.findFirst({
-    where: {
-      eventId: data.eventId,
-      coHost: true,
-      coHostId: data.coHostId,
-    },
-  });
-
-  if (event && coHost) {
+  if (event) {
     const FundRaising = await prisma.fundRaising.findFirst({
       where: {
         eventId: data.eventId,
+        created_by: data.coHostId,
       },
     });
+
     if (FundRaising) {
       return FundRaising;
     }
@@ -62,7 +57,7 @@ const Create = async (data, image) => {
     const message = `FundRaising has been created and is active`;
     const notification = await prisma.notifications.create({
       data: {
-        userId: event.userId,
+        userId: data.coHostId,
         type: "FUNDRAISING",
         message: message,
         referenceEvent: event.id,
