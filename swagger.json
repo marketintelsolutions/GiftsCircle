@@ -1892,6 +1892,39 @@
         }
       }
     },
+    "/fundRaising/{eventId}/{coHostId}": {
+      "get": {
+        "description": "",
+        "tags": ["FundRaising"],
+        "parameters": [
+          {
+            "name": "eventId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "coHostId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
     "/fundRaising/GetFundDonors/{id}": {
       "get": {
         "description": "",
@@ -3689,6 +3722,11 @@
             "type": "string",
             "required": true
           },
+          "coHostId": {
+            "type": "string",
+            "required": true
+          },
+
           "amount": {
             "type": "number",
             "required": true
