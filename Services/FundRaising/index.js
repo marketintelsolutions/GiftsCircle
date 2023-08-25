@@ -11,6 +11,17 @@ const GetFundRaising = async (id) => {
   return fundRaising;
 };
 
+const GetCoHostFundRaising = async (eventId, coHostId) => {
+  const fundRaising = await prisma.fundRaising.findMany({
+    where: {
+      eventId: eventId,
+      created_by: coHostId,
+    },
+  });
+  await prisma.$disconnect();
+  return fundRaising;
+};
+
 const Create = async (data, image) => {
   const event = await prisma.event.findUnique({
     where: {
@@ -18,7 +29,15 @@ const Create = async (data, image) => {
     },
   });
 
-  if (event) {
+  const coHost = await prisma.guests.findFirst({
+    where: {
+      eventId: data.eventId,
+      coHost: true,
+      coHostId: data.coHostId,
+    },
+  });
+
+  if (event && coHost) {
     const FundRaising = await prisma.fundRaising.findFirst({
       where: {
         eventId: data.eventId,
@@ -36,6 +55,7 @@ const Create = async (data, image) => {
         image: image,
         title: data.title,
         description: data.description,
+        created_by: data.coHostId,
       },
     });
 
@@ -91,7 +111,7 @@ const UpdateAmount = async (data) => {
         id: data.id,
       },
       data: {
-        amount: data.amount
+        amount: data.amount,
       },
     });
 
@@ -117,7 +137,7 @@ const Donate = async (data) => {
         phone: data.tel,
         amount: parseInt(data.amount),
         fundId: data.fundId,
-        created_by: data.userId
+        created_by: data.userId,
       },
     });
 
@@ -126,7 +146,7 @@ const Donate = async (data) => {
         id: fundRaising.id,
       },
       data: {
-        amountPaid: fundRaising.amountPaid + parseInt(data.amount)
+        amountPaid: fundRaising.amountPaid + parseInt(data.amount),
       },
     });
     const event = await prisma.event.findUnique({
@@ -190,6 +210,7 @@ const DeleteFundRaising = async (id) => {
 module.exports = {
   Create,
   GetFundRaising,
+  GetCoHostFundRaising,
   UpdateAmount,
   UpdateStatus,
   Donate,

@@ -10,6 +10,7 @@ const {
   Donate,
   GetFundDonors,
   DeleteFundRaising,
+  GetCoHostFundRaising,
 } = require("../../Services/FundRaising");
 const cloudinary = require("../../config/Cloudinary");
 const { upload, dataUri } = require("../../config/multer");
@@ -22,6 +23,22 @@ const prisma = new PrismaClient();
 router.get("/:id", EnsureAuthenticated, async (req, res) => {
   try {
     let data = await GetFundRaising(req.params.id);
+    if (data) {
+      return res.status(200).send(data);
+    }
+  } catch (err) {
+    console.log(err);
+    await prisma.$disconnect();
+    return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
+  }
+});
+
+router.get("/:eventId/:coHostId", EnsureAuthenticated, async (req, res) => {
+  try {
+    let data = await GetCoHostFundRaising(
+      req.params.eventId,
+      req.params.coHostId
+    );
     if (data) {
       return res.status(200).send(data);
     }
