@@ -8,6 +8,18 @@ const GetAllEvents = async () => {
   return events;
 };
 
+const GetEventFundRaising = async (eventId) => {
+  const fundRaising = await prisma.fundRaising.findMany({
+    where: {
+      eventId: eventId,
+    },
+  });
+  await prisma.$disconnect();
+
+  return fundRaising;
+};
+
 module.exports = {
   GetAllEvents,
+  GetEventFundRaising,
 };

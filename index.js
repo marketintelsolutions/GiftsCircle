@@ -105,6 +105,10 @@ app.use(
   "/api/admin/complimentaryGift/",
   require("./Controllers/Admin/ComplimentaryGift")
 );
+app.use(
+  "/api/admin/fundRaising/",
+  require("./Controllers/Admin/FundraisingController")
+);
 app.use("/api/admin/gift/", require("./Controllers/Admin/GiftController"));
 app.use("/api/admin/asoebi/", require("./Controllers/Admin/AsoebiController"));
 app.use("/api/admin/sms/", require("./Controllers/User/SmsController"));

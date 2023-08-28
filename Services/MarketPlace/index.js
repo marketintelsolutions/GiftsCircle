@@ -37,7 +37,7 @@ const UpdateTransaction = async (id, data) => {
       id: id,
     },
     data: {
-      status: data.status,
+      delivered: data.delivered,
     },
   });
 

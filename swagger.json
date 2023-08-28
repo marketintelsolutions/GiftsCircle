@@ -1078,6 +1078,33 @@
         }
       }
     },
+    "/admin/event/Fundraising/GetAll/{id}": {
+      "get": {
+        "description": "",
+        "tags": ["Admin_Event"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
 
     "/giftItem/{id}": {
       "get": {
@@ -2083,6 +2110,37 @@
       }
     },
 
+    "/admin/fundRaising/Update/Withdrawal": {
+      "put": {
+        "description": "",
+        "tags": ["Admin_FundRaising"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "type": "array",
+            "schema": {
+              "$ref": "#/definitions/schema/UpdateFundRaisingWithdrawal"
+            }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+
     "/complimentaryGift/{id}": {
       "get": {
         "description": "",
@@ -2549,6 +2607,88 @@
         "description": "",
         "tags": ["Admin_Asoebi"],
         "parameters": [],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/asoebi/AsoebiTrans/{asoebiId}": {
+      "get": {
+        "description": "",
+        "tags": ["Admin_Asoebi"],
+        "parameters": [
+          {
+            "name": "asoebiId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/asoebi/EventAsoebisTrans/{eventId}": {
+      "get": {
+        "description": "",
+        "tags": ["Admin_Asoebi"],
+        "parameters": [
+          {
+            "name": "eventId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/asoebi/Update/AsoebiTrans": {
+      "put": {
+        "description": "",
+        "tags": ["Admin_Asoebi"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "type": "array",
+            "schema": { "$ref": "#/definitions/schema/UpdateAsoebiTrans" }
+          }
+        ],
         "security": [
           {
             "apiKeyAuth": []
@@ -3233,6 +3373,33 @@
         }
       }
     },
+    "/admin/marketPlace/Get/All": {
+      "get": {
+        "description": "",
+        "tags": ["Admin_MarketPlace"],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
     "/admin/marketPlace/{id}": {
       "put": {
         "description": "",
@@ -3242,7 +3409,6 @@
             "name": "body",
             "in": "body",
             "required": true,
-            "type": "array",
             "schema": { "$ref": "#/definitions/schema/MarketplaceTransUpdate" }
           },
           {
@@ -3778,6 +3944,19 @@
           }
         }
       },
+      "UpdateFundRaisingWithdrawal": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "required": true
+          },
+          "withdrawn": {
+            "type": "boolean",
+            "required": true
+          }
+        }
+      },
       "UpdateUser": {
         "type": "object",
         "properties": {
@@ -3846,6 +4025,19 @@
           },
           "quantity": {
             "type": "number",
+            "required": true
+          }
+        }
+      },
+      "UpdateAsoebiTrans": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "required": true
+          },
+          "delivered": {
+            "type": "boolean",
             "required": true
           }
         }
@@ -4032,8 +4224,8 @@
       "MarketplaceTransUpdate": {
         "type": "object",
         "properties": {
-          "status": {
-            "type": "string",
+          "delivered": {
+            "type": "boolean",
             "required": true
           }
         }
