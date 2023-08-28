@@ -23,6 +23,8 @@ const GetCoHostFundRaising = async (eventId, coHostId) => {
   return fundRaising;
 };
 
+
+
 const Create = async (data, image) => {
   const event = await prisma.event.findUnique({
     where: {
