@@ -17,7 +17,7 @@ router.get("/users/GetAll", AdminAuthenticated, async (req, res) => {
   }
 });
 
-router.delete("/user/:id", AdminAuthenticated, async (req, res) => {
+router.delete("/:id", AdminAuthenticated, async (req, res) => {
   try {
     await DeleteUser(req.params.id);
     return res
