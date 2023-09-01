@@ -1,7 +1,11 @@
 const { PrismaClient } = require("@prisma/client");
 const ResponseDTO = require("../../DTO/Response");
 const { SendEmail, SendResetEmail } = require("../../Utils/Email/EmailService");
-const { comparePassword, GenerateOtp, GenerateToken } = require("../../Utils/HelperFunctions");
+const {
+  comparePassword,
+  GenerateOtp,
+  GenerateToken,
+} = require("../../Utils/HelperFunctions");
 const { v4: uuidv4 } = require("uuid");
 
 const prisma = new PrismaClient();
@@ -73,19 +77,18 @@ const SendVerifyEmail = async (email) => {
 };
 
 const VerifyOtp = async (data) => {
-  const otp = await prisma.otp.findFirst({
-    where: {
-      code: data.code,
-    },
-  });
-  const user = await prisma.user.findFirst({
-    where: {
-      email: otp.user,
-    },
-  });
-
-  if (otp && data.user === otp.user) {
-    try {
+  try {
+    const otp = await prisma.otp.findFirst({
+      where: {
+        code: data.code,
+      },
+    });
+    const user = await prisma.user.findFirst({
+      where: {
+        email: otp.user,
+      },
+    });
+    if (otp && data.user === otp.user) {
       var currentDate = new Date().getTime();
       var expires = new Date(otp.expires).getTime();
       if (expires > currentDate) {
@@ -102,12 +105,12 @@ const VerifyOtp = async (data) => {
       } else {
         return ResponseDTO("Failed", "Otp has Expired");
       }
-    } catch (error) {
-      console.log(error);
-      return ResponseDTO("Failed", "Request Failed");
     }
+    return ResponseDTO("Failed", "Otp is Invalid");
+  } catch (error) {
+    console.log(error);
+    return ResponseDTO("Failed", "Request Failed");
   }
-  return ResponseDTO("Failed", "Otp is Invalid");
 };
 
 const SendResetPasswordEmail = async (email) => {
