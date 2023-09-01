@@ -54,11 +54,10 @@ const SendVerifyEmail = async (email) => {
   if (user) {
     try {
       let otp = GenerateOtp();
-      var expires = new Date();
+      var expires = new Date(Date.now());
       expires.setMinutes(expires.getMinutes() + 10);
-      expires = new Date(expires);
 
-      let data = await prisma.otp.create({
+      await prisma.otp.create({
         data: {
           id: uuidv4(),
           user: user.email,
@@ -89,9 +88,9 @@ const VerifyOtp = async (data) => {
       },
     });
     if (otp && data.user === otp.user) {
-      var currentDate = new Date().getTime();
-      var expires = new Date(otp.expires).getTime();
-      if (expires > currentDate) {
+      var currentDate = new Date();
+      var expires = otp.expires;
+      if (currentDate < expires) {
         await prisma.user.update({
           where: {
             id: user.id,
