@@ -102,6 +102,7 @@ const GetEventGiftTransactions = async (id) => {
           giftitemId: true,
           status: true,
           complimentaryGift: true,
+          created_by: true,
         },
       },
       complimentaryGift: {
