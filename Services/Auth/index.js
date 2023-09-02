@@ -44,62 +44,46 @@ const GoogleSignIn = async (data) => {
   return null;
 };
 
-const SendVerifyEmail = async (email) => {
-  const user = await prisma.user.findFirst({
-    where: {
-      email: email,
-    },
-  });
+const SendVerifyEmail = async (data) => {
+  try {
+    const user = await prisma.user.findFirst({
+      where: {
+        email: data.email,
+      },
+    });
 
-  if (user) {
-    try {
-      let otp = GenerateOtp();
-      var expires = new Date(Date.now());
-      expires.setMinutes(expires.getMinutes() + 10);
-
-      await prisma.otp.create({
-        data: {
-          id: uuidv4(),
-          user: user.email,
-          code: otp,
-          expires: expires,
-        },
-      });
-
-      let result = await SendEmail(email, user.firstname, otp);
-      return result.response;
-    } catch (error) {
-      console.log(error);
+    if (user) {
+      return null;
     }
+
+    let otp = GenerateOtp();
+    var expires = new Date(Date.now());
+    expires.setMinutes(expires.getMinutes() + 10);
+
+    await prisma.otp.create({
+      data: {
+        user: data.email,
+        code: otp,
+        expires: expires,
+      },
+    });
+
+    let result = await SendEmail(data.email, data.firstname, otp);
+    return result.response;
+  } catch (error) {
+    console.log(error);
   }
-  return null;
 };
 
 const VerifyOtp = async (data) => {
   try {
     const otp = await prisma.otp.findFirst({
-      where: {
-        code: data.code,
-      },
-    });
-    const user = await prisma.user.findFirst({
-      where: {
-        email: otp.user,
-      },
+      where: { code: data.code },
     });
     if (otp && data.user === otp.user) {
       var currentDate = new Date();
       var expires = otp.expires;
       if (currentDate < expires) {
-        await prisma.user.update({
-          where: {
-            id: user.id,
-          },
-          data: {
-            emailVerified: true,
-          },
-        });
-
         return ResponseDTO("Success", "Email has been verified");
       } else {
         return ResponseDTO("Failed", "Otp has Expired");
