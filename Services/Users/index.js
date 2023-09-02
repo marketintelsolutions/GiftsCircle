@@ -4,7 +4,7 @@ const {
   comparePassword,
   GenerateOtp,
   VerifyToken,
-  hashPassword
+  hashPassword,
 } = require("../../Utils/HelperFunctions");
 const { v4: uuidv4 } = require("uuid");
 const prisma = new PrismaClient();
@@ -47,7 +47,7 @@ const Create = async (data) => {
   });
 
   if (!user) {
-    await prisma.user.create({
+    let Data = await prisma.user.create({
       data: {
         password: "",
         email: data.email,
@@ -57,24 +57,9 @@ const Create = async (data) => {
       },
     });
 
-    let otp = GenerateOtp();
-    var expires = new Date();
-    expires.setMinutes(expires.getMinutes() + 1);
-    expires = new Date(expires);
-
-    await prisma.otp.create({
-      data: {
-        id: uuidv4(),
-        user: data.email,
-        code: otp,
-        expires: expires,
-      },
-    });
-
-    await SendEmail(data.email, data.firstname, otp);
     await prisma.$disconnect();
 
-    return data;
+    return Data;
   }
   return null;
 };

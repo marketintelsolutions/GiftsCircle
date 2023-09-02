@@ -274,7 +274,7 @@
             "name": "body",
             "in": "body",
             "required": true,
-            "schema": { "$ref": "#/definitions/schema/GoogleSignin" }
+            "schema": { "$ref": "#/definitions/schema/SendVerifyEmail" }
           }
         ],
         "responses": {
@@ -3512,6 +3512,19 @@
         "type": "object",
         "properties": {
           "email": {
+            "type": "string",
+            "required": true
+          }
+        }
+      },
+      "SendVerifyEmail": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "required": true
+          },
+          "firstname": {
             "type": "string",
             "required": true
           }

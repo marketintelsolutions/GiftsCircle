@@ -105,13 +105,15 @@ router.post("/verifyEmail", async (req, res) => {
 
 router.post("/sendVerifyEmail", async (req, res) => {
   try {
-    let data = await SendVerifyEmail(req.body.email);
-    if (data.status) {
-      return res
-        .status(201)
-        .send(ResponseDTO("Success", "Email sent successfully"));
+    let data = await SendVerifyEmail(req.body);
+    if (data) {
+      if (data.status) {
+        return res
+          .status(201)
+          .send(ResponseDTO("Success", "Email sent successfully"));
+      }
     }
-    return res.status(400).send(ResponseDTO("Failed", "User not found"));
+    return res.status(400).send(ResponseDTO("Failed", "User already exists"));
   } catch (err) {
     console.log(err);
     await prisma.$disconnect();
