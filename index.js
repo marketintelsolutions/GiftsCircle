@@ -116,6 +116,10 @@ app.use(
   "/api/admin/sourvenir/",
   require("./Controllers/Admin/SourvenirController")
 );
+app.use(
+  "/api/admin/category",
+  require("./Controllers/Admin/CategoryController")
+);
 app.use("/api/admin/", require("./Controllers/Admin/AuthController"));
 
 app.use("/api/docs/", swaggerUi.serve, swaggerUi.setup(swaggerDocument));

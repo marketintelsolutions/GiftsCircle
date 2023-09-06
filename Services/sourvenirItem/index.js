@@ -14,25 +14,77 @@ const Get = async (id) => {
 };
 
 const GetAll = async () => {
-  const sourvenirItems = await prisma.sourvenirItem.findMany({});
+  const sourvenirItems = await prisma.sourvenirItem.findMany({
+    // include: {
+    //   SourvenirItemCategory: {
+    //     include: {
+    //       category: true, // Include the related category
+    //     },
+    //   },
+    // },
+  });
   await prisma.$disconnect();
   return sourvenirItems;
 };
 
-const Create = async (data, image) => {
-  let Data = await prisma.sourvenirItem.create({
-    data: {
-      title: data.title,
-      category: data.category,
-      details: data.details,
-      amount: parseInt(data.amount),
-      image: image,
-      weight: parseInt(data.weight),
-    },
-  });
+const searchSouvernirItemsByCategorySlug = async (categorySlug) => {
+  try {
+    const category = await prisma.category.findMany({
+      where: {
+        OR: [
+          { slug: categorySlug },
+          { subCategories: { some: { slug: categorySlug } } },
+        ],
+      },
+      include: {
+        SourvenirItemCategory: {
+          include: {
+            sovernirItem: true,
+          },
+        },
+      },
+    });
 
-  await prisma.$disconnect();
-  return Data;
+    if (!category) {
+      return null;
+    }
+
+    return category;
+  } catch (error) {
+    console.log(error);
+  } finally {
+    await prisma.$disconnect();
+  }
+};
+
+const Create = async (data, image) => {
+  let transaction;
+  let result;
+  try {
+    transaction = await prisma.$transaction(async (prisma) => {
+      result = await prisma.sourvenirItem.create({
+        data: {
+          title: data.title,
+          category: data.category,
+          details: data.details,
+          amount: parseInt(data.amount),
+          image: image,
+          weight: parseInt(data.weight),
+          SourvenirItemCategory: {
+            create: data.categories.map((c) => ({ categoryId: parseInt(c) })),
+          },
+        },
+      });
+    });
+    return result;
+  } catch (error) {
+    if (transaction) {
+      console.log("Transaction rolled back due to an error.");
+      await prisma.$queryRaw`ROLLBACK;`;
+    }
+  } finally {
+    await prisma.$disconnect();
+  }
 };
 
 const Update = async (id, data, image) => {
@@ -72,4 +124,11 @@ const Delete = async (id) => {
   return sourvenirItem;
 };
 
-module.exports = { Create, Get, GetAll, Update, Delete };
+module.exports = {
+  Create,
+  Get,
+  GetAll,
+  Update,
+  Delete,
+  searchSouvernirItemsByCategorySlug,
+};

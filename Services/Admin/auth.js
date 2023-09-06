@@ -19,10 +19,10 @@ const Login = async (data) => {
     if (checkPasssword) {
       await prisma.$disconnect();
       if (admin.role === "SUPERADMIN") {
-        let token = GenerateToken(data.email, "SUPERADMIN", "4h");
+        let token = GenerateToken(data.email, admin.id, "SUPERADMIN", "4h");
         return { token, admin };
       } else {
-        let token = GenerateToken(data.email, "ADMIN", "4h");
+        let token = GenerateToken(data.email, admin.id, "ADMIN", "4h");
         return { token, admin };
       }
     }

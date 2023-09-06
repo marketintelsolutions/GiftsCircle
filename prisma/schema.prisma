@@ -19,7 +19,6 @@ model admin {
 
   role AdminRole @default(ADMIN)
 
-  @@index([id], type: SpGist)
   @@index([email])
 }
 
@@ -49,64 +48,110 @@ model user {
   Guests                Guests[]
   gift                  gift[]
 
-  @@index([id], type: SpGist)
   @@index([email])
 }
 
-model giftitem {
-  id         String    @id @default(uuid())
-  title      String?   @db.VarChar(255)
-  category   String    @db.VarChar(255)
-  image      String?   @db.VarChar(255)
-  details    String?   @db.VarChar(255)
-  amount     Int
-  weight     Int
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
-  deleted_at DateTime?
-  created_by String?   @db.VarChar(255)
-  updated_by String?   @db.VarChar(255)
-  deleted_by String?   @db.VarChar(255)
-  gift       gift[]
+model Category {
+  id                    Int                     @id @default(autoincrement())
+  name                  String
+  slug                  String                  @unique
+  parentCategory        Category?               @relation("Subcategories", fields: [parentCategoryId], references: [id])
+  parentCategoryId      Int?
+  created_at            DateTime                @default(now())
+  updated_at            DateTime?               @updatedAt
+  created_by            String?                 @db.VarChar(255)
+  updated_by            String?                 @db.VarChar(255)
+  GiftItemCategory      GiftItemCategory[]
+  giftitem              giftitem[]
+  asoebiitem            asoebiitem[]
+  AsoebiItemCategory    AsoebiItemCategory[]
+  sourvenirItem         sourvenirItem[]
+  SourvenirItemCategory SourvenirItemCategory[]
+  subCategories         Category[]              @relation("Subcategories")
+}
 
-  @@index([id], type: SpGist)
+model giftitem {
+  id               String             @id @default(uuid())
+  title            String?            @db.VarChar(255)
+  image            String?            @db.VarChar(255)
+  details          String?            @db.VarChar(255)
+  amount           Int
+  weight           Int
+  created_at       DateTime           @default(now())
+  updated_at       DateTime?          @updatedAt
+  deleted_at       DateTime?
+  created_by       String?            @db.VarChar(255)
+  updated_by       String?            @db.VarChar(255)
+  deleted_by       String?            @db.VarChar(255)
+  gift             gift[]
+  categoryId       Int? // Reference to Category
+  category         Category?          @relation(fields: [categoryId], references: [id])
+  GiftItemCategory GiftItemCategory[]
+}
+
+model GiftItemCategory {
+  giftItemId String
+  categoryId Int
+  giftItem   giftitem @relation(fields: [giftItemId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  @@id([giftItemId, categoryId])
 }
 
 model asoebiitem {
-  id                String              @id @default(uuid())
-  title             String?             @db.VarChar(255)
-  category          String              @db.VarChar(255)
-  image             String?             @db.VarChar(255)
-  details           String?             @db.VarChar
-  amount            Int
-  created_at        DateTime            @default(now())
-  updated_at        DateTime?           @updatedAt
-  deleted_at        DateTime?
-  created_by        String?             @db.VarChar(255)
-  updated_by        String?             @db.VarChar(255)
-  deleted_by        String?             @db.VarChar(255)
-  asoebiTransaction asoebiTransaction[]
+  id                 String               @id @default(uuid())
+  title              String?              @db.VarChar(255)
+  image              String?              @db.VarChar(255)
+  details            String?              @db.VarChar
+  amount             Int
+  weight             Int                  @default(1)
+  categoryId         Int? // Reference to Category
+  category           Category?            @relation(fields: [categoryId], references: [id])
+  created_at         DateTime             @default(now())
+  updated_at         DateTime?            @updatedAt
+  deleted_at         DateTime?
+  created_by         String?              @db.VarChar(255)
+  updated_by         String?              @db.VarChar(255)
+  deleted_by         String?              @db.VarChar(255)
+  asoebiTransaction  asoebiTransaction[]
+  AsoebiItemCategory AsoebiItemCategory[]
+}
 
-  @@index([id], type: SpGist)
+model AsoebiItemCategory {
+  asoebiItemItemId String
+  categoryId       Int
+  asoebiItem       asoebiitem @relation(fields: [asoebiItemItemId], references: [id])
+  category         Category   @relation(fields: [categoryId], references: [id])
+
+  @@id([asoebiItemItemId, categoryId])
 }
 
 model sourvenirItem {
-  id         String      @id @default(uuid())
-  title      String?     @db.VarChar(255)
-  category   String      @db.VarChar(255)
-  image      String?     @db.VarChar(255)
-  details    String?     @db.VarChar
-  amount     Int
-  weight     Int
-  created_at DateTime    @default(now())
-  updated_at DateTime?   @updatedAt
-  deleted_at DateTime?
-  created_by String?     @db.VarChar(255)
-  updated_by String?     @db.VarChar(255)
-  deleted_by String?     @db.VarChar(255)
-  sourvenir  sourvenir[]
+  id                    String                  @id @default(uuid())
+  title                 String?                 @db.VarChar(255)
+  image                 String?                 @db.VarChar(255)
+  details               String?                 @db.VarChar
+  amount                Int
+  weight                Int
+  categoryId            Int? // Reference to Category
+  category              Category?               @relation(fields: [categoryId], references: [id])
+  created_at            DateTime                @default(now())
+  updated_at            DateTime?               @updatedAt
+  deleted_at            DateTime?
+  created_by            String?                 @db.VarChar(255)
+  updated_by            String?                 @db.VarChar(255)
+  deleted_by            String?                 @db.VarChar(255)
+  sourvenir             sourvenir[]
+  SourvenirItemCategory SourvenirItemCategory[]
+}
 
-  @@index([id], type: SpGist)
+model SourvenirItemCategory {
+  sourvenirItemId String
+  categoryId      Int
+  sovernirItem    sourvenirItem @relation(fields: [sourvenirItemId], references: [id])
+  category        Category      @relation(fields: [categoryId], references: [id])
+
+  @@id([sourvenirItemId, categoryId])
 }
 
 model event {
@@ -143,7 +188,6 @@ model event {
   FundRaising     FundRaising[]
 
   @@index([host], map: "Event_userId_fkey")
-  @@index([id], type: SpGist)
   @@index([userId], type: SpGist)
 }
 
@@ -156,7 +200,6 @@ model CoHostCodes {
   updated_at DateTime? @updatedAt
   deleted_at DateTime?
 
-  @@index([id], type: SpGist)
   @@index([eventId, userId])
 }
 
@@ -175,7 +218,6 @@ model Guests {
   updated_by String?   @db.VarChar(255)
   deleted_by String?   @db.VarChar(255)
 
-  @@index([id], type: SpGist)
   @@index([eventId, userId, coHost])
   @@index([eventId, userId])
 }
@@ -200,7 +242,6 @@ model delivery {
   deleted_by String?   @db.VarChar(255)
 
   @@index([userId], map: "Delivery_userId_fkey")
-  @@index([id], type: SpGist)
   @@index([eventId], type: SpGist)
 }
 
@@ -220,7 +261,6 @@ model deliveryTransactions {
   deleted_by   String?        @db.VarChar(255)
 
   @@index([userId], map: "DeliveryTransaction_userId_fkey")
-  @@index([id], type: SpGist)
 }
 
 model FundRaising {
@@ -242,7 +282,6 @@ model FundRaising {
   deleted_by          String?               @db.VarChar(255)
   FundRaisingDonation FundRaisingDonation[]
 
-  @@index([id], type: SpGist)
   @@index([eventId], type: SpGist)
 }
 
@@ -262,7 +301,6 @@ model FundRaisingDonation {
   updated_by String?     @db.VarChar(255)
   deleted_by String?     @db.VarChar(255)
 
-  @@index([id], type: SpGist)
   @@index([fundId], type: SpGist)
 }
 
@@ -289,7 +327,6 @@ model gift {
   userId             String?
 
   @@index([eventId], map: "Gift_eventId_fkey")
-  @@index([id], type: SpGist)
   @@index([eventId, created_by])
   @@index([eventId, userId])
   @@index([userId])
@@ -313,7 +350,6 @@ model giftTransaction {
   updated_by          String?            @db.VarChar(255)
   deleted_by          String?            @db.VarChar(255)
 
-  @@index([id], type: SpGist)
   @@index([eventId, userId])
   @@index([eventId], type: SpGist)
   @@index([userId], type: SpGist)
@@ -333,8 +369,6 @@ model complimentarygift {
   created_by      String?           @db.VarChar(255)
   updated_by      String?           @db.VarChar(255)
   deleted_by      String?           @db.VarChar(255)
-
-  @@index([id], type: SpGist)
 }
 
 model marketGiftTransaction {
@@ -354,7 +388,6 @@ model marketGiftTransaction {
   updated_by  String?        @db.VarChar(255)
   deleted_by  String?        @db.VarChar(255)
 
-  @@index([id], type: SpGist)
   @@index([userId], type: SpGist)
   @@index([status])
 }
@@ -378,7 +411,6 @@ model asoebi {
 
   @@index([eventId], type: SpGist)
   @@index([userId], type: SpGist)
-  @@index([id], type: SpGist)
   @@index([eventId, userId])
 }
 
@@ -403,7 +435,6 @@ model asoebiTransaction {
 
   @@index([eventId], type: SpGist)
   @@index([userId], type: SpGist)
-  @@index([id], type: SpGist)
   @@index([eventId, userId])
 }
 
@@ -424,7 +455,6 @@ model sourvenir {
 
   @@index([eventId], type: SpGist)
   @@index([userId], type: SpGist)
-  @@index([id], type: SpGist)
   @@index([eventId, userId])
 }
 
@@ -445,7 +475,6 @@ model Media {
 
   @@index([eventId], type: SpGist)
   @@index([userId], type: SpGist)
-  @@index([id], type: SpGist)
   @@index([eventId, userId])
 }
 
@@ -464,7 +493,6 @@ model ComplimentaryMessage {
 
   @@index([eventId], type: SpGist)
   @@index([userId], type: SpGist)
-  @@index([id], type: SpGist)
   @@index([eventId, userId])
 }
 
@@ -485,7 +513,6 @@ model Notifications {
 
   @@index([eventId], type: SpGist)
   @@index([userId], type: SpGist)
-  @@index([id], type: SpGist)
   @@index([userId, referenceEvent])
   @@index([read, userId])
 }
