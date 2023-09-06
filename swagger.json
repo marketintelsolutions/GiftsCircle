@@ -130,6 +130,10 @@
     {
       "name": "Admin_MarketPlace",
       "description": "Apis handling Admin Marketplace endpoints"
+    },
+    {
+      "name": "Categories",
+      "description": "Apis handling Categories endpoints"
     }
   ],
   "paths": {
@@ -1152,6 +1156,34 @@
         }
       }
     },
+    "/giftItem/Get/BySlug/{slug}": {
+      "get": {
+        "description": "",
+        "tags": ["GiftItem"],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+
     "/admin/giftItem/create": {
       "post": {
         "description": "",
@@ -2322,6 +2354,33 @@
         }
       }
     },
+    "/asoebiItem/Get/BySlug/{slug}": {
+      "get": {
+        "description": "",
+        "tags": ["AsoebiItem"],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
     "/admin/asoebiItem/create": {
       "post": {
         "description": "",
@@ -2736,6 +2795,33 @@
       "get": {
         "description": "",
         "tags": ["SourvenirItem"],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/sourvenirItem/Get/BySlug/{slug}": {
+      "get": {
+        "description": "",
+        "tags": ["SourvenirItem"],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "security": [
           {
             "apiKeyAuth": []
@@ -3415,6 +3501,82 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+
+    "/category/": {
+      "get": {
+        "description": "",
+        "tags": ["Categories"],
+        "parameters": [],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/category": {
+      "post": {
+        "description": "",
+        "tags": ["Categories"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "type": "array",
+            "schema": { "$ref": "#/definitions/schema/Category" }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/category/{id}": {
+      "delete": {
+        "description": "",
+        "tags": ["Categories"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": false,
             "type": "string"
           }
         ],
@@ -4166,8 +4328,8 @@
             "type": "object",
             "required": true
           },
-          "category": {
-            "type": "string",
+          "categories": {
+            "type": "array",
             "required": true
           },
           "details": {
@@ -4220,8 +4382,8 @@
             "type": "object",
             "required": true
           },
-          "category": {
-            "type": "string",
+          "categories": {
+            "type": "array",
             "required": true
           },
           "details": {
@@ -4240,6 +4402,20 @@
           "delivered": {
             "type": "boolean",
             "required": true
+          }
+        }
+      },
+      "Category": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "required": true
+          },
+
+          "parentCategoryId": {
+            "type": "string",
+            "required": false
           }
         }
       }

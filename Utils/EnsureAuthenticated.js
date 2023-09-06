@@ -8,7 +8,8 @@ const EnsureAuthenticated = (req, res, next) => {
     const token = bearer[1];
 
     try {
-      VerifyToken(token);
+      let payload = VerifyToken(token);
+      req.user = payload;
       next();
     } catch (err) {
       console.log(err);
@@ -29,6 +30,7 @@ const UserAuthenticated = (req, res, next) => {
     try {
       let payload = VerifyToken(token);
       if (payload.role === "USER") {
+        req.user = payload;
         next();
       } else {
         res.sendStatus(403);
@@ -51,6 +53,7 @@ const AdminAuthenticated = (req, res, next) => {
     try {
       let payload = VerifyToken(token);
       if (payload.role === "ADMIN" || payload.role === "SUPERADMIN") {
+        req.user = payload;
         next();
       } else {
         res.sendStatus(403);
@@ -73,6 +76,7 @@ const SuperAdminAuthenticated = (req, res, next) => {
     try {
       let payload = VerifyToken(token);
       if (payload.role === "SUPERADMIN") {
+        req.user = payload;
         next();
       } else {
         res.sendStatus(403);

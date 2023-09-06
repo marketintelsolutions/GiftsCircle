@@ -6,6 +6,13 @@ const Get = async (id) => {
     where: {
       id: id,
     },
+    include: {
+      AsoebiItemCategory: {
+        include: {
+          category: true,
+        },
+      },
+    },
   });
 
   await prisma.$disconnect();
@@ -13,24 +20,77 @@ const Get = async (id) => {
 };
 
 const GetAll = async () => {
-  const asoebiItems = await prisma.asoebiitem.findMany({});
+  const asoebiItems = await prisma.asoebiitem.findMany({
+    // include: {
+    //   AsoebiItemCategory: {
+    //     include: {
+    //       category: true, // Include the related category
+    //     },
+    //   },
+    // },
+  });
   await prisma.$disconnect();
   return asoebiItems;
 };
+const searchAsoebiItemsByCategorySlug = async (categorySlug) => {
+  try {
+    const category = await prisma.category.findMany({
+      where: {
+        OR: [
+          { slug: categorySlug },
+          { subCategories: { some: { slug: categorySlug } } },
+        ],
+      },
+      include: {
+        AsoebiItemCategory: {
+          include: {
+            asoebiItem: true,
+          },
+        },
+      },
+    });
+
+    if (!category) {
+      return null;
+    }
+
+    return category;
+  } catch (error) {
+    console.log(error);
+  } finally {
+    await prisma.$disconnect();
+  }
+};
 
 const Create = async (data, image) => {
-  let Data = await prisma.asoebiitem.create({
-    data: {
-      title: data.title,
-      category: data.category,
-      details: data.details,
-      amount: parseInt(data.amount),
-      image: image,
-    },
-  });
+  let transaction;
+  let result;
+  try {
+    transaction = await prisma.$transaction(async (prisma) => {
+      result = await prisma.asoebiitem.create({
+        data: {
+          title: data.title,
+          details: data.details,
+          amount: parseInt(data.amount),
+          image: image,
+          weight: parseInt(data.weight),
+          AsoebiItemCategory: {
+            create: data.categories.map((c) => ({ categoryId: parseInt(c) })),
+          },
+        },
+      });
+    });
 
-  await prisma.$disconnect();
-  return Data;
+    return result;
+  } catch (error) {
+    console.log(error);
+    if (transaction) {
+      console.log("Transaction rolled back due to an error.");
+      await prisma.$queryRaw`ROLLBACK;`;
+    }
+  } finally {
+    await prisma.$disconnect();
+  }
 };
 
 const Update = async (id, data, image) => {
@@ -71,4 +131,11 @@ const Delete = async (id) => {
   return asoebiItem;
 };
 
-module.exports = { Create, Get, GetAll, Update, Delete };
+module.exports = {
+  Create,
+  Get,
+  GetAll,
+  Update,
+  Delete,
+  searchAsoebiItemsByCategorySlug,
+};
