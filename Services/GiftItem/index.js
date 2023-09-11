@@ -84,6 +84,7 @@ const Create = async (data, image) => {
     }
   } finally {
     await prisma.$disconnect();
+    return null
   }
 };
 
