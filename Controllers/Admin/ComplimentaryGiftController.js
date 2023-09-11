@@ -59,7 +59,7 @@ router.delete("/:id", AdminAuthenticated, async (req, res) => {
       .send(
         ResponseDTO(
           "Success",
-          `GiftItem with id ${req.params.id} deleted successfully`
+          `Complimentary gift with id ${req.params.id} deleted successfully`
         )
       );
   } catch (err) {

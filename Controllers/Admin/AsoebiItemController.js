@@ -19,8 +19,10 @@ router.post(
         folder: "eventcircle/asoebi",
       });
       let data = await Create(req.body, response.url);
-
-      return res.status(200).send(data);
+      if(data){
+        return res.status(200).send(data);
+      }
+      return res.status(400).send(ResponseDTO("Failed", "Error occured while adding asoebiItem"));
     } catch (err) {
       console.log(err);
       await prisma.$disconnect();

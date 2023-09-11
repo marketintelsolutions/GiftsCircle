@@ -103,7 +103,7 @@ app.use(
 );
 app.use(
   "/api/admin/complimentaryGift/",
-  require("./Controllers/Admin/ComplimentaryGift")
+  require("./Controllers/Admin/ComplimentaryGiftController")
 );
 app.use(
   "/api/admin/fundRaising/",
