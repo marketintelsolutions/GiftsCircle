@@ -10,6 +10,7 @@ const GetAll = async () => {
   await prisma.$disconnect();
   return categories;
 };
+
 const Create = async (data, user) => {
   let slug = generateSlug(data.name);
 
