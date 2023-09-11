@@ -1186,7 +1186,7 @@
 
     "/admin/giftItem/create": {
       "post": {
-        "description": "",
+        "description": "Note the categories field is an array instead of an object",
         "tags": ["Admin_GiftItem"],
         "parameters": [
           {
@@ -2307,6 +2307,33 @@
         }
       }
     },
+    "/admin/complimentaryGift//{id}": {
+      "delete": {
+        "description": "",
+        "tags": ["Admin_ComplimentaryGift"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
 
     "/asoebiItem/{id}": {
       "get": {
@@ -2383,7 +2410,7 @@
     },
     "/admin/asoebiItem/create": {
       "post": {
-        "description": "",
+        "description": "Note the categories field is an array instead of an object",
         "tags": ["Admin_AsoebiItem"],
         "parameters": [
           {
@@ -4329,7 +4356,7 @@
             "required": true
           },
           "categories": {
-            "type": "array",
+            "type": "object",            
             "required": true
           },
           "details": {
@@ -4383,7 +4410,7 @@
             "required": true
           },
           "categories": {
-            "type": "array",
+            "type": "object",
             "required": true
           },
           "details": {
@@ -4391,6 +4418,10 @@
             "required": true
           },
           "amount": {
+            "type": "number",
+            "required": true
+          },
+          "weight": {
             "type": "number",
             "required": true
           }
