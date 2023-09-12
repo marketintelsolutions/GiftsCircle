@@ -31,7 +31,7 @@ const Create = async (data, user) => {
         slug: slug,
         parentCategory: {
           connect: {
-            id: data.parentCategoryId,
+            id: parseInt(data.parentCategoryId),
           },
         },
         created_by: user.id,
