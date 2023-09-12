@@ -3596,6 +3596,39 @@
       }
     },
     "/admin/category/{id}": {
+      "put": {
+        "description": "",
+        "tags": ["Categories"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "number"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/schema/UpdateCategory" }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/category//{id}": {
       "delete": {
         "description": "",
         "tags": ["Categories"],
@@ -4447,6 +4480,15 @@
           "parentCategoryId": {
             "type": "string",
             "required": false
+          }
+        }
+      },
+      "UpdateCategory": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "required": true
           }
         }
       }
