@@ -44,9 +44,36 @@ const Create = async (data, user) => {
     data: {
       name: data.name,
       slug: slug,
+      created_by: user.id
     },
   });
+  await prisma.$disconnect();
   return Data;
+};
+
+const Update = async (id, data) => {
+  const category = await prisma.category.findUnique({
+    where: {
+      id: parseInt(id),
+    },
+  });
+
+  if (category) {
+    let slug = generateSlug(data.name);
+    let Data = await prisma.category.update({
+      where: {
+        id: parseInt(id),
+      },
+      data: {
+       name: data.name,
+       slug: slug
+      },
+    });
+
+    await prisma.$disconnect();
+    return Data;
+  }
+  return null;
 };
 
 const Delete = async (id) => {
@@ -66,4 +93,4 @@ function generateSlug(inputString) {
 
   return hyphenSeparatedString;
 }
-module.exports = { Create, GetAll, Delete };
+module.exports = { Create, GetAll, Update, Delete };
