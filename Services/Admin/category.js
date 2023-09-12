@@ -31,7 +31,7 @@ const Create = async (data, user) => {
         slug: slug,
         parentCategory: {
           connect: {
-            id: data.parentCategoryId,
+            id: parseInt(data.parentCategoryId),
           },
         },
         created_by: user.id,
@@ -79,7 +79,7 @@ const Update = async (id, data) => {
 const Delete = async (id) => {
   const res = await prisma.category.delete({
     where: {
-      id: id,
+      id: parseInt(id),
     },
   });
   await prisma.$disconnect();
