@@ -79,7 +79,7 @@ const Update = async (id, data) => {
 const Delete = async (id) => {
   const res = await prisma.category.delete({
     where: {
-      id: id,
+      id: parseInt(id),
     },
   });
   await prisma.$disconnect();
