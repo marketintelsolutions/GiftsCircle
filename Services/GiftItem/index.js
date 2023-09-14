@@ -14,13 +14,13 @@ const Get = async (id) => {
 
 const GetAll = async () => {
   const giftItems = await prisma.giftitem.findMany({
-    // include: {
-    //   GiftItemCategory: {
-    //     include: {
-    //       category: true,
-    //     },
-    //   },
-    // },
+    include: {
+      GiftItemCategory: {
+        include: {
+          category: true,
+        },
+      },
+    },
   });
   await prisma.$disconnect();
   return giftItems;
@@ -59,13 +59,11 @@ const searchGiftItemsByCategorySlug = async (categorySlug) => {
 const Create = async (data, image) => {
   let transaction;
   let result;
-
   try {
     transaction = await prisma.$transaction(async (prisma) => {
       result = await prisma.giftitem.create({
         data: {
           title: data.title,
-          category: data.category,
           details: data.details,
           amount: parseInt(data.amount),
           image: image,
@@ -78,13 +76,13 @@ const Create = async (data, image) => {
     });
     return result;
   } catch (error) {
+    
     if (transaction) {
       console.log("Transaction rolled back due to an error.");
       await prisma.$queryRaw`ROLLBACK;`;
     }
   } finally {
     await prisma.$disconnect();
-    return null
   }
 };
 

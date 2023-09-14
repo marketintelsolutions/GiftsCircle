@@ -92,8 +92,8 @@ model giftitem {
 model GiftItemCategory {
   giftItemId String
   categoryId Int
-  giftItem   giftitem @relation(fields: [giftItemId], references: [id])
-  category   Category @relation(fields: [categoryId], references: [id])
+  giftItem   giftitem @relation(fields: [giftItemId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@id([giftItemId, categoryId])
 }
@@ -120,8 +120,8 @@ model asoebiitem {
 model AsoebiItemCategory {
   asoebiItemItemId String
   categoryId       Int
-  asoebiItem       asoebiitem @relation(fields: [asoebiItemItemId], references: [id])
-  category         Category   @relation(fields: [categoryId], references: [id])
+  asoebiItem       asoebiitem @relation(fields: [asoebiItemItemId], references: [id], onDelete: Cascade)
+  category         Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@id([asoebiItemItemId, categoryId])
 }
@@ -148,8 +148,8 @@ model sourvenirItem {
 model SourvenirItemCategory {
   sourvenirItemId String
   categoryId      Int
-  sovernirItem    sourvenirItem @relation(fields: [sourvenirItemId], references: [id])
-  category        Category      @relation(fields: [categoryId], references: [id])
+  sovernirItem    sourvenirItem @relation(fields: [sourvenirItemId], references: [id], onDelete: Cascade)
+  category        Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@id([sourvenirItemId, categoryId])
 }
