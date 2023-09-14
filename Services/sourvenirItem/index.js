@@ -65,7 +65,6 @@ const Create = async (data, image) => {
       result = await prisma.sourvenirItem.create({
         data: {
           title: data.title,
-          category: data.category,
           details: data.details,
           amount: parseInt(data.amount),
           image: image,
@@ -78,13 +77,13 @@ const Create = async (data, image) => {
     });
     return result;
   } catch (error) {
+   
     if (transaction) {
       console.log("Transaction rolled back due to an error.");
       await prisma.$queryRaw`ROLLBACK;`;
     }
   } finally {
     await prisma.$disconnect();
-    return null
   }
 };
 

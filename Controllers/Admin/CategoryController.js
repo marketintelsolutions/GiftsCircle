@@ -50,7 +50,7 @@ router.delete("/:id", AdminAuthenticated, async (req, res) => {
   } catch (err) {
     console.log(err);
     await prisma.$disconnect();
-    return res.status(400).send({ msg: "Record not found" });
+    return res.status(400).send({ msg: "Error occured while deleting record" });
   }
 });
 
