@@ -3,9 +3,7 @@ const prisma = new PrismaClient();
 
 const GetAllMarketPlaceTrans = async (status) => {
   const marketTrans = await prisma.marketGiftTransaction.findMany({
-    where: {
-      status: status,
-    },
+   
   });
 
   await prisma.$disconnect();
