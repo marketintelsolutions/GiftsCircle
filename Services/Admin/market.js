@@ -6,6 +6,7 @@ const GetAllMarketPlaceTrans = async (status) => {
    
   });
 
+
   await prisma.$disconnect();
   return marketTrans;
 };
