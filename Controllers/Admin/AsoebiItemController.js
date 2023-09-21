@@ -31,7 +31,7 @@ router.post(
   }
 );
 
-router.put("/:id", AdminAuthenticated, async (req, res) => {
+router.put("/:id", upload.single("image"), AdminAuthenticated, async (req, res) => {
   try {
     let data = null;
     if (req.file) {
@@ -39,6 +39,7 @@ router.put("/:id", AdminAuthenticated, async (req, res) => {
       const response = await cloudinary.uploader.upload(file, {
         folder: "eventcircle/asoebi",
       });
+
       data = await Update(req.params.id, req.body, response.url);
       if (data) {
         return res.status(200).send(data);
