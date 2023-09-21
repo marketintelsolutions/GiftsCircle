@@ -114,7 +114,6 @@ const Update = async (id, data, image) => {
         weight: data.weight ? parseInt(data.weight) : asoebiItem.weight,
       },
     });
-
     await prisma.$disconnect();
     return Data;
   }
