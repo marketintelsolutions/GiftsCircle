@@ -103,8 +103,8 @@ const Update = async (id, data, image) => {
         image: image ? image : sourvenirItem.image,
         amount: data.amount ? parseInt(data.amount) : sourvenirItem.amount,
         details: data.details ? data.details : sourvenirItem.details,
-        category: data.category ? data.category : sourvenirItem.category,
         title: data.title ? data.title : sourvenirItem.title,
+        weight: data.weight ? parseInt(data.weight) : sourvenirItem.weight,
       },
     });
 

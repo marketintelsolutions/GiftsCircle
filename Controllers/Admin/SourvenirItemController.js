@@ -4,53 +4,72 @@ const ResponseDTO = require("../../DTO/Response");
 const router = express.Router();
 const cloudinary = require("../../config/Cloudinary");
 const { upload, dataUri } = require("../../config/multer");
-const {
-  Create,
-  Update,
-  Delete,
-} = require("../../Services/sourvenirItem");
+const { Create, Update, Delete } = require("../../Services/sourvenirItem");
 const { AdminAuthenticated } = require("../../Utils/EnsureAuthenticated");
 const prisma = new PrismaClient();
 
-
-router.post("/create", upload.single("image"), AdminAuthenticated, async (req, res) => {
-  try {
-    const file = dataUri(req).content;
-    const response = await cloudinary.uploader.upload(file, {
-      folder: "eventcircle/sourvenir",
-    });
-    let data = await Create(req.body, response.url);
-    if(data){
-      return res.status(200).send(data);
+router.post(
+  "/create",
+  upload.single("image"),
+  AdminAuthenticated,
+  async (req, res) => {
+    try {
+      const file = dataUri(req).content;
+      const response = await cloudinary.uploader.upload(file, {
+        folder: "eventcircle/sourvenir",
+      });
+      let data = await Create(req.body, response.url);
+      if (data) {
+        return res.status(200).send(data);
+      }
+      return res
+        .status(400)
+        .send(
+          ResponseDTO("Failed", "Error occured while adding sourvernirItem")
+        );
+    } catch (err) {
+      console.log(err);
+      await prisma.$disconnect();
+      return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
     }
-    return res.status(400).send(ResponseDTO("Failed", "Error occured while adding sourvernirItem"));
-    
-  } catch (err) {
-    console.log(err);
-    await prisma.$disconnect();
-    return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
   }
-});
+);
 
-router.put("/:id", upload.single("image"), AdminAuthenticated, async (req, res) => {
-  try {
-    const file = dataUri(req).content;
-    const response = await cloudinary.uploader.upload(file, {
-      folder: "eventcircle/sourvenir",
-    });
-    let data = await Update(req.params.id, req.body, response.url);
-    if (data) {
-      return res.status(200).send(data);
+router.put(
+  "/:id",
+  upload.single("image"),
+  AdminAuthenticated,
+  async (req, res) => {
+    try {
+      let data = null;
+      if (req.file) {
+        const file = dataUri(req).content;
+        const response = await cloudinary.uploader.upload(file, {
+          folder: "eventcircle/sourvenir",
+        });
+        data = await Update(req.params.id, req.body, response.url);
+        if (data) {
+          return res.status(200).send(data);
+        }
+        return res
+          .status(400)
+          .send(ResponseDTO("Failed", "SourvenirItem not found"));
+      } else {
+        data = await Update(req.params.id, req.body, null);
+        if (data) {
+          return res.status(200).send(data);
+        }
+        return res
+          .status(400)
+          .send(ResponseDTO("Failed", "SourvenirItem not found"));
+      }
+    } catch (err) {
+      console.log(err);
+      await prisma.$disconnect();
+      return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
     }
-    return res
-      .status(400)
-      .send(ResponseDTO("Failed", "Sourvenir Item not found"));
-  } catch (err) {
-    console.log(err);
-    await prisma.$disconnect();
-    return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
   }
-});
+);
 
 router.delete("/:id", AdminAuthenticated, async (req, res) => {
   try {

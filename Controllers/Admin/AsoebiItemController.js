@@ -33,15 +33,28 @@ router.post(
 
 router.put("/:id", AdminAuthenticated, async (req, res) => {
   try {
-    const file = dataUri(req).content;
-    const response = await cloudinary.uploader.upload(file, {
-      folder: "eventcircle/asoebi",
-    });
-    let data = await Update(req.params.id, req.body, response.url);
-    if (data) {
-      return res.status(200).send(data);
+    let data = null;
+    if (req.file) {
+      const file = dataUri(req).content;
+      const response = await cloudinary.uploader.upload(file, {
+        folder: "eventcircle/asoebi",
+      });
+      data = await Update(req.params.id, req.body, response.url);
+      if (data) {
+        return res.status(200).send(data);
+      }
+      return res
+        .status(400)
+        .send(ResponseDTO("Failed", "AsoebiItem not found"));
+    } else {
+      data = await Update(req.params.id, req.body, null);
+      if (data) {
+        return res.status(200).send(data);
+      }
+      return res
+        .status(400)
+        .send(ResponseDTO("Failed", "AsoebiItem not found"));
     }
-    return res.status(400).send(ResponseDTO("Failed", "Asoebi Item not found"));
   } catch (err) {
     console.log(err);
     await prisma.$disconnect();
