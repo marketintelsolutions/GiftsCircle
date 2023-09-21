@@ -47,7 +47,7 @@ router.put(
       if (req.file) {
         const file = dataUri(req).content;
         const response = await cloudinary.uploader.upload(file, {
-          folder: "eventcircle",
+          folder: "eventcircle/gifts",
         });
         data = await Update(req.params.id, req.body, response.url);
         if (data) {

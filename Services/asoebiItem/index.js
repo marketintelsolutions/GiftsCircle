@@ -110,8 +110,8 @@ const Update = async (id, data, image) => {
         image: image ? image : asoebiItem.image,
         amount: data.amount ? parseInt(data.amount) : asoebiItem.amount,
         details: data.details ? data.details : asoebiItem.details,
-        category: data.category ? data.category : asoebiItem.category,
         title: data.title ? data.title : asoebiItem.title,
+        weight: data.weight ? parseInt(data.weight) : asoebiItem.weight,
       },
     });
 
