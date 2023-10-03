@@ -76,8 +76,8 @@ model giftitem {
   title            String?            @db.VarChar(255)
   image            String?            @db.VarChar(255)
   details          String?            @db.VarChar(255)
-  amount           Int
-  weight           Int
+  amount           Decimal            @db.Decimal(32, 16)
+  weight           Decimal            @db.Decimal(32, 16)
   created_at       DateTime           @default(now())
   updated_at       DateTime?          @updatedAt
   deleted_at       DateTime?
@@ -104,8 +104,8 @@ model asoebiitem {
   title              String?              @db.VarChar(255)
   image              String?              @db.VarChar(255)
   details            String?              @db.VarChar
-  amount             Int
-  weight             Int                  @default(1)
+  amount             Decimal              @db.Decimal(32, 16)
+  weight             Decimal              @db.Decimal(32, 16)
   categoryId         Int? // Reference to Category
   category           Category?            @relation(fields: [categoryId], references: [id])
   created_at         DateTime             @default(now())
@@ -132,8 +132,8 @@ model sourvenirItem {
   title                 String?                 @db.VarChar(255)
   image                 String?                 @db.VarChar(255)
   details               String?                 @db.VarChar
-  amount                Int
-  weight                Int
+  amount                Decimal                 @db.Decimal(32, 16)
+  weight                Decimal                 @db.Decimal(32, 16)
   categoryId            Int? // Reference to Category
   category              Category?               @relation(fields: [categoryId], references: [id])
   created_at            DateTime                @default(now())
@@ -362,7 +362,7 @@ model complimentarygift {
   category        String            @db.VarChar(255)
   image           String?           @db.VarChar(255)
   details         String?           @db.VarChar(255)
-  amount          Int
+  amount          Decimal           @db.Decimal(32, 16)
   giftTransaction giftTransaction[]
   created_at      DateTime          @default(now())
   updated_at      DateTime?         @updatedAt
