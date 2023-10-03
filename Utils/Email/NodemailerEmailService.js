@@ -57,4 +57,27 @@ const SendEventPublishEmail = (reciever, name, event) => {
   });
 };
 
-module.exports = { SendEventPublishEmail };
+const AdminSetPasswordEmail = (adminName, defaultPassword, email, token) => {
+  var mailOptions = {
+    from: '"Godwill" <godwillonyewuchii@gmail.com>',
+    to: email, 
+    subject: "Set Password",
+    template: "adminCreate", 
+    context: {
+      username: adminName,
+      defaultPassword: defaultPassword,
+      email: email,
+      url: `https://eventcircleadmin.netlify.app/admin/setPassword?token=${token}`,
+    },
+  };
+
+  // trigger the sending of the E-mail
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      return console.log(error);
+    }
+    console.log("Message sent: " + info.response);
+  });
+};
+
+module.exports = { SendEventPublishEmail, AdminSetPasswordEmail };

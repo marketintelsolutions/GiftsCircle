@@ -2,11 +2,9 @@ const { PrismaClient } = require("@prisma/client");
 const { SendEmail } = require("../../Utils/Email/EmailService");
 const {
   comparePassword,
-  GenerateOtp,
   VerifyToken,
   hashPassword,
 } = require("../../Utils/HelperFunctions");
-const { v4: uuidv4 } = require("uuid");
 const prisma = new PrismaClient();
 
 const GetUserNotifications = async (id) => {

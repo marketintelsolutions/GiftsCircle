@@ -66,9 +66,9 @@ const Create = async (data, image) => {
         data: {
           title: data.title,
           details: data.details,
-          amount: parseInt(data.amount),
+          amount: parseFloat(data.amount),
           image: image,
-          weight: parseInt(data.weight),
+          weight: parseFloat(data.weight),
           SourvenirItemCategory: {
             create: data.categories.map((c) => ({ categoryId: parseInt(c) })),
           },
@@ -101,10 +101,10 @@ const Update = async (id, data, image) => {
       },
       data: {
         image: image ? image : sourvenirItem.image,
-        amount: data.amount ? parseInt(data.amount) : sourvenirItem.amount,
+        amount: data.amount ? parseFloat(data.amount) : sourvenirItem.amount,
         details: data.details ? data.details : sourvenirItem.details,
         title: data.title ? data.title : sourvenirItem.title,
-        weight: data.weight ? parseInt(data.weight) : sourvenirItem.weight,
+        weight: data.weight ? parseFloat(data.weight) : sourvenirItem.weight,
       },
     });
 

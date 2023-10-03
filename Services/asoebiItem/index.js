@@ -72,9 +72,9 @@ const Create = async (data, image) => {
         data: {
           title: data.title,
           details: data.details,
-          amount: parseInt(data.amount),
+          amount: parseFloat(data.amount),
           image: image,
-          weight: parseInt(data.weight),
+          weight: parseFloat(data.weight),
           AsoebiItemCategory: {
             create: data.categories.map((c) => ({ categoryId: parseInt(c) })),
           },
@@ -108,10 +108,10 @@ const Update = async (id, data, image) => {
       },
       data: {
         image: image ? image : asoebiItem.image,
-        amount: data.amount ? parseInt(data.amount) : asoebiItem.amount,
+        amount: data.amount ? parseFloat(data.amount) : asoebiItem.amount,
         details: data.details ? data.details : asoebiItem.details,
         title: data.title ? data.title : asoebiItem.title,
-        weight: data.weight ? parseInt(data.weight) : asoebiItem.weight,
+        weight: data.weight ? parseFloat(data.weight) : asoebiItem.weight,
       },
     });
     await prisma.$disconnect();

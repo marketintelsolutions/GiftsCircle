@@ -25,7 +25,7 @@ const Create = async (data, image) => {
       title: data.title,
       category: data.category,
       details: data.details,
-      amount: parseInt(data.amount),
+      amount: parseFloat(data.amount),
       image: image,
     },
   });
@@ -63,7 +63,7 @@ const Update = async (id, data, image) => {
       },
       data: {
         image: image ? image : complimentaryItem.image,
-        amount: data.amount ? parseInt(data.amount) : complimentaryItem.amount,
+        amount: data.amount ? parseFloat(data.amount) : complimentaryItem.amount,
         details: data.details ? data.details : complimentaryItem.details,
         category: data.category ? data.category : complimentaryItem.category,
         title: data.title ? data.title : complimentaryItem.title,

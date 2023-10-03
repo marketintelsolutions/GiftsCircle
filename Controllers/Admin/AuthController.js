@@ -8,13 +8,19 @@ const {
   Create,
   UpdateAdmin,
   DeleteAdmin,
+  SetPassword,
 } = require("../../Services/Admin/auth");
 const {
-  AdminAuthenticated,
   SuperAdminAuthenticated,
+  AdminAuthenticated,
 } = require("../../Utils/EnsureAuthenticated");
 const cloudinary = require("../../config/Cloudinary");
 const { upload, dataUri } = require("../../config/multer");
+const { SendEmail } = require("../../Utils/Email/EmailService");
+const {
+  AdminSetPasswordEmail,
+} = require("../../Utils/Email/NodemailerEmailService");
+const { GenerateToken } = require("../../Utils/HelperFunctions");
 const router = express.Router();
 const prisma = new PrismaClient();
 
@@ -72,6 +78,13 @@ router.post(
 
       let data = await Create(req.body, response.url);
       if (data) {
+        const token = GenerateToken(data.email, data.id, data.role, "1h");
+        AdminSetPasswordEmail(
+          data.firstname,
+          data.defaultPassword,
+          data.email,
+          token
+        );
         return res.status(200).send(data);
       }
       return res
@@ -84,6 +97,20 @@ router.post(
     }
   }
 );
+
+router.put("/setPassword", AdminAuthenticated, async (req, res) => {
+  try {
+    let data = await SetPassword(req.body, req.user.email);
+    if (data.status === "Success") {
+      return res.status(200).send(data);
+    }
+    return res.status(400).send(data);
+  } catch (err) {
+    console.log(err);
+    await prisma.$disconnect();
+    return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
+  }
+});
 
 router.put("/:id", SuperAdminAuthenticated, async (req, res) => {
   try {

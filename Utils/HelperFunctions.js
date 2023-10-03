@@ -58,6 +58,10 @@ const CreateGuestId = () => {
   return Id_Generator(6, true, true, false, true);
 };
 
+const CreateDefaultPassword = () => {
+  return Id_Generator(8, true, true, false, true)
+}
+
 module.exports = {
   comparePassword,
   GenerateToken,
@@ -67,4 +71,5 @@ module.exports = {
   CreateEventId,
   CreateGuestId,
   hashPassword,
+  CreateDefaultPassword,
 };
