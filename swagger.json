@@ -362,6 +362,39 @@
         }
       }
     },
+    "/admin/setPassword": {
+      "put": {
+        "description": "",
+        "tags": ["Admin_Auth"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/schema/SetAdminPassword" }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
     "/admin/{id}": {
       "put": {
         "description": "",
@@ -3703,12 +3736,21 @@
             "type": "string",
             "required": true
           },
-          "password": {
+          "image": {
+            "type": "object",
+            "required": true
+          }
+        }
+      },
+      "SetAdminPassword": {
+        "type": "object",
+        "properties": {
+          "defaultPassword": {
             "type": "string",
             "required": true
           },
-          "image": {
-            "type": "object",
+          "password": {
+            "type": "string",
             "required": true
           }
         }

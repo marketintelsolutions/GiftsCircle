@@ -1,11 +1,11 @@
 const { PrismaClient } = require("@prisma/client");
-const ResponseDTO = require("../../DTO/Response");
 const {
   hashPassword,
   comparePassword,
   GenerateToken,
+  CreateDefaultPassword,
 } = require("../../Utils/HelperFunctions");
-
+const ResponseDTO = require("../../DTO/Response");
 const prisma = new PrismaClient();
 
 const Login = async (data) => {
@@ -62,10 +62,10 @@ const Create = async (data, image) => {
   });
 
   if (!admin) {
-    const hashedPassword = await hashPassword(data.password);
     const createdAdmin = await prisma.admin.create({
       data: {
-        password: hashedPassword,
+        defaultPassword: CreateDefaultPassword(),
+        password: "",
         email: data.email,
         lastname: data.lastname,
         firstname: data.firstname,
@@ -77,6 +77,30 @@ const Create = async (data, image) => {
     return createdAdmin;
   }
   return null;
+};
+
+const SetPassword = async (data, email) => {
+  const admin = await prisma.admin.findUnique({
+    where: {
+      email: email,
+    },
+  });
+  if (!admin) return ResponseDTO("Failed", "Admin not found");
+
+  if (admin.defaultPassword !== data.defaultPassword)
+    return ResponseDTO("Failed", "Incorrect default password");
+
+  const hashedPassword = await hashPassword(data.password);
+  await prisma.admin.update({
+    where: {
+      id: admin.id,
+    },
+    data: {
+      password: hashedPassword,
+    },
+  });
+
+  return ResponseDTO("Success", "Password set successfully");
 };
 
 const UpdateAdmin = async (data, id) => {
@@ -123,4 +147,5 @@ module.exports = {
   DeleteAdmin,
   GetAdmin,
   GetAdmins,
+  SetPassword,
 };
