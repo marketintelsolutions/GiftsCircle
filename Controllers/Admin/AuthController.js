@@ -78,7 +78,7 @@ router.post(
 
       let data = await Create(req.body, response.url);
       if (data) {
-        const token = GenerateToken(data.email, data.id, data.role, "1h");
+        const token = GenerateToken(data.email, data.id, data.role, "24h");
         AdminSetPasswordEmail(
           data.firstname,
           data.defaultPassword,
