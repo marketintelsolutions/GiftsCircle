@@ -1725,6 +1725,34 @@
         }
       }
     },
+    "/admin/gift/Update/GiftTrans": {
+      "put": {
+        "description": "",
+        "tags": ["Admin_Gift"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "type": "array",
+            "schema": { "$ref": "#/definitions/schema/UpdateAsoebiTrans" }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
 
     "/delivery/{id}": {
       "get": {
