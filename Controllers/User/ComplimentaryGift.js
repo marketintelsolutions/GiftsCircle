@@ -37,7 +37,7 @@ router.get("/Get/All", EnsureAuthenticated, async (req, res) => {
 
 router.post("/Buy", UserAuthenticated, async (req, res) => {
   try {
-    let data = await Buy(req.body);
+    let data = await Buy(req.body, req.user.id);
     if (data) {
       return res.status(200).send(data);
     }

@@ -61,7 +61,7 @@ router.post(
       const response = await cloudinary.uploader.upload(file, {
         folder: "eventcircle/fundRaising",
       });
-      let data = await Create(req.body, response.url);
+      let data = await Create(req.body, response.url, req.user.id);
       if (data) {
         if (data.notification) {
           req.io.emit(data.notification.userId, data.notification);
@@ -112,7 +112,7 @@ router.put("/UpdateStatus", UserAuthenticated, async (req, res) => {
 
 router.post("/Donate", UserAuthenticated, async (req, res) => {
   try {
-    let data = await Donate(req.body);
+    let data = await Donate(req.body,  req.user.id);
     if (data) {
       req.io.emit(data.notification.userId, data.notification);
       req.io.emit(data.guestNotification.userId, data.guestNotification);

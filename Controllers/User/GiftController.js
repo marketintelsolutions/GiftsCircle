@@ -124,7 +124,7 @@ router.get("/Get/PurchasedBy/:id", EnsureAuthenticated, async (req, res) => {
 
 router.post("/create", UserAuthenticated, async (req, res) => {
   try {
-    let data = await Create(req.body);
+    let data = await Create(req.body, req.user.id);
     return res.status(200).send(data);
   } catch (err) {
     console.log(err);
@@ -135,7 +135,7 @@ router.post("/create", UserAuthenticated, async (req, res) => {
 
 router.post("/createMany", UserAuthenticated, async (req, res) => {
   try {
-    let data = await CreateMany(req.body);
+    let data = await CreateMany(req.body,   req.user.id);
     return res.status(200).send(data);
   } catch (err) {
     console.log(err);
@@ -146,7 +146,7 @@ router.post("/createMany", UserAuthenticated, async (req, res) => {
 
 router.post("/Buy", UserAuthenticated, async (req, res) => {
   try {
-    let data = await Buy(req.body);
+    let data = await Buy(req.body, req.user.id);
     if (data) {
       req.io.emit(data.notification.userId, data.notification);
       req.io.emit(data.guestNotification.userId, data.guestNotification);

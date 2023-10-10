@@ -504,7 +504,34 @@
       }
     },
 
-    "/user/{id}": {
+    "/user/": {
+      "get": {
+        "description": "",
+        "tags": ["User"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/user/notifications/": {
       "get": {
         "description": "",
         "tags": ["User"],
@@ -532,33 +559,6 @@
       }
     },
     "/user/notifications/{id}": {
-      "get": {
-        "description": "",
-        "tags": ["User"],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "security": [
-          {
-            "apiKeyAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          }
-        }
-      }
-    },
-    "/user/notifications//{id}": {
       "put": {
         "description": "",
         "tags": ["User"],
@@ -612,7 +612,7 @@
         }
       }
     },
-    "/user///{id}": {
+    "/user//": {
       "put": {
         "description": "",
         "tags": ["User"],
@@ -721,18 +721,11 @@
         }
       }
     },
-    "/event/UserEvents/{id}": {
+    "/event/UserEvents/": {
       "get": {
         "description": "",
         "tags": ["Event"],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
+        "parameters": [],
         "security": [
           {
             "apiKeyAuth": []
@@ -809,19 +802,13 @@
         }
       }
     },
-    "/event/GetCoHostGuestCode/{eventId}/{userId}": {
+    "/event/GetCoHostGuestCode/{eventId}/": {
       "get": {
         "description": "Gets the guest code of a particular coHost",
         "tags": ["Event"],
         "parameters": [
           {
             "name": "eventId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "userId",
             "in": "path",
             "required": true,
             "type": "string"
@@ -1754,17 +1741,12 @@
       }
     },
 
-    "/delivery/{id}": {
+    "/delivery/": {
       "get": {
         "description": "",
         "tags": ["Delivery"],
         "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
+      
         ],
         "security": [
           {
@@ -1835,18 +1817,11 @@
         }
       }
     },
-    "/delivery/{userId}/deliveryTrans": {
+    "/delivery/user/deliveryTrans": {
       "get": {
         "description": "",
         "tags": ["Delivery"],
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
+        "parameters": [],
         "security": [
           {
             "apiKeyAuth": []
@@ -1890,7 +1865,7 @@
         }
       }
     },
-    "/delivery/deliveryTrans/{userId}": {
+    "/delivery/deliveryTrans/": {
       "post": {
         "description": "",
         "tags": ["Delivery"],
@@ -1901,12 +1876,6 @@
             "required": true,
             "type": "array",
             "schema": { "$ref": "#/definitions/schema/DeliveryTrans" }
-          },
-          {
-            "name": "userId",
-            "in": "path",
-            "type": "string",
-            "required": true
           }
         ],
         "security": [
@@ -3260,19 +3229,13 @@
         }
       }
     },
-    "/media/Get/UserUploadedMedia/{eventId}/{userId}": {
+    "/media/Get/UserUploadedMedia/{eventId}/": {
       "get": {
         "description": "Get Media files uploaded by a guest for the event",
         "tags": ["Media"],
         "parameters": [
           {
             "name": "eventId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "userId",
             "in": "path",
             "required": true,
             "type": "string"
@@ -3492,17 +3455,11 @@
       }
     },
 
-    "/marketPlace/Get/All/{id}": {
+    "/marketPlace/Get/All/": {
       "get": {
         "description": "",
         "tags": ["MarketPlace"],
         "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
         ],
         "security": [
           {
@@ -3851,10 +3808,6 @@
       "ChangePassword": {
         "type": "object",
         "properties": {
-          "email": {
-            "type": "string",
-            "required": true
-          },
           "oldPassword": {
             "type": "string",
             "required": true
@@ -3897,10 +3850,6 @@
             "required": true
           },
           "host": {
-            "type": "string",
-            "required": true
-          },
-          "userId": {
             "type": "string",
             "required": true
           }
@@ -4055,10 +4004,6 @@
           "complimentaryGift": {
             "type": "string",
             "required": true
-          },
-          "created_by": {
-            "type": "string",
-            "required": true
           }
         }
       },
@@ -4066,10 +4011,6 @@
         "type": "object",
         "properties": {
           "status": {
-            "type": "string",
-            "required": true
-          },
-          "userId": {
             "type": "string",
             "required": true
           },
@@ -4128,10 +4069,6 @@
             "required": true
           },
           "tel2": {
-            "type": "string",
-            "required": true
-          },
-          "userId": {
             "type": "string",
             "required": true
           }
@@ -4193,11 +4130,6 @@
             "type": "string",
             "required": true
           },
-          "coHostId": {
-            "type": "string",
-            "required": true
-          },
-
           "amount": {
             "type": "number",
             "required": true
@@ -4236,10 +4168,6 @@
             "required": true
           },
           "fundId": {
-            "type": "string",
-            "required": true
-          },
-          "userId": {
             "type": "string",
             "required": true
           },
@@ -4294,10 +4222,6 @@
             "type": "string",
             "required": true
           },
-          "userId": {
-            "type": "string",
-            "required": true
-          },
           "asoebiItem": {
             "type": "string",
             "required": true
@@ -4312,10 +4236,6 @@
         "type": "object",
         "properties": {
           "asoebiId": {
-            "type": "string",
-            "required": true
-          },
-          "userId": {
             "type": "string",
             "required": true
           },
@@ -4350,10 +4270,6 @@
       "Sourvenir": {
         "type": "object",
         "properties": {
-          "userId": {
-            "type": "string",
-            "required": true
-          },
           "sourvenirItemId": {
             "type": "string",
             "required": true
@@ -4381,11 +4297,6 @@
       "Media": {
         "type": "object",
         "properties": {
-          "userId": {
-            "type": "string",
-            "required": true
-          },
-
           "eventId": {
             "type": "string",
             "required": true
@@ -4403,10 +4314,6 @@
       "ComplimentaryMessage": {
         "type": "object",
         "properties": {
-          "userId": {
-            "type": "string",
-            "required": true
-          },
           "eventId": {
             "type": "string",
             "required": true
@@ -4421,10 +4328,6 @@
         "type": "object",
         "properties": {
           "itemId": {
-            "type": "string",
-            "required": true
-          },
-          "userId": {
             "type": "string",
             "required": true
           },
@@ -4459,7 +4362,7 @@
             "required": true
           },
           "categories": {
-            "type": "object",            
+            "type": "object",
             "required": true
           },
           "details": {

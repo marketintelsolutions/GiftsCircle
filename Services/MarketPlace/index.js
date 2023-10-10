@@ -12,7 +12,11 @@ const GetMarketTransactions = async (id) => {
   return trans;
 };
 
-const BuyMarketItems = async (data) => {
+const BuyMarketItems = async (data, userId) => {
+  data.map((ele) => {
+    ele.userId = userId
+    return ele;
+  })
   let Data = await prisma.marketGiftTransaction.createMany({
     data: [...data],
     skipDuplicates: true,
@@ -21,7 +25,7 @@ const BuyMarketItems = async (data) => {
   const message = `Market Items purchased`;
   const notification = await prisma.notifications.create({
     data: {
-      userId: data[0].userId,
+      userId: userId,
       type: "PURCHASE",
       message: message,
     },

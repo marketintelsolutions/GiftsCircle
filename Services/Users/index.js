@@ -91,10 +91,10 @@ const SetPassword = async (data, type) => {
   return null;
 };
 
-const ChangePassword = async (data) => {
-  const user = await prisma.user.findFirst({
+const ChangePassword = async (data, userId) => {
+  const user = await prisma.user.findUnique({
     where: {
-      email: data.email,
+      id: userId,
     },
   });
 
