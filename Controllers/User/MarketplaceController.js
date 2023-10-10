@@ -3,7 +3,7 @@ const express = require("express");
 const ResponseDTO = require("../../DTO/Response");
 const router = express.Router();
 const {
-  EnsureAuthenticated,
+  EnsureAuthenticated, UserAuthenticated,
 } = require("../../Utils/EnsureAuthenticated");
 const {
   GetMarketTransactions,
@@ -12,9 +12,9 @@ const {
 
 const prisma = new PrismaClient();
 
-router.get("/Get/All/:id", EnsureAuthenticated, async (req, res) => {
+router.get("/Get/All/", EnsureAuthenticated, async (req, res) => {
   try {
-    let data = await GetMarketTransactions(req.params.id);
+    let data = await GetMarketTransactions(req.user.id);
     return res.status(200).send(data);
   } catch (err) {
     console.log(err);
@@ -23,9 +23,9 @@ router.get("/Get/All/:id", EnsureAuthenticated, async (req, res) => {
   }
 });
 
-router.post("/create", EnsureAuthenticated, async (req, res) => {
+router.post("/create", UserAuthenticated, async (req, res) => {
   try {
-    let data = await BuyMarketItems(req.body);
+    let data = await BuyMarketItems(req.body, req.user.id);
     req.io.emit(data.notification.userId, data.notification);
     return res.status(200).send(data.Data);
   } catch (err) {

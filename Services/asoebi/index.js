@@ -29,13 +29,12 @@ const GetEventAsoebi = async (id) => {
   return asoebis;
 };
 
-const Create = async (data) => {
+const Create = async (data, userId) => {
   let Data = await prisma.asoebi.create({
     data: {
       quantity: 0,
       amountPaid: 0,
       asoebiItem: data.asoebiItem,
-      userId: data.userId,
       eventId: data.eventId,
       increment: data.increment,
       purchasedByHost: data.purchasedByHost,
@@ -46,9 +45,10 @@ const Create = async (data) => {
   return Data;
 };
 
-const CreateMany = async (data) => {
+const CreateMany = async (data, userId) => {
   data.forEach((element) => {
     element.amountPaid = 0;
+    element.userId = userId
     element.quantity = 0;
     return element;
   });
@@ -60,7 +60,7 @@ const CreateMany = async (data) => {
   const message = `Asoebis has been added for guest`;
   const notification = await prisma.notifications.create({
     data: {
-      userId: data[0].userId,
+      userId: userId,
       type: "ASOEBI",
       message: message,
       referenceEvent: data.eventId,
@@ -81,64 +81,81 @@ const Delete = async (id) => {
   return asoebi;
 };
 
-const Buy = async (data) => {
-  const asoebi = await prisma.asoebi.findUnique({
-    where: {
-      id: data.asoebiId,
-    },
-  });
+const Buy = async (data, userId) => {
+  let transaction;
+  let result;
+  try {
+    transaction = await prisma.$transaction(async (prisma) => {
+      const asoebi = await prisma.asoebi.findUnique({
+        where: {
+          id: data.asoebiId,
+        },
+      });
 
-  if (asoebi) {
-    const buy = await prisma.asoebiTransaction.create({
-      data: {
-        amount: data.amount,
-        asoebiId: data.asoebiId,
-        userId: data.userId,
-        eventId: data.eventId,
-        quantity: data.quantity,
-        delivered: false,
-        asoebiitemId: asoebi.asoebiItem,
-      },
-    });
+      if (asoebi) {
+        const buy = await prisma.asoebiTransaction.create({
+          data: {
+            amount: parseInt(data.amount),
+            asoebiId: data.asoebiId,
+            userId: userId,
+            eventId: data.eventId,
+            quantity: data.quantity,
+            delivered: false,
+            asoebiitemId: asoebi.asoebiItem,
+          },
+        });
 
-    await prisma.asoebi.update({
-      where: {
-        id: asoebi.id,
-      },
-      data: {
-        amountPaid: asoebi.amountPaid + data.amount,
-        quantity: asoebi.quantity + data.quantity,
-        updated_by: data.userId,
-      },
-    });
+        await prisma.asoebi.update({
+          where: {
+            id: asoebi.id,
+          },
+          data: {
+            amountPaid: asoebi.amountPaid + parseInt(data.amount),
+            quantity: asoebi.quantity + data.quantity,
+            updated_by: userId,
+          },
+        });
 
-    const user = await prisma.user.findFirst({ where: { id: data.userId } });
-    const event = await prisma.event.findUnique({
-      where: { id: data.eventId },
-    });
-    const message = `${user.firstname} bought ${data.quantity} quantity of asoebi`;
-    const guestMessage = `You have bought ${data.quantity} quantity of asoebi`;
-    const notification = await prisma.notifications.create({
-      data: {
-        userId: event.userId,
-        type: "ASOEBI",
-        message: message,
-        referenceEvent: event.id,
-      },
-    });
+        const user = await prisma.user.findFirst({
+          where: { id: userId },
+        });
+        const event = await prisma.event.findUnique({
+          where: { id: data.eventId },
+        });
+        const message = `${user.firstname} bought ${data.quantity} quantity of asoebi`;
+        const guestMessage = `You have bought ${data.quantity} quantity of asoebi`;
+        const notification = await prisma.notifications.create({
+          data: {
+            userId: event.userId,
+            type: "ASOEBI",
+            message: message,
+            referenceEvent: event.id,
+          },
+        });
 
-    const guestNotification = await prisma.notifications.create({
-      data: {
-        userId: data.userId,
-        type: "PURCHASE",
-        message: guestMessage,
-      },
+        const guestNotification = await prisma.notifications.create({
+          data: {
+            userId: userId,
+            type: "PURCHASE",
+            message: guestMessage,
+          },
+        });
+
+        result = { buy, notification, guestNotification };
+      } else {
+        result = null;
+      }
     });
+    return result;
+  } catch (error) {
+    console.log(error);
+    if (transaction) {
+      console.log("Transaction rolled back due to an error.");
+      await prisma.$queryRaw`ROLLBACK;`;
+    }
+  } finally {
     await prisma.$disconnect();
-
-    return { buy, notification, guestNotification };
   }
-  return null;
 };
 
 const GetAsoebiBuyers = async (id) => {

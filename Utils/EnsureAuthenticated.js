@@ -13,10 +13,10 @@ const EnsureAuthenticated = (req, res, next) => {
       next();
     } catch (err) {
       console.log(err);
-      res.sendStatus(403);
+      res.sendStatus(401);
     }
   } else {
-    res.sendStatus(403);
+    res.sendStatus(401);
   }
 };
 
@@ -33,13 +33,13 @@ const UserAuthenticated = (req, res, next) => {
         req.user = payload;
         next();
       } else {
-        res.sendStatus(403);
+        res.sendStatus(401);
       }
     } catch (err) {
-      res.sendStatus(403);
+      res.sendStatus(401);
     }
   } else {
-    res.sendStatus(403);
+    res.sendStatus(401);
   }
 };
 
@@ -56,13 +56,13 @@ const AdminAuthenticated = (req, res, next) => {
         req.user = payload;
         next();
       } else {
-        res.sendStatus(403);
+        res.sendStatus(401);
       }
     } catch (err) {
-      res.sendStatus(403);
+      res.sendStatus(401);
     }
   } else {
-    res.sendStatus(403);
+    res.sendStatus(401);
   }
 };
 
@@ -79,13 +79,13 @@ const SuperAdminAuthenticated = (req, res, next) => {
         req.user = payload;
         next();
       } else {
-        res.sendStatus(403);
+        res.sendStatus(401);
       }
     } catch (err) {
-      res.sendStatus(403);
+      res.sendStatus(401);
     }
   } else {
-    res.sendStatus(403);
+    res.sendStatus(401);
   }
 };
 module.exports = {

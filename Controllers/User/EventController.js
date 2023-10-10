@@ -7,7 +7,6 @@ const {
   GetEvent,
   GetUserEvents,
   Update2,
-  GetAllEvents,
   DeleteEvent,
   Update3,
   AddGuest,
@@ -26,6 +25,22 @@ const { EnsureAuthenticated, UserAuthenticated } = require("../../Utils/EnsureAu
 // const upload = new Multer.memoryStorage();
 const prisma = new PrismaClient();
 
+router.get("/UserEvents", EnsureAuthenticated, async (req, res) => {
+  try {
+    
+    let data = await GetUserEvents(req.user.id);
+    if (data) {
+      return res.status(200).send(data);
+    }
+    return res.status(400).send(ResponseDTO("Failed", "Event not found"));
+  } catch (err) {
+    console.log(err);
+    await prisma.$disconnect();
+    return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
+  }
+});
+
+
 router.get("/:id", async (req, res) => {
   try {
     let data = await GetEvent(req.params.id);
@@ -40,19 +55,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.get("/UserEvents/:id", EnsureAuthenticated, async (req, res) => {
-  try {
-    let data = await GetUserEvents(req.params.id);
-    if (data) {
-      return res.status(200).send(data);
-    }
-    return res.status(400).send(ResponseDTO("Failed", "Event not found"));
-  } catch (err) {
-    console.log(err);
-    await prisma.$disconnect();
-    return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
-  }
-});
+
 
 router.get("/guests/:id/:eventId", EnsureAuthenticated, async (req, res) => {
   try {
@@ -99,13 +102,13 @@ router.get("/:id/cohosts", EnsureAuthenticated, async (req, res) => {
 });
 
 router.get(
-  "/GetCoHostGuestCode/:eventId/:userId",
+  "/GetCoHostGuestCode/:eventId/",
   EnsureAuthenticated,
   async (req, res) => {
     try {
       const data = await GetCoHostGuestCode(
         req.params.eventId,
-        req.params.userId
+        req.user.id
       );
       return res.status(200).send(data);
     } catch (err) {
@@ -118,7 +121,7 @@ router.get(
 
 router.post("/", UserAuthenticated, async (req, res) => {
   try {
-    let data = await Create(req.body);
+    let data = await Create(req.body, req.user.id);
     if (data) {
       return res.status(200).send(data);
     }

@@ -48,13 +48,13 @@ router.get("/Get/GuestSentFiles/:id", EnsureAuthenticated, async (req, res) => {
 });
 
 router.get(
-  "/Get/UserUploadedMedia/:eventId/:userId",
+  "/Get/UserUploadedMedia/:eventId/",
   EnsureAuthenticated,
   async (req, res) => {
     try {
       let data = await GetUserUploadedMedia(
         req.params.eventId,
-        req.params.userId
+        req.user.id
       );
       return res.status(200).send(data);
     } catch (err) {
@@ -122,7 +122,7 @@ router.post(
             folder: "eventcircle/media",
           })
           .then((response) => {
-            CreateMany(req.body, response.url);
+            CreateMany(req.body, response.url,req.user.id);
           })
           .catch((err) => console.log(err));
       });
@@ -131,7 +131,7 @@ router.post(
       });
       if (req.body.uploadedBy === "GUEST") {
         const user = await prisma.user.findFirst({
-          where: { id: req.body.userId },
+          where: { id: req.user.id },
         });
 
         const message = `Media : ${user.firstname} sent you some media files`;
@@ -172,7 +172,7 @@ router.post(
 
 router.post("/UploadVideo", UserAuthenticated, async (req, res) => {
   try {
-    let data = await Create(req.body, req.body.files);
+    let data = await Create(req.body, req.body.files, req.user.id);
     req.io.emit(data.guestNotification.userId, data.guestNotification);
     req.io.emit(data.notification.userId, data.notification);
     return res.status(200).send(data.Data);
@@ -185,7 +185,7 @@ router.post("/UploadVideo", UserAuthenticated, async (req, res) => {
 
 router.post("/UploadMessage", UserAuthenticated, async (req, res) => {
   try {
-    let data = await CreateComplimentaryMessage(req.body);
+    let data = await CreateComplimentaryMessage(req.body, req.user.id);
     req.io.emit(data.guestNotification.userId, data.guestNotification);
     req.io.emit(data.notification.userId, data.notification);
     return res.status(200).send(data.Data);

@@ -1,23 +1,5 @@
 const { PrismaClient } = require("@prisma/client");
-const { v4: uuidv4 } = require("uuid");
 const prisma = new PrismaClient();
-
-const Get = async (id) => {
-  const complimentaryItem = await prisma.complimentarygift.findUnique({
-    where: {
-      id: id,
-    },
-  });
-
-  await prisma.$disconnect();
-  return complimentaryItem;
-};
-
-const GetAll = async () => {
-  const complimentaryItems = await prisma.complimentarygift.findMany({});
-  await prisma.$disconnect();
-  return complimentaryItems;
-};
 
 const Create = async (data, image) => {
   let Data = await prisma.complimentarygift.create({
@@ -88,4 +70,4 @@ const Delete = async (id) => {
   return complimentarygift;
 };
 
-module.exports = { Create, Buy, Get, GetAll, Update, Delete };
+module.exports = { Create, Buy,Update, Delete };
