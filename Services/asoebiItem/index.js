@@ -63,7 +63,7 @@ const searchAsoebiItemsByCategorySlug = async (categorySlug) => {
 };
 
 const Create = async (data, image) => {
- 
+  let prisma = new PrismaClient()
   let transaction;
   let result;
   try {

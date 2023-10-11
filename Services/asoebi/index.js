@@ -82,6 +82,7 @@ const Delete = async (id) => {
 };
 
 const Buy = async (data, userId) => {
+  let prisma = new PrismaClient()
   let transaction;
   let result;
   try {

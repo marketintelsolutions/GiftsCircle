@@ -337,6 +337,8 @@ const AddGuest = async (data) => {
 };
 
 const AddCoHost = async (data) => {
+
+  let prisma = new PrismaClient()
   let transaction;
   let result;
   try {
