@@ -57,6 +57,7 @@ const searchGiftItemsByCategorySlug = async (categorySlug) => {
 };
 
 const Create = async (data, image) => {
+  const prisma = new PrismaClient()
   let transaction;
   let result;
   try {
@@ -76,7 +77,7 @@ const Create = async (data, image) => {
     });
     return result;
   } catch (error) {
-    
+    console.log(error)
     if (transaction) {
       console.log("Transaction rolled back due to an error.");
       await prisma.$queryRaw`ROLLBACK;`;

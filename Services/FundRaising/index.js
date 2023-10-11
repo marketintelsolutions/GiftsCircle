@@ -117,6 +117,7 @@ const UpdateAmount = async (data) => {
 };
 
 const Donate = async (data, userId) => {
+  let prisma = new PrismaClient()
   let transaction;
   let result;
   try {

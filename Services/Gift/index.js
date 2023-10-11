@@ -231,6 +231,7 @@ const EnableContribution = async (data, id) => {
 };
 
 const Buy = async (data, userId) => {
+  const prisma = new PrismaClient()
   let transaction;
   let result;
   try {
@@ -306,7 +307,7 @@ const Buy = async (data, userId) => {
       console.log("Transaction rolled back due to an error.");
       await prisma.$queryRaw`ROLLBACK;`;
     }
-  } finally {
+  }  finally {
     await prisma.$disconnect();
   }
 };
