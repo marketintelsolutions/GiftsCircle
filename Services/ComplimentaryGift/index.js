@@ -78,7 +78,7 @@ const Update = async (id, data, image) => {
 };
 
 const Delete = async (id) => {
-  let complimentarygift = await prisma.giftTransaction.delete({
+  let complimentarygift = await prisma.complimentarygift.delete({
     where: {
       id: id,
     },
