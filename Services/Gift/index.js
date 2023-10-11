@@ -183,7 +183,7 @@ const CreateMany = async (data, userId) => {
       (element.status = "UnPaid"),
       (element.amountPaid = 0);
     element.giftitemId = element.giftitemId;
-    element.userId = userId;
+    element.created_by = userId;
 
     return element;
   });
