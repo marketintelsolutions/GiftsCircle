@@ -134,6 +134,10 @@
     {
       "name": "Categories",
       "description": "Apis handling Categories endpoints"
+    },
+    {
+      "name": "Cart",
+      "description": "Apis handling cart endpoints"
     }
   ],
   "paths": {
@@ -3672,6 +3676,116 @@
           }
         }
       }
+    },
+
+    "/cart/GetAll/": {
+      "get": {
+        "description": "",
+        "tags": ["Cart"],
+        "parameters": [
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/cart": {
+      "post": {
+        "description": "Item Type should be one of this [ASOEBI, GIFT, SOURVENIR, COMPLIMENTARYGIFT]",
+        "tags": ["Cart"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "type": "array",
+            "schema": { "$ref": "#/definitions/schema/Cart" }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/cart/{id}": {
+      "put": {
+        "description": "",
+        "tags": ["Cart"],
+        "parameters": [
+          {
+            "name": "quantity",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/schema/CartUpdate" }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/cart//{id}": {
+      "delete": {
+        "description": "",
+        "tags": ["Cart"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -4461,6 +4575,52 @@
         "properties": {
           "name": {
             "type": "string",
+            "required": true
+          }
+        }
+      },
+      "Cart": {
+        "type": "object",
+        "properties": {
+          "itemId": {
+            "type": "string",
+            "required": true
+          },
+          "itemType": {
+            "type": "string",
+            "required": true
+          },
+          "quantity": {
+            "type": "number",
+            "required": true
+          },
+          "amount": {
+            "type": "number",
+            "required": true
+          },
+          "title": {
+            "type": "string",
+            "required": true
+          },
+          "details": {
+            "type": "string",
+            "required": true
+          },
+          "weight": {
+            "type": "number",
+            "required": true
+          },
+          "image": {
+            "type": "string",
+            "required": true
+          }
+        }
+      },
+      "CartUpdate": {
+        "type": "object",
+        "properties": {
+          "quantity": {
+            "type": "number",
             "required": true
           }
         }

@@ -48,6 +48,7 @@ model user {
   deliveryTransactions  deliveryTransactions[]
   Guests                Guests[]
   gift                  gift[]
+  Cart                  Cart[]
 
   @@index([email])
 }
@@ -541,6 +542,21 @@ model Sms {
   @@index([sender])
 }
 
+model Cart {
+  id         String         @id @default(uuid())
+  user       user           @relation(fields: [userId], references: [id])
+  userId     String
+  itemId     String
+  itemType   MarketCategory
+  quantity   Int
+  title      String?        @db.VarChar(255)
+  image      String?        @db.VarChar(255)
+  details    String?        @db.VarChar
+  amount     Decimal        @db.Decimal(32, 16)
+  weight     Decimal        @db.Decimal(32, 16)
+  created_at DateTime       @default(now())
+}
+
 enum Status {
   PAID
   COMPLETED
@@ -559,6 +575,7 @@ enum MarketCategory {
   ASOEBI
   GIFT
   SOURVENIR
+  COMPLIMENTARYGIFT
 }
 
 enum Role {

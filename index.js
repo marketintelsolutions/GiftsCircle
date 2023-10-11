@@ -81,7 +81,8 @@ app.use(
   require("./Controllers/User/FundRaisingController")
 );
 app.use("/api/", require("./Controllers/User/AuthController"));
-app.use("/api/category", require("./Controllers/User/CategoryController"));
+app.use("/api/category/", require("./Controllers/User/CategoryController"));
+app.use("/api/cart/", require("./Controllers/User/CartController"));
 
 //apis for admin
 app.use("/api/admin/user/", require("./Controllers/Admin/UserController"));
