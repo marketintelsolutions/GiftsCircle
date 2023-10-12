@@ -67,10 +67,6 @@ router.post("/create", UserAuthenticated, async (req, res) => {
     let data = await Create(req.body, req.user.id);
     if (data) {
       return res.status(200).send(data);
-    } else {
-      return res
-        .status(400)
-        .send(ResponseDTO("Failed", "Delivery Details already Exists"));
     }
   } catch (err) {
     console.log(err);
