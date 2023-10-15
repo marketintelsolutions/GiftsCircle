@@ -15,7 +15,7 @@ const GetMarketTransactions = async (id) => {
 const BuyMarketItems = async (data, userId) => {
   data.map((ele) => {
     ele.userId = userId
-    ele.amountPaid = parseInt(ele.amount)
+    ele.amountPaid = parseInt(ele.amountPaid)
     return ele;
   })
   let Data = await prisma.marketGiftTransaction.createMany({
