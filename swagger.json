@@ -4450,7 +4450,7 @@
             "required": true
           },
 
-          "amount": {
+          "amountPaid": {
             "type": "number",
             "required": true
           },
