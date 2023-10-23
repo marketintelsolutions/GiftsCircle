@@ -340,7 +340,7 @@ model giftTransaction {
   complimentaryGift   complimentarygift? @relation(fields: [complimentarygiftId], references: [id], onDelete: SetNull)
   amount              Int
   giftId              String?            @db.VarChar(255)
-  purchasedBy         user               @relation(fields: [userId], references: [id])
+  purchasedBy         user              @relation(fields: [userId], references: [id], onDelete: Cascade)
   quantity            Int
   delivered           Boolean            @default(false)
   eventId             String             @db.VarChar(50)

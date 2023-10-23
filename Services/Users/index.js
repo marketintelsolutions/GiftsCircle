@@ -129,6 +129,7 @@ const GetUser = async (id) => {
 
   await prisma.$disconnect();
   return user;
+  
 };
 
 const GetUsers = async () => {

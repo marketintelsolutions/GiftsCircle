@@ -19,6 +19,7 @@ router.get("/users/GetAll", AdminAuthenticated, async (req, res) => {
 
 router.delete("/:id", AdminAuthenticated, async (req, res) => {
   try {
+    console.log(req.params.id)
     await DeleteUser(req.params.id);
     return res
       .status(200)
@@ -29,6 +30,7 @@ router.delete("/:id", AdminAuthenticated, async (req, res) => {
         )
       );
   } catch (err) {
+    console.log(err)
     await prisma.$disconnect();
     return res.status(400).send(ResponseDTO("Failed", "User not found"));
   }
