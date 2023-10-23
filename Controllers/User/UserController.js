@@ -4,8 +4,6 @@ const ResponseDTO = require("../../DTO/Response");
 const {
   ChangePassword,
   GetUser,
-  GetUsers,
-  DeleteUser,
   UpdateUser,
   GetUserNotifications,
   UpdateNotifications,
