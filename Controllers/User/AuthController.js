@@ -7,6 +7,7 @@ const {
   SendVerifyEmail,
   VerifyOtp,
   SendResetPasswordEmail,
+  RefreshToken,
 } = require("../../Services/Auth");
 const { Create, SetPassword } = require("../../Services/Users");
 const router = express.Router();
@@ -130,6 +131,21 @@ router.post("/sendResetEmail", async (req, res) => {
         .send(ResponseDTO("Success", "Email sent successfully"));
     } else {
       return res.status(400).send(ResponseDTO("Failed", "User not found"));
+    }
+  } catch (err) {
+    console.log(err);
+    await prisma.$disconnect();
+    return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
+  }
+});
+
+router.post("/refreshToken", async (req, res) => {
+  try {
+    let data = await RefreshToken(req.body);
+    if (data) {
+      return res.status(200).send(data);
+    } else {
+      return res.status(400).send(ResponseDTO("Failed", "Tokens are invalid"));
     }
   } catch (err) {
     console.log(err);

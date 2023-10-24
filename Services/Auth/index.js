@@ -5,6 +5,9 @@ const {
   comparePassword,
   GenerateOtp,
   GenerateToken,
+  GenerateRefreshToken,
+  VerifyToken,
+  VerifyRefreshToken,
 } = require("../../Utils/HelperFunctions");
 
 const prisma = new PrismaClient();
@@ -20,10 +23,11 @@ const Login = async (data) => {
     if (checkPasssword) {
       await prisma.$disconnect();
       let token = GenerateToken(data.email, user.id, "USER", "1h");
+      let refreshToken = GenerateRefreshToken(user.email);
       let returnedUser = { ...user };
       delete returnedUser.password;
 
-      return { token, user:returnedUser };
+      return { token, refreshToken, user: returnedUser };
     }
 
     return null;
@@ -40,11 +44,12 @@ const GoogleSignIn = async (data) => {
 
   if (user) {
     let token = GenerateToken(user.email, user.id, "USER", "1h");
+    let refreshToken = GenerateRefreshToken(user.email);
     await prisma.$disconnect();
     let returnedUser = { ...user };
     delete returnedUser.password;
 
-    return { token, user:returnedUser };
+    return { token, refreshToken, user: returnedUser };
   }
   return null;
 };
@@ -125,10 +130,44 @@ const SendResetPasswordEmail = async (email) => {
   return null;
 };
 
+const RefreshToken = async (data) => {
+  const access_token = VerifyToken(data.access_token);
+  const refreshToken = VerifyRefreshToken(data.refresh_token);
+  const currentDate = new Date().getTime();
+
+  if (
+    access_token.email !== refreshToken.email ||
+    refreshToken.exp <= currentDate / 1000
+  ) {
+    return null;
+  }
+  if (access_token.role === "USER") {
+    const user = await prisma.user.findFirst({
+      where: { email: access_token.email },
+    });
+    if (!user) {
+      return null;
+    } else {
+      const token = GenerateToken(user.email, user.id, user.role, "1h");
+      return { access_token: token };
+    }
+  } else {
+    const admin = await prisma.admin.findFirst({
+      where: { email: access_token.email },
+    });
+    if (!admin) {
+      return null;
+    } else {
+      const token = GenerateToken(admin.email, admin.id, admin.role, "1h");
+      return { access_token: token };
+    }
+  }
+};
 module.exports = {
   Login,
   GoogleSignIn,
   VerifyOtp,
   SendVerifyEmail,
   SendResetPasswordEmail,
+  RefreshToken,
 };

@@ -317,6 +317,28 @@
         }
       }
     },
+    "/refreshToken": {
+      "post": {
+        "description": "",
+        "tags": ["Auth"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/schema/RefreshToken" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
     "/admin/login": {
       "post": {
         "description": "",
@@ -3882,6 +3904,19 @@
             "required": true
           },
           "firstname": {
+            "type": "string",
+            "required": true
+          }
+        }
+      },
+      "RefreshToken": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "required": true
+          },
+          "refresh_token": {
             "type": "string",
             "required": true
           }
