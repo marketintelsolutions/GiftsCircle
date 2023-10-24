@@ -21,8 +21,21 @@ const GenerateToken = (email, id, role, duration) => {
   return token;
 };
 
+const GenerateRefreshToken = (email) => {
+  const token = jwt.sign({ email }, process.env.REFRESH_JWT_KEY, {
+    algorithm: "HS256",
+    expiresIn: "1d",
+  });
+  return token;
+};
+
 const VerifyToken = (token) => {
   let payload = jwt.verify(token, process.env.JWT_KEY);
+  return payload;
+};
+
+const VerifyRefreshToken = (token) => {
+  let payload = jwt.verify(token, process.env.REFRESH_JWT_KEY);
   return payload;
 };
 
@@ -59,13 +72,15 @@ const CreateGuestId = () => {
 };
 
 const CreateDefaultPassword = () => {
-  return Id_Generator(8, true, true, false, true)
-}
+  return Id_Generator(8, true, true, false, true);
+};
 
 module.exports = {
   comparePassword,
   GenerateToken,
+  GenerateRefreshToken,
   VerifyToken,
+  VerifyRefreshToken,
   GenerateOtp,
   CreateCoHostId,
   CreateEventId,
