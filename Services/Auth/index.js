@@ -22,7 +22,7 @@ const Login = async (data) => {
     let checkPasssword = await comparePassword(data.password, user.password);
     if (checkPasssword) {
       await prisma.$disconnect();
-      let token = GenerateToken(data.email, user.id, "USER", "5m");
+      let token = GenerateToken(data.email, user.id, "USER", "1m");
       let refreshToken = GenerateRefreshToken(user.email);
       let returnedUser = { ...user };
       delete returnedUser.password;
@@ -43,7 +43,7 @@ const GoogleSignIn = async (data) => {
   });
 
   if (user) {
-    let token = GenerateToken(user.email, user.id, "USER", "5m");
+    let token = GenerateToken(user.email, user.id, "USER", "1m");
     let refreshToken = GenerateRefreshToken(user.email);
     await prisma.$disconnect();
     let returnedUser = { ...user };
