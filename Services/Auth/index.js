@@ -13,7 +13,7 @@ const {
 const prisma = new PrismaClient();
 
 const Login = async (data) => {
-  const user = await prisma.user.findFirst({
+  let user = await prisma.user.findFirst({
     where: {
       email: data.email,
     },
@@ -22,12 +22,20 @@ const Login = async (data) => {
     let checkPasssword = await comparePassword(data.password, user.password);
     if (checkPasssword) {
       await prisma.$disconnect();
-      let token = GenerateToken(data.email, user.id, "USER", "1m");
+      let accessToken = GenerateToken(data.email, user.id, "USER", "1m");
       let refreshToken = GenerateRefreshToken(user.email);
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          refreshToken: refreshToken,
+        },
+      });
+      await prisma.$disconnect();
       let returnedUser = { ...user };
       delete returnedUser.password;
+      delete returnedUser.refreshToken;
 
-      return { token, refreshToken, user: returnedUser };
+      return { accessToken, refreshToken, user: returnedUser };
     }
 
     return null;
@@ -36,20 +44,27 @@ const Login = async (data) => {
 };
 
 const GoogleSignIn = async (data) => {
-  const user = await prisma.user.findFirst({
+  let user = await prisma.user.findFirst({
     where: {
       email: data.email,
     },
   });
 
   if (user) {
-    let token = GenerateToken(user.email, user.id, "USER", "1m");
-    let refreshToken = GenerateRefreshToken(user.email);
+    let accessToken = GenerateToken(user.email, user.id, "USER", "1m");
+    let refreshToken = GenerateRefreshToken(user.email, user.role);
+    user = await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        refreshToken: refreshToken,
+      },
+    });
     await prisma.$disconnect();
     let returnedUser = { ...user };
     delete returnedUser.password;
+    delete returnedUser.refreshToken;
 
-    return { token, refreshToken, user: returnedUser };
+    return { accessToken, refreshToken, user: returnedUser };
   }
   return null;
 };
@@ -131,37 +146,40 @@ const SendResetPasswordEmail = async (email) => {
 };
 
 const RefreshToken = async (data) => {
-  const access_token = VerifyToken(data.access_token);
   const refreshToken = VerifyRefreshToken(data.refresh_token);
   const currentDate = new Date().getTime();
 
-  if (
-    access_token.email !== refreshToken.email ||
-    refreshToken.exp <= currentDate / 1000
-  ) {
+  if (refreshToken.exp <= currentDate / 1000) {
     return null;
   }
-  if (access_token.role === "USER") {
-    const user = await prisma.user.findFirst({
-      where: { email: access_token.email },
-    });
-    if (!user) {
-      return null;
-    } else {
-      const token = GenerateToken(user.email, user.id, user.role, "1h");
-      return { access_token: token };
-    }
+
+  const user = await prisma.user.findFirst({
+    where: { email: data.email },
+  });
+  if (!user || data.refresh_token !== user.refreshToken) {
+    return null;
   } else {
-    const admin = await prisma.admin.findFirst({
-      where: { email: access_token.email },
-    });
-    if (!admin) {
-      return null;
-    } else {
-      const token = GenerateToken(admin.email, admin.id, admin.role, "1h");
-      return { access_token: token };
-    }
+    const token = GenerateToken(user.email, user.id, user.role, "1h");
+    return { access_token: token };
   }
+};
+
+const Logout = async (id) => {
+  const user = await prisma.user.findUniqueOrThrow({
+    where: { id: id },
+  });
+
+  const result = await prisma.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      refreshToken: null,
+    },
+  });
+
+  await prisma.$disconnect()
+  return result
 };
 module.exports = {
   Login,
@@ -170,4 +188,5 @@ module.exports = {
   SendVerifyEmail,
   SendResetPasswordEmail,
   RefreshToken,
+  Logout
 };

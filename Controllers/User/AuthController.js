@@ -8,8 +8,10 @@ const {
   VerifyOtp,
   SendResetPasswordEmail,
   RefreshToken,
+  Logout,
 } = require("../../Services/Auth");
 const { Create, SetPassword } = require("../../Services/Users");
+const { UserAuthenticated } = require("../../Utils/EnsureAuthenticated");
 const router = express.Router();
 const prisma = new PrismaClient();
 
@@ -146,6 +148,20 @@ router.post("/refreshToken", async (req, res) => {
       return res.status(200).send(data);
     } else {
       return res.status(400).send(ResponseDTO("Failed", "Tokens are invalid"));
+    }
+  } catch (err) {
+    console.log(err);
+    await prisma.$disconnect();
+    return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
+  }
+});
+
+router.post("/logout", UserAuthenticated, async (req, res) => {
+  try {
+    let data = await Logout(req.user.id);
+
+    if (data) {
+      return res.sendStatus(200);
     }
   } catch (err) {
     console.log(err);
