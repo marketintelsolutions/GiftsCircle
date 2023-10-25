@@ -36,6 +36,7 @@ model user {
   emailVerified         Boolean?
   password              String                  @db.VarChar(255)
   role                  Role                    @default(USER)
+  refreshToken          String?                 @db.VarChar(255)
   created_at            DateTime                @default(now())
   updated_at            DateTime?               @updatedAt
   deleted_at            DateTime?
@@ -340,7 +341,7 @@ model giftTransaction {
   complimentaryGift   complimentarygift? @relation(fields: [complimentarygiftId], references: [id], onDelete: SetNull)
   amount              Int
   giftId              String?            @db.VarChar(255)
-  purchasedBy         user              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  purchasedBy         user               @relation(fields: [userId], references: [id], onDelete: Cascade)
   quantity            Int
   delivered           Boolean            @default(false)
   eventId             String             @db.VarChar(50)
