@@ -24,7 +24,7 @@ const GenerateToken = (email, id, role, duration) => {
 const GenerateRefreshToken = (email, role) => {
   const token = jwt.sign({ email, role: role}, process.env.REFRESH_JWT_KEY, {
     algorithm: "HS256",
-    expiresIn: "1d",
+    expiresIn: "3m",
   });
   return token;
 };

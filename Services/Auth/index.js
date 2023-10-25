@@ -6,7 +6,6 @@ const {
   GenerateOtp,
   GenerateToken,
   GenerateRefreshToken,
-  VerifyToken,
   VerifyRefreshToken,
 } = require("../../Utils/HelperFunctions");
 
