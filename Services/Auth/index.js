@@ -158,7 +158,7 @@ const RefreshToken = async (data) => {
   if (!user || data.refresh_token !== user.refreshToken) {
     return null;
   } else {
-    const token = GenerateToken(user.email, user.id, user.role, "1h");
+    const token = GenerateToken(user.email, user.id, user.role, "1m");
     return { access_token: token };
   }
 };
