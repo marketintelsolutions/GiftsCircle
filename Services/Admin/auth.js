@@ -4,12 +4,14 @@ const {
   comparePassword,
   GenerateToken,
   CreateDefaultPassword,
+  VerifyRefreshToken,
+  GenerateRefreshToken,
 } = require("../../Utils/HelperFunctions");
 const ResponseDTO = require("../../DTO/Response");
 const prisma = new PrismaClient();
 
 const Login = async (data) => {
-  const admin = await prisma.admin.findFirst({
+  let admin = await prisma.admin.findFirst({
     where: {
       email: data.email,
     },
@@ -20,9 +22,23 @@ const Login = async (data) => {
       await prisma.$disconnect();
       if (admin.role === "SUPERADMIN") {
         let token = GenerateToken(data.email, admin.id, "SUPERADMIN", "4h");
+        let refreshToken = GenerateRefreshToken(admin.email, admin.role);
+        admin = await prisma.admin.update({
+          where: { id: admin.id },
+          data: {
+            refreshToken: refreshToken,
+          },
+        });
         return { token, admin };
       } else {
         let token = GenerateToken(data.email, admin.id, "ADMIN", "4h");
+        let refreshToken = GenerateRefreshToken(admin.email, admin.role);
+        admin = await prisma.admin.update({
+          where: { id: admin.id },
+          data: {
+            refreshToken: refreshToken,
+          },
+        });
         return { token, admin };
       }
     }
@@ -140,6 +156,43 @@ const DeleteAdmin = async (id) => {
   return admin;
 };
 
+const RefreshToken = async (data) => {
+  const refreshToken = VerifyRefreshToken(data.refresh_token);
+  const currentDate = new Date().getTime();
+
+  if (refreshToken.exp <= currentDate / 1000) {
+    return null;
+  }
+
+  const admin = await prisma.admin.findFirst({
+    where: { email: data.email },
+  });
+  if (!admin || data.refresh_token !== admin.refreshToken) {
+    return null;
+  } else {
+    const token = GenerateToken(admin.email, admin.id, admin.role, "1h");
+    return { access_token: token };
+  }
+};
+
+const Logout = async (id) => {
+  const admin = await prisma.admin.findUniqueOrThrow({
+    where: { id: id },
+  });
+
+  const result = await prisma.admin.update({
+    where: {
+      id: admin.id,
+    },
+    data: {
+      refreshToken: null,
+    },
+  });
+
+  await prisma.$disconnect()
+  return result
+};
+
 module.exports = {
   Login,
   Create,
@@ -148,4 +201,6 @@ module.exports = {
   GetAdmin,
   GetAdmins,
   SetPassword,
+  RefreshToken,
+  Logout
 };

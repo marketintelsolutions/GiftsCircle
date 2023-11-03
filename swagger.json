@@ -551,6 +551,55 @@
         }
       }
     },
+    "/admin/refreshToken": {
+      "post": {
+        "description": "",
+        "tags": ["Admin_Auth"],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/schema/RefreshToken" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/logout": {
+      "post": {
+        "description": "",
+        "tags": ["Admin_Auth"],
+        "parameters": [
+         
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
 
     "/user/": {
       "get": {
