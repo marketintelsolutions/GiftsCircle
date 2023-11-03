@@ -9,6 +9,8 @@ const {
   UpdateAdmin,
   DeleteAdmin,
   SetPassword,
+  Logout,
+  RefreshToken,
 } = require("../../Services/Admin/auth");
 const {
   SuperAdminAuthenticated,
@@ -140,4 +142,32 @@ router.delete("/:id", SuperAdminAuthenticated, async (req, res) => {
   }
 });
 
+router.post("/refreshToken", async (req, res) => {
+  try {
+    let data = await RefreshToken(req.body);
+    if (data) {
+      return res.status(200).send(data);
+    } else {
+      return res.status(400).send(ResponseDTO("Failed", "Tokens are invalid"));
+    }
+  } catch (err) {
+    console.log(err);
+    await prisma.$disconnect();
+    return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
+  }
+});
+
+router.post("/logout", AdminAuthenticated, async (req, res) => {
+  try {
+    let data = await Logout(req.user.id);
+
+    if (data) {
+      return res.sendStatus(200);
+    }
+  } catch (err) {
+    console.log(err);
+    await prisma.$disconnect();
+    return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
+  }
+});
 module.exports = router;
