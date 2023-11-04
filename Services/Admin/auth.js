@@ -21,7 +21,7 @@ const Login = async (data) => {
     if (checkPasssword) {
       await prisma.$disconnect();
       if (admin.role === "SUPERADMIN") {
-        let token = GenerateToken(data.email, admin.id, "SUPERADMIN", "1m");
+        let token = GenerateToken(data.email, admin.id, "SUPERADMIN", "4h");
         let refreshToken = GenerateRefreshToken(admin.email, admin.role);
         admin = await prisma.admin.update({
           where: { id: admin.id },
@@ -31,7 +31,7 @@ const Login = async (data) => {
         });
         return { token, admin };
       } else {
-        let token = GenerateToken(data.email, admin.id, "ADMIN", "1m");
+        let token = GenerateToken(data.email, admin.id, "ADMIN", "4h");
         let refreshToken = GenerateRefreshToken(admin.email, admin.role);
         admin = await prisma.admin.update({
           where: { id: admin.id },
@@ -170,7 +170,7 @@ const RefreshToken = async (data) => {
   if (!admin || data.refresh_token !== admin.refreshToken) {
     return null;
   } else {
-    const token = GenerateToken(admin.email, admin.id, admin.role, "1m");
+    const token = GenerateToken(admin.email, admin.id, admin.role, "1h");
     return { access_token: token };
   }
 };
