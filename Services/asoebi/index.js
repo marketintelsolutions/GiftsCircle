@@ -1,4 +1,4 @@
-const { PrismaClient } = require("@prisma/client");
+const { PrismaClient, TransactionType } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const Get = async (id) => {
@@ -29,7 +29,7 @@ const GetEventAsoebi = async (id) => {
   return asoebis;
 };
 
-const Create = async (data, userId) => {
+const Create = async (data) => {
   let Data = await prisma.asoebi.create({
     data: {
       quantity: 0,
@@ -160,9 +160,10 @@ const Buy = async (data, userId) => {
 };
 
 const GetAsoebiBuyers = async (id) => {
-  let buyers = await prisma.asoebiTransaction.findMany({
+  let buyers = await prisma.transaction.findMany({
     where: {
       eventId: id,
+      type: TransactionType.ASOEBI
     },
     select: {
       amount: true,

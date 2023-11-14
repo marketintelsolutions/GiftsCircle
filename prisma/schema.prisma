@@ -51,6 +51,7 @@ model user {
   Guests                Guests[]
   gift                  gift[]
   Cart                  Cart[]
+  Transaction           Transaction[]
 
   @@index([email])
 }
@@ -570,6 +571,36 @@ model Contact {
   @@index([email])
 }
 
+model Transaction {
+  id          String            @id @default(uuid())
+  type        TransactionType
+  details     Json
+  amount      Int
+  purchasedBy user              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quantity    Int
+  status      TransactionStatus
+  referenceId String?           @db.VarChar(50)
+  delivered   Boolean           @default(false)
+  eventId     String?           @db.VarChar(50)
+  userId      String            @db.VarChar(255)
+  created_at  DateTime          @default(now())
+  updated_at  DateTime?         @updatedAt
+
+  @@index([eventId, userId])
+  @@index([eventId], type: SpGist)
+  @@index([userId], type: SpGist)
+}
+
+enum TransactionType {
+  GIFT
+  MARKET_ASOEBI
+  MARKET_GIFT
+  MARKET_SOURVENIR
+  MARKET_COMPLIMENTARYGIFT
+  ASOEBI
+  FUNDRAISING
+}
+
 enum Status {
   PAID
   COMPLETED
@@ -624,4 +655,10 @@ enum NOTIFICATION {
   MEDIA
   DELIVERY
   ASOEBI
+}
+
+enum TransactionStatus {
+  PENDING
+  SUCCESS
+  FAILURE
 }
