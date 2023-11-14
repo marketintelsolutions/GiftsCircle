@@ -83,6 +83,7 @@ app.use(
 app.use("/api/", require("./Controllers/User/AuthController"));
 app.use("/api/category/", require("./Controllers/User/CategoryController"));
 app.use("/api/cart/", require("./Controllers/User/CartController"));
+app.use("/api/contact/", require("./Controllers/User/ContactController"));
 
 //apis for admin
 app.use("/api/admin/user/", require("./Controllers/Admin/UserController"));
@@ -122,7 +123,10 @@ app.use(
   "/api/admin/category",
   require("./Controllers/Admin/CategoryController")
 );
+app.use("/api/admin/contact", require("./Controllers/Admin/ContactController"));
 app.use("/api/admin/", require("./Controllers/Admin/AuthController"));
+
+app.use("/api/webhook/", require('./Controllers/webhook/'));
 
 app.use("/api/docs/", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 

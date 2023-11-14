@@ -15,7 +15,7 @@ model admin {
   password        String    @db.VarChar(255)
   defaultPassword String    @default("") @db.VarChar(255)
   image           String    @db.VarChar(255)
-   refreshToken          String?                 @db.VarChar(255)
+  refreshToken    String?   @db.VarChar(255)
   updated_at      DateTime? @updatedAt
   created_at      DateTime? @default(now())
 
@@ -557,6 +557,17 @@ model Cart {
   amount     Decimal        @db.Decimal(32, 16)
   weight     Decimal        @db.Decimal(32, 16)
   created_at DateTime       @default(now())
+}
+
+model Contact {
+  id         String   @id @default(uuid())
+  name       String   @db.VarChar(50)
+  email      String   @db.VarChar(100)
+  subject    String   @db.VarChar
+  message    String   @db.VarChar
+  created_at DateTime @default(now())
+
+  @@index([email])
 }
 
 enum Status {

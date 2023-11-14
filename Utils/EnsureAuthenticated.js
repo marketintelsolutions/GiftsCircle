@@ -1,4 +1,5 @@
 const { VerifyToken } = require("./HelperFunctions");
+const crypto = require('crypto');
 
 const EnsureAuthenticated = (req, res, next) => {
   const header = req.headers["authorization"];
@@ -88,9 +89,23 @@ const SuperAdminAuthenticated = (req, res, next) => {
     res.sendStatus(401);
   }
 };
+
+const ValidateWebhook = (req, res, next) => {
+  const secret = process.env.PAYSTACK_TEST_KEY;
+  const hash = crypto
+    .createHmac("sha512", secret)
+    .update(JSON.stringify(req.body))
+    .digest("hex");
+  if (hash == req.headers["x-paystack-signature"]) {
+    next();
+  } else {
+    res.sendStatus(401);
+  }
+};
 module.exports = {
   EnsureAuthenticated,
   UserAuthenticated,
   AdminAuthenticated,
   SuperAdminAuthenticated,
+  ValidateWebhook,
 };
