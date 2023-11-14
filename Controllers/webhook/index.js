@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const { ValidateWebhook } = require("../../Utils/EnsureAuthenticated");
+const { TransformPayload, PayIn } = require("../../Services/Webhook");
 
 router.post("/payment", ValidateWebhook, async (req, res) => {
   try {
-    console.log(req.body);
-    res.send(200);
+    PayIn(req.body);
+    res.sendStatus(200);
   } catch (err) {
     console.log(err);
 
