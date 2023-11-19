@@ -69,55 +69,46 @@ const GoogleSignIn = async (data) => {
 };
 
 const SendVerifyEmail = async (data) => {
-  try {
-    const user = await prisma.user.findFirst({
-      where: {
-        email: data.email,
-      },
-    });
+  const user = await prisma.user.findFirst({
+    where: {
+      email: data.email,
+    },
+  });
 
-    if (user) {
-      return null;
-    }
-
-    let otp = GenerateOtp();
-    var expires = new Date(Date.now());
-    expires.setMinutes(expires.getMinutes() + 10);
-
-    await prisma.otp.create({
-      data: {
-        user: data.email,
-        code: otp,
-        expires: expires,
-      },
-    });
-
-    let result = await SendEmail(data.email, data.firstname, otp);
-    return result.response;
-  } catch (error) {
-    console.log(error);
+  if (user) {
+    return null;
   }
+
+  let otp = GenerateOtp();
+  var expires = new Date(Date.now());
+  expires.setMinutes(expires.getMinutes() + 10);
+
+  await prisma.otp.create({
+    data: {
+      user: data.email,
+      code: otp,
+      expires: expires,
+    },
+  });
+
+  let result = await SendEmail(data.email, data.firstname, otp);
+  return result.response;
 };
 
 const VerifyOtp = async (data) => {
-  try {
-    const otp = await prisma.otp.findFirst({
-      where: { code: data.code },
-    });
-    if (otp && data.user === otp.user) {
-      var currentDate = new Date();
-      var expires = otp.expires;
-      if (currentDate < expires) {
-        return ResponseDTO("Success", "Email has been verified");
-      } else {
-        return ResponseDTO("Failed", "Otp has Expired");
-      }
+  const otp = await prisma.otp.findFirst({
+    where: { code: data.code },
+  });
+  if (otp && data.user === otp.user) {
+    var currentDate = new Date();
+    var expires = otp.expires;
+    if (currentDate < expires) {
+      return ResponseDTO("Success", "Email has been verified");
+    } else {
+      return ResponseDTO("Failed", "Otp has Expired");
     }
-    return ResponseDTO("Failed", "Otp is Invalid");
-  } catch (error) {
-    console.log(error);
-    return ResponseDTO("Failed", "Request Failed");
   }
+  return ResponseDTO("Failed", "Otp is Invalid");
 };
 
 const SendResetPasswordEmail = async (email) => {
@@ -128,18 +119,14 @@ const SendResetPasswordEmail = async (email) => {
   });
 
   if (user) {
-    try {
-      let token = GenerateToken(email, "USER", "30m");
-      let url =
-        process.env.env === "development"
-          ? "http://localhost:3000"
-          : "https://giftscircle.netlify.app";
-      let data = `${url}/change_password?token=${token}`;
-      let result = await SendResetEmail(email, user.firstname, data);
-      return result.response;
-    } catch (error) {
-      console.log(error);
-    }
+    let token = GenerateToken(email, "USER", "30m");
+    let url =
+      process.env.env === "development"
+        ? "http://localhost:3000"
+        : "https://giftscircle.netlify.app";
+    let data = `${url}/change_password?token=${token}`;
+    let result = await SendResetEmail(email, user.firstname, data);
+    return result.response;
   }
   return null;
 };
@@ -177,8 +164,8 @@ const Logout = async (id) => {
     },
   });
 
-  await prisma.$disconnect()
-  return result
+  await prisma.$disconnect();
+  return result;
 };
 module.exports = {
   Login,
@@ -187,5 +174,5 @@ module.exports = {
   SendVerifyEmail,
   SendResetPasswordEmail,
   RefreshToken,
-  Logout
+  Logout,
 };
