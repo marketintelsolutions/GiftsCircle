@@ -119,7 +119,7 @@ const SendResetPasswordEmail = async (email) => {
   });
 
   if (user) {
-    let token = GenerateToken(email, "USER", "30m");
+    let token = GenerateToken(email, user.id, "USER", "30m");
     let url =
       process.env.env === "development"
         ? "http://localhost:3000"

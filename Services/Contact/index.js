@@ -28,7 +28,7 @@ const Create = async (data) => {
       name: data.name,
       email: data.email,
       message: data.message,
-      subject: data.subject,
+      phone: data.phone,
     },
   });
   await prisma.$disconnect();
