@@ -17,10 +17,17 @@ const GetAllTransactions = async (
   const skip = (page - 1) * perPage;
   const trans = await prisma.transaction.findMany({
     where: query,
-    include:  {
-        purchasedBy:true
+    include: {
+      purchasedBy: {
+        select: {
+          firstname: true,
+          lastname: true,
+          email: true,
+          id: true,
+        },
+      },
     },
-    take: 20,
+    take: parseInt(perPage),
     orderBy: [
       {
         created_at: "desc",
@@ -28,6 +35,8 @@ const GetAllTransactions = async (
     ],
     skip: skip,
   });
+
+  console.log(trans)
 
   await prisma.$disconnect();
 
@@ -39,8 +48,8 @@ const Get = async (id) => {
     where: {
       id: id,
     },
-    include:  {
-        purchasedBy:true
+    include: {
+      purchasedBy: true,
     },
   });
 
@@ -49,4 +58,4 @@ const Get = async (id) => {
   return trans;
 };
 
-module.exports = {Get, GetAllTransactions };
+module.exports = { Get, GetAllTransactions };
