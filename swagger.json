@@ -146,6 +146,10 @@
     {
       "name": "Admin_Contact",
       "description": "Apis handling Admin Contact Messages endpoints"
+    },
+    {
+      "name": "Transactions",
+      "description": "Apis handling Transaction endpoints"
     }
   ],
   "paths": {
@@ -3947,6 +3951,74 @@
             "in":"query",
             "required":false,
           "type":"number"          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+
+    "/admin/transaction/": {
+      "get": {
+        "description": "",
+        "tags": ["Transactions"],
+        "parameters": [
+          {
+            "name":"page",
+            "in":"query",
+            "required":false,
+          "type":"number"          },
+          {
+            "name":"perPage",
+            "in":"query",
+            "required":false,
+          "type":"number"          },
+          {
+            "name":"type",
+            "in":"query",
+            "required":false,
+          "type":"string"          },{
+            "name":"status",
+            "in":"query",
+            "required":false,
+          "type":"string"          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/transaction/{id}": {
+      "get": {
+        "description": "",
+        "tags": ["Transactions"],
+        "parameters": [
+          {
+            "name":"id",
+            "in":"path",
+            "required":true,
+          "type":"string"          }
+          
         ],
         "security": [
           {
