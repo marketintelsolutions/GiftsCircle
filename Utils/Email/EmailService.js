@@ -62,4 +62,6 @@ const SendResetEmail = async (reciever, name, data) => {
   return request;
 };
 
+
+
 module.exports = { SendEmail, SendResetEmail };

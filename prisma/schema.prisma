@@ -547,7 +547,7 @@ model Sms {
 
 model Cart {
   id         String         @id @default(uuid())
-  user       user           @relation(fields: [userId], references: [id])
+  user       user           @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     String
   itemId     String
   itemType   MarketCategory
