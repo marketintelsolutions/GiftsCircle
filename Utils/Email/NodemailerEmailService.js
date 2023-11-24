@@ -80,4 +80,34 @@ const AdminSetPasswordEmail = (adminName, defaultPassword, email, token) => {
   });
 };
 
-module.exports = { SendEventPublishEmail, AdminSetPasswordEmail };
+const AdminContactEmail = async (data) => {
+ const dateobj =   new Date(data.created_at);
+ const formattedTime = dateobj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+ var options = { day: 'numeric', month: 'long', year: 'numeric' };
+var formattedDate = dateobj.toLocaleDateString([], options);
+ 
+  var mailOptions = {
+    from: '"EventCircle" <godwillonyewuchii@gmail.com>',
+    to: data.email, 
+    subject: "Contact Message",
+    template: "contact", 
+    context: {
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      message: data.message,
+      date: formattedDate,
+      time: formattedTime,
+    },
+  };
+
+  // trigger the sending of the E-mail
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      return console.log(error);
+    }
+    console.log("Message sent: " + info.response);
+  });
+}
+
+module.exports = { SendEventPublishEmail, AdminSetPasswordEmail, AdminContactEmail };

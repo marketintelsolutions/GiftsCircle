@@ -4,7 +4,6 @@ const {
   TransactionStatus,
   NOTIFICATION,
 } = require("@prisma/client");
-const { tryCatch } = require("bullmq");
 
 const TransformPayload = (payload) => {
   const { event, data } = payload;
@@ -45,14 +44,8 @@ const PayIn = async (payload) => {
       case "FUNDRAISING":
         result = await HandleFundRaisingTrans(data);
         break;
-      case "MARKET_ASOEBI":
-        result = await HandleMarketAsoebiTrans(data);
-        break;
-      case "MARKET_GIFT":
-        result = await HandleMarketGiftTrans(data);
-        break;
-      case "MARKET_SOURVENIR":
-        result = await HandleMarketSourvenirTrans(data);
+      case "MARKET":
+        result = await HandleMarketTrans(data);
         break;
       default:
         break;
@@ -335,7 +328,7 @@ const HandleFundRaisingTrans = async (payload) => {
   }
 };
 
-const HandleMarketAsoebiTrans = async (payload) => {
+const HandleMarketTrans = async (payload) => {
   const referenceId =
     payload.products.length === 1 ? payload.products[0].id : null;
   let prisma = new PrismaClient();
@@ -349,134 +342,9 @@ const HandleMarketAsoebiTrans = async (payload) => {
       });
       if (!user) throw new Error("User not found");
 
-      const fundRaising = await prisma.fundRaising.findUnique({
-        where: {
-          id: payload.products[0].id,
-        },
-      });
-      if (!fundRaising) throw new Error("FundRaising not found");
-
       await prisma.transaction.create({
         data: {
-          type: TransactionType.MARKET_ASOEBI,
-          amount: payload.amount,
-          purchasedBy: {
-            connect: {
-              id: user.id,
-            },
-          },
-          quantity: 1,
-          status: TransactionStatus.SUCCESS,
-          referenceId: referenceId,
-          details: payload.products,
-        },
-      });
-
-      const message = `Market Items purchased`;
-      await prisma.notifications.create({
-        data: {
-          userId: user.id,
-          type: NOTIFICATION.PURCHASE,
-          message: message,
-        },
-      });
-      console.log("Payment   completed");
-    });
-    return true;
-  } catch (error) {
-    console.log(error, transaction);
-    if (transaction) {
-      console.log("Transaction rolled back due to an error.");
-      await prisma.$queryRaw`ROLLBACK;`;
-    }
-  } finally {
-    await prisma.$disconnect();
-  }
-};
-
-const HandleMarketGiftTrans = async (payload) => {
-  const referenceId =
-    payload.products.length === 1 ? payload.products[0].id : null;
-  let prisma = new PrismaClient();
-  let transaction;
-  try {
-    transaction = await prisma.$transaction(async (prisma) => {
-      const user = await prisma.user.findFirst({
-        where: {
-          email: payload.user,
-        },
-      });
-      if (!user) throw new Error("User not found");
-
-      const fundRaising = await prisma.fundRaising.findUnique({
-        where: {
-          id: payload.products[0].id,
-        },
-      });
-      if (!fundRaising) throw new Error("FundRaising not found");
-
-      await prisma.transaction.create({
-        data: {
-          type: TransactionType.MARKET_GIFT,
-          amount: payload.amount,
-          purchasedBy: {
-            connect: {
-              id: user.id,
-            },
-          },
-          quantity: 1,
-          status: TransactionStatus.SUCCESS,
-          referenceId: referenceId,
-          details: payload.products,
-        },
-      });
-
-      const message = `Market Items purchased`;
-      await prisma.notifications.create({
-        data: {
-          userId: user.id,
-          type: NOTIFICATION.PURCHASE,
-          message: message,
-        },
-      });
-      console.log("Payment   completed");
-    });
-    return true;
-  } catch (error) {
-    console.log(error, transaction);
-    if (transaction) {
-      console.log("Transaction rolled back due to an error.");
-      await prisma.$queryRaw`ROLLBACK;`;
-    }
-  } finally {
-    await prisma.$disconnect();
-  }
-};
-
-const HandleMarketSourvenirTrans = async (payload) => {
-  const referenceId =
-    payload.products.length === 1 ? payload.products[0].id : null;
-  let prisma = new PrismaClient();
-  let transaction;
-  try {
-    transaction = await prisma.$transaction(async (prisma) => {
-      const user = await prisma.user.findFirst({
-        where: {
-          email: payload.user,
-        },
-      });
-      if (!user) throw new Error("User not found");
-
-      const fundRaising = await prisma.fundRaising.findUnique({
-        where: {
-          id: payload.products[0].id,
-        },
-      });
-      if (!fundRaising) throw new Error("FundRaising not found");
-
-      await prisma.transaction.create({
-        data: {
-          type: TransactionType.MARKET_SOURVENIR,
+          type: TransactionType.MARKET,
           amount: payload.amount,
           purchasedBy: {
             connect: {

@@ -1,27 +1,17 @@
 const express = require("express");
 const swaggerDocument = require("./swagger.json");
 const swaggerUi = require("swagger-ui-express");
-// const { createBullBoard } = require("@bull-board/api");
-// const { BullMQAdapter } = require("@bull-board/api/bullMQAdapter");
-// const { ExpressAdapter } = require("@bull-board/express");
 const cors = require("cors");
 const http = require("http");
 const { Server } = require("socket.io");
 const adminRouter = require("./routes/adminRouter")
 const userRouter = require("./routes/userRouter")
-// const queue = require("./Services/Queues/index");
 
 const dotenv = require("dotenv");
 dotenv.config();
 
 const run = async () => {
-  // const serverAdapter = new ExpressAdapter();
-  // serverAdapter.setBasePath("/admin/queues");
 
-  // createBullBoard({
-  //   queues: [new BullMQAdapter(queue)],
-  //   serverAdapter,
-  // });
   const app = express();
   const server = http.createServer(app);
   const io = new Server(server, {
@@ -84,7 +74,6 @@ const run = async () => {
 
   app.use("/api/docs/", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-  // app.use("/admin/queues", serverAdapter.getRouter());
 
   const PORT = process.env.PORT || 4000;
 

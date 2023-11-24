@@ -547,7 +547,7 @@ model Sms {
 
 model Cart {
   id         String         @id @default(uuid())
-  user       user           @relation(fields: [userId], references: [id])
+  user       user           @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     String
   itemId     String
   itemType   MarketCategory
@@ -580,7 +580,6 @@ model Transaction {
   quantity    Int
   status      TransactionStatus
   referenceId String?           @db.VarChar(50)
-  delivered   Boolean           @default(false)
   eventId     String?           @db.VarChar(50)
   userId      String            @db.VarChar(255)
   created_at  DateTime          @default(now())
@@ -593,10 +592,7 @@ model Transaction {
 
 enum TransactionType {
   GIFT
-  MARKET_ASOEBI
-  MARKET_GIFT
-  MARKET_SOURVENIR
-  MARKET_COMPLIMENTARYGIFT
+  MARKET
   ASOEBI
   FUNDRAISING
 }

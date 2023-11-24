@@ -2,14 +2,12 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
-    <title>Event Published</title>
+    <title>Contact Message</title>
   </head>
   <body>
-    <div
-      style="display: flex; flex-direction: column; gap: 12px; font-size: 14px; font-family: sans-serif;"
-    >
+    <div style="gap: 12px; font-size: 14px; font-family: sans-serif;">
       <h2>
-        <b>Hello {{username}}</b>
+        <b>Hello Admin</b>
       </h2>
       <br />
       <p>
@@ -19,37 +17,40 @@
         Below are the details:
       </p>
       <div>
-        <p>
-          <b>Name:</b>
-         
-        </p>
-        <p> Name</p>
-        <p>
-          <b>Email:</b>
-          
-        </p>
-        <p>boss@gmail.com</p>
-        <p>
-          <b>Phone</b>
-         
-        </p>
-        <p>08132030908</p>
-        <p>
-          <b>Message:</b>
-         
-        </p>
-        <p>Message</p>
-       
+        <div style="display: flex; gap:20px">
+          <p style="margin-right: 20px;">
+            <b>Name:</b>
+          </p>
+          <p>{{name}}</p>
+        </div>
+        <div style="display:flex; gap:20px">
+          <p style="margin-right: 20px;">
+            <b>Email:</b>
+          </p>
+          <p>{{email}}</p>
+        </div>
+        <div style="display: flex; gap:20px">
+          <p style="margin-right: 20px;">
+            <b>Phone:</b>
+
+          </p>
+          <p>{{phone}}</p>
+        </div>
+        <div style="display: flex; gap:20px">
+          <p style="margin-right: 20px;">
+            <b>Message:</b>
+
+          </p>
+          <p>{{message}}</p>
+        </div>
+
+        <div>
+          <p>Submitted {{time}} - {{date}}</p>
+
+        </div>
+
       </div>
 
-      <div>
-        <p>Submitted 10:24PM - 10 August, 2023</p>
-
-       <div style="display: flex;gap: 10px;align-items: center;"><img src="/images/Login.png" height="50px" width="50px"/> <p style="font-size: 30px;">EventCircle</p></div> 
-      </div>
-
-      
-      
     </div>
   </body>
 </html>
