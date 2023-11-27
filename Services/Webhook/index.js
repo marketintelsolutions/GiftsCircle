@@ -268,6 +268,7 @@ const HandleGiftTrans = async (payload) => {
       user.firstname,
       user.email,
       payload.amount,
+      payload.deliveryFee,
       payload.products
     );
   } catch (error) {
@@ -364,6 +365,7 @@ const HandleFundRaisingTrans = async (payload) => {
       user.firstname,
       user.email,
       payload.amount,
+      0,
       payload.products
     );
   } catch (error) {
@@ -424,6 +426,7 @@ const HandleMarketTrans = async (payload) => {
       user.firstname,
       user.email,
       payload.amount,
+      payload.deliveryFee,
       payload.products
     );
     return true;
@@ -439,14 +442,11 @@ const HandleMarketTrans = async (payload) => {
 };
 
 const checkRefExist = async (ref) => {
-  console.log(ref)
   const checkRef = await prismaGen.transaction.findFirst({
     where: {
       transactionRef: ref,
     },
   });
-
-  console.log(checkRef)
 
   return checkRef;
 };
