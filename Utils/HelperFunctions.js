@@ -76,6 +76,15 @@ const CreateDefaultPassword = () => {
   return Id_Generator(8, true, true, false, true);
 };
 
+const formatAmount = (amount) => {
+  const formattedAmount = new Intl.NumberFormat("en-NG", {
+    style: "currency",
+    currency: "NGN",
+  }).format(amount);
+
+  return formattedAmount;
+};
+
 module.exports = {
   comparePassword,
   GenerateToken,
@@ -88,4 +97,5 @@ module.exports = {
   CreateGuestId,
   hashPassword,
   CreateDefaultPassword,
+  formatAmount
 };

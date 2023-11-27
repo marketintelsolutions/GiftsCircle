@@ -4,6 +4,8 @@ const {
   TransactionStatus,
   NOTIFICATION,
 } = require("@prisma/client");
+const { SendWebHookEmail } = require("../../Utils/Email/EmailService");
+const prismaGen = new PrismaClient();
 
 const TransformPayload = (payload) => {
   const { event, data } = payload;
@@ -22,6 +24,8 @@ const TransformPayload = (payload) => {
       payinData.senderPhone = data.customer.phone;
       payinData.senderEmail = data.customer.email;
       payinData.products = data.metadata?.products;
+      payinData.transactionRef = data.reference;
+      payinData.deliveryFee = data.metadata?.deliveryFee;
       break;
 
     default:
@@ -32,6 +36,8 @@ const TransformPayload = (payload) => {
 
 const PayIn = async (payload) => {
   const data = TransformPayload(payload);
+  const checkRef = await checkRefExist(data.transactionRef);
+  if (checkRef) return;
   let result;
   try {
     switch (data.type) {
@@ -59,10 +65,11 @@ const HandleAsoebiTrans = async (payload) => {
   const referenceId =
     payload.products.length === 1 ? payload.products[0].id : null;
   let prisma = new PrismaClient();
-  let transaction;
+  let prismaTransaction;
+  let user;
   try {
-    transaction = await prisma.$transaction(async (prisma) => {
-      const user = await prisma.user.findFirst({
+    prismaTransaction = await prisma.$transaction(async (prisma) => {
+      user = await prisma.user.findFirst({
         where: {
           email: payload.user,
         },
@@ -90,26 +97,36 @@ const HandleAsoebiTrans = async (payload) => {
           referenceId: referenceId,
           eventId: event.id,
           details: payload.products,
+          transactionRef: payload.transactionRef,
         },
       });
 
-      payload.products.forEach(async (ele) => {
+      const asoebiUpdates = [];
+
+      for (const ele of payload.products) {
         const asoebi = await prisma.asoebi.findUnique({
           where: {
             id: ele.id,
           },
         });
-        await prisma.asoebi.update({
-          where: {
-            id: ele.id,
-          },
-          data: {
-            amountPaid: asoebi.amountPaid + parseInt(ele.amount),
-            quantity: asoebi.quantity + 1,
-            updated_by: user.id,
-          },
-        });
-      });
+
+        if (asoebi) {
+          asoebiUpdates.push(
+            prisma.asoebi.update({
+              where: {
+                id: ele.id,
+              },
+              data: {
+                amountPaid: asoebi.amountPaid + parseInt(ele.amount),
+                quantity: asoebi.quantity + 1,
+                updated_by: user.id,
+              },
+            })
+          );
+        }
+      }
+
+      await Promise.all(asoebiUpdates);
 
       const message = `${user.firstname} bought one quantity of asoebi`;
       const guestMessage = `You have bought one quantity of asoebi`;
@@ -117,7 +134,7 @@ const HandleAsoebiTrans = async (payload) => {
       await prisma.notifications.create({
         data: {
           userId: event.userId,
-          type: "ASOEBI",
+          type: NOTIFICATION.PURCHASE,
           message: message,
           referenceEvent: event.id,
         },
@@ -126,17 +143,24 @@ const HandleAsoebiTrans = async (payload) => {
       await prisma.notifications.create({
         data: {
           userId: user.id,
-          type: "PURCHASE",
+          type: NOTIFICATION.PURCHASE,
           message: guestMessage,
         },
       });
-
-      return true;
     });
+
+    await SendWebHookEmail(
+      user.firstname,
+      user.email,
+      payload.amount,
+      payload.deliveryFee,
+      payload.products
+    );
   } catch (error) {
     console.log(error);
-    if (transaction) {
+    if (prismaTransaction) {
       console.log("Transaction rolled back due to an error.");
+      // Rollback the transaction if it was initiated
       await prisma.$queryRaw`ROLLBACK;`;
     }
   } finally {
@@ -149,9 +173,10 @@ const HandleGiftTrans = async (payload) => {
     payload.products.length === 1 ? payload.products[0].id : null;
   let prisma = new PrismaClient();
   let transaction;
+  let user;
   try {
     transaction = await prisma.$transaction(async (prisma) => {
-      const user = await prisma.user.findFirst({
+      user = await prisma.user.findFirst({
         where: {
           email: payload.user,
         },
@@ -179,33 +204,43 @@ const HandleGiftTrans = async (payload) => {
           referenceId: referenceId,
           eventId: event.id,
           details: payload.products,
+          transactionRef: payload.transactionRef,
         },
       });
 
-      payload.products.forEach(async (ele) => {
+      const giftUpdates = [];
+
+      for (const ele of payload.products) {
         const gift = await prisma.gift.findUnique({
           where: {
             id: ele.id,
           },
         });
-        let check =
-          parseInt(gift.amountPaid) + parseInt(ele.amount) >
-          parseInt(gift.giftItemAmount) * parseInt(gift.quantity) +
-            parseInt(ele.deliveryAmount);
 
-        await prisma.gift.update({
-          where: {
-            id: ele.id,
-          },
-          data: {
-            purchased: check,
-            status: ele.status,
-            complimentaryGift: ele.complimentaryGift,
-            amountPaid: parseInt(gift.amountPaid) + parseInt(ele.amount),
-            updated_at: new Date(Date.now()),
-          },
-        });
-      });
+        if (gift) {
+          let check =
+            parseInt(gift.amountPaid) + parseInt(ele.amount) >
+            parseInt(gift.giftItemAmount) * parseInt(gift.quantity) +
+              parseInt(ele.deliveryAmount);
+
+          giftUpdates.push(
+            prisma.gift.update({
+              where: {
+                id: ele.id,
+              },
+              data: {
+                purchased: check,
+                status: ele.status,
+                complimentaryGift: ele.complimentaryGift,
+                amountPaid: parseInt(gift.amountPaid) + parseInt(ele.amount),
+                updated_at: new Date(Date.now()),
+              },
+            })
+          );
+        }
+      }
+
+      await Promise.all(asoebiUpdates);
 
       const message = `${user.firstname} paid for some gifts for ${event.title} event`;
       await prisma.notifications.create({
@@ -226,9 +261,15 @@ const HandleGiftTrans = async (payload) => {
           referenceEvent: event.id,
         },
       });
+
       console.log("Payment   completed");
-      return true;
     });
+    await SendWebHookEmail(
+      user.firstname,
+      user.email,
+      payload.amount,
+      payload.products
+    );
   } catch (error) {
     console.log(error);
     if (transaction) {
@@ -245,9 +286,10 @@ const HandleFundRaisingTrans = async (payload) => {
     payload.products.length === 1 ? payload.products[0].id : null;
   let prisma = new PrismaClient();
   let transaction;
+  let user;
   try {
     transaction = await prisma.$transaction(async (prisma) => {
-      const user = await prisma.user.findFirst({
+      user = await prisma.user.findFirst({
         where: {
           email: payload.user,
         },
@@ -282,6 +324,7 @@ const HandleFundRaisingTrans = async (payload) => {
           referenceId: referenceId,
           eventId: event.id,
           details: payload.products,
+          transactionRef: payload.transactionRef,
         },
       });
 
@@ -314,9 +357,15 @@ const HandleFundRaisingTrans = async (payload) => {
           amountPaid: fundRaising.amountPaid + parseInt(payload.amount),
         },
       });
+
       console.log("Payment   completed");
     });
-    return true;
+    await SendWebHookEmail(
+      user.firstname,
+      user.email,
+      payload.amount,
+      payload.products
+    );
   } catch (error) {
     console.log(error, transaction);
     if (transaction) {
@@ -333,9 +382,10 @@ const HandleMarketTrans = async (payload) => {
     payload.products.length === 1 ? payload.products[0].id : null;
   let prisma = new PrismaClient();
   let transaction;
+  let user;
   try {
     transaction = await prisma.$transaction(async (prisma) => {
-      const user = await prisma.user.findFirst({
+      user = await prisma.user.findFirst({
         where: {
           email: payload.user,
         },
@@ -355,6 +405,7 @@ const HandleMarketTrans = async (payload) => {
           status: TransactionStatus.SUCCESS,
           referenceId: referenceId,
           details: payload.products,
+          transactionRef: payload.transactionRef,
         },
       });
 
@@ -366,8 +417,15 @@ const HandleMarketTrans = async (payload) => {
           message: message,
         },
       });
+
       console.log("Payment   completed");
     });
+    await SendWebHookEmail(
+      user.firstname,
+      user.email,
+      payload.amount,
+      payload.products
+    );
     return true;
   } catch (error) {
     console.log(error, transaction);
@@ -378,6 +436,19 @@ const HandleMarketTrans = async (payload) => {
   } finally {
     await prisma.$disconnect();
   }
+};
+
+const checkRefExist = async (ref) => {
+  console.log(ref)
+  const checkRef = await prismaGen.transaction.findFirst({
+    where: {
+      transactionRef: ref,
+    },
+  });
+
+  console.log(checkRef)
+
+  return checkRef;
 };
 
 module.exports = {

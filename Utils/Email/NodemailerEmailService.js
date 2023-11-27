@@ -87,7 +87,7 @@ const AdminContactEmail = async (data) => {
 var formattedDate = dateobj.toLocaleDateString([], options);
  
   var mailOptions = {
-    from: '"EventCircle" <godwillonyewuchii@gmail.com>',
+    from: '"EventCircle" <eventcircle01@gmail.com>',
     to: data.email, 
     subject: "Contact Message",
     template: "contact", 
