@@ -231,85 +231,24 @@ const EnableContribution = async (data, id) => {
 };
 
 const Buy = async (data, userId) => {
-  const prisma = new PrismaClient()
-  let transaction;
-  let result;
-  try {
-    transaction = await prisma.$transaction(async (prisma) => {
-      data.forEach(async (ele) => {
-        let check =
-          parseInt(ele.amountPaid) + parseInt(ele.amount) >
-          parseInt(ele.giftItemAmount) * parseInt(ele.quantity) +
-            parseInt(ele.deliveryAmount);
+  data.forEach((element) => {
+    delete element.status;
+    delete element.complimentaryGift;
+    delete element.amountPaid;
+    delete element.giftItemAmount;
+    delete element.deliveryAmount;
 
-        await prisma.gift.update({
-          where: {
-            id: ele.giftId,
-          },
-          data: {
-            purchased: check,
-            status: ele.status,
-            complimentaryGift: ele.complimentaryGift,
-            amountPaid: parseInt(ele.amountPaid) + parseInt(ele.amount),
-            updated_at: new Date(Date.now()),
-          },
-        });
-      });
+    element.amount = parseInt(element.amount);
+    element.userId = userId;
 
-      data.forEach((element) => {
-        delete element.status;
-        delete element.complimentaryGift;
-        delete element.amountPaid;
-        delete element.giftItemAmount;
-        delete element.deliveryAmount;
-
-        element.amount = parseInt(element.amount);
-        element.userId = userId
-
-        element.quantity = 1;
-        return element;
-      });
-      let transactions = await prisma.giftTransaction.createMany({
-        data: [...data],
-        skipDuplicates: true,
-      });
-
-      const user = await prisma.user.findFirst({ where: { id: userId } });
-      const event = await prisma.event.findUnique({
-        where: { id: data[0].eventId },
-      });
-      const message = `${user.firstname} paid for some gifts for ${event.title} event`;
-      const notification = await prisma.notifications.create({
-        data: {
-          userId: event.userId,
-          type: "PURCHASE",
-          message: message,
-          referenceEvent: event.id,
-        },
-      });
-
-      const guestMessage = `Gifts for ${event.title} bought successfully`;
-      const guestNotification = await prisma.notifications.create({
-        data: {
-          userId: userId,
-          type: "PURCHASE",
-          message: guestMessage,
-          referenceEvent: event.id,
-        },
-      });
-
-      result = { transactions, notification, guestNotification };
-    });
-    return result;
-  } catch (error) {
-    console.log(error);
-    if (transaction) {
-      console.log("Transaction rolled back due to an error.");
-      await prisma.$queryRaw`ROLLBACK;`;
-    }
-  }  finally {
-    await prisma.$disconnect();
-  }
+    element.quantity = 1;
+    return element;
+  });
+  let transactions = await prisma.giftTransaction.createMany({
+    data: [...data],
+    skipDuplicates: true,
+  });
+  return transactions;
 };
 
 const Delete = async (id) => {

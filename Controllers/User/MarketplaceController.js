@@ -26,8 +26,7 @@ router.get("/Get/All/", EnsureAuthenticated, async (req, res) => {
 router.post("/create", UserAuthenticated, async (req, res) => {
   try {
     let data = await BuyMarketItems(req.body, req.user.id);
-    req.io.emit(data.notification.userId, data.notification);
-    return res.status(200).send(data.Data);
+    return res.status(200).send(data);
   } catch (err) {
     console.log(err);
     await prisma.$disconnect();
