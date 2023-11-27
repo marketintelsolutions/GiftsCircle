@@ -82,7 +82,7 @@ const SendWebHookEmail = async (
   const html = compiledFunction({
     amount: formatAmount(amount),
     products: products,
-    deliveryFee: formatAmount(parseInt(deliveryAmount)),
+    deliveryFee: formatAmount(parseInt(deliveryAmount)) || 0,
     recieverName: recieverName,
   });
 

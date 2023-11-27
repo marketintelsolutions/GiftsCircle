@@ -78,9 +78,10 @@ html(xmlns='http://www.w3.org/1999/xhtml', xmlns:v='urn:schemas-microsoft-com:vm
                         tr
                             td(style='align-items:center;justify-content:center;')
                                 div(style='align-items:center;justify-content:center;flex-direction:column;gap:16px;word-break:break-word;width:85%;margin:20px auto;')
-                                    h3(data-testid='kRCGXK-CneANy-XPXRZzv' style='font-weight: 600;text-align:start;')
-                                        p(style='color:#000;font-family:Nunito Sans, Helvetica, Nunito Sans, sans-serif;font-size:16px;')
-                                            | Delivery Fee:  #{deliveryFee}
+                                    if deliveryFee
+                                        h3(data-testid='kRCGXK-CneANy-XPXRZzv' style='font-weight: 600;text-align:start;')
+                                            p(style='color:#000;font-family:Nunito Sans, Helvetica, Nunito Sans, sans-serif;font-size:16px;')
+                                                | Delivery Fee:  #{deliveryFee}
                                     h3(data-testid='kRCGXK-CneANy-XPXRZzv' style='font-weight: 700;text-align:start;')
                                         p(style='color:#000;font-family:Nunito Sans, Helvetica, Nunito Sans, sans-serif;font-size:18px;')
                                             | Total:  #{amount}
