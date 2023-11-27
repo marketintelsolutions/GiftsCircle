@@ -240,7 +240,7 @@ const HandleGiftTrans = async (payload) => {
         }
       }
 
-      await Promise.all(asoebiUpdates);
+      await Promise.all(giftUpdates);
 
       const message = `${user.firstname} paid for some gifts for ${event.title} event`;
       await prisma.notifications.create({
