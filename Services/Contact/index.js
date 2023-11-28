@@ -32,7 +32,6 @@ const Create = async (data) => {
       phone: data.phone,
     },
   });
-  console.log(Data)
   await AdminContactEmail(Data)
   await prisma.$disconnect();
   return Data;
