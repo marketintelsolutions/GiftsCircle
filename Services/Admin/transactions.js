@@ -36,8 +36,6 @@ const GetAllTransactions = async (
     skip: skip,
   });
 
-  console.log(trans)
-
   await prisma.$disconnect();
 
   return trans;
