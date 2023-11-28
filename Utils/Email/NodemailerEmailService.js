@@ -88,7 +88,7 @@ var formattedDate = dateobj.toLocaleDateString([], options);
  
   var mailOptions = {
     from: '"EventCircle" <eventcircle01@gmail.com>',
-    to: data.email, 
+    to: 'eventcircle01@gmail.com', 
     subject: "Contact Message",
     template: "contact", 
     context: {
