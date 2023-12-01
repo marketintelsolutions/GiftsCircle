@@ -577,7 +577,6 @@ model Transaction {
   details        Json
   amount         Int
   purchasedBy    user              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  quantity       Int
   status         TransactionStatus
   transactionRef String            @db.VarChar(50)
   referenceId    String?           @db.VarChar(50)
