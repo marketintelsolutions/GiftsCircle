@@ -91,7 +91,7 @@ const SuperAdminAuthenticated = (req, res, next) => {
 };
 
 const ValidateWebhook = (req, res, next) => {
-  const secret = process.env.PAYSTACK_TEST_KEY;
+  const secret = process.env.NODE_ENV === "prod" ? process.env.PAYSTACK_LIVE_KEY :  process.env.PAYSTACK_TEST_KEY;
   const hash = crypto
     .createHmac("sha512", secret)
     .update(JSON.stringify(req.body))
