@@ -116,10 +116,9 @@ const Buy = async (data, userId) => {
 };
 
 const GetAsoebiBuyers = async (id) => {
-  let buyers = await prisma.transaction.findMany({
+  let buyers = await prisma.asoebiTransaction.findMany({
     where: {
       eventId: id,
-      type: TransactionType.ASOEBI,
     },
     select: {
       amount: true,
