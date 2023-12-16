@@ -18,10 +18,7 @@ const {
 } = require("../../Utils/EnsureAuthenticated");
 const cloudinary = require("../../config/Cloudinary");
 const { upload, dataUri } = require("../../config/multer");
-const { SendEmail } = require("../../Utils/Email/EmailService");
-const {
-  AdminSetPasswordEmail,
-} = require("../../Utils/Email/NodemailerEmailService");
+const { AdminSetPasswordEmail } = require("../../Utils/Email/EmailService");
 const { GenerateToken } = require("../../Utils/HelperFunctions");
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -81,11 +78,12 @@ router.post(
       let data = await Create(req.body, response.url);
       if (data) {
         const token = GenerateToken(data.email, data.id, data.role, "24h");
-        AdminSetPasswordEmail(
+        const link = `${process.env.ADMIN_FRONTEND_URL}/admin/setPassword?token=${token}`;
+        await AdminSetPasswordEmail(
           data.firstname,
-          data.defaultPassword,
           data.email,
-          token
+          data.defaultPassword,
+          link,
         );
         return res.status(200).send(data);
       }

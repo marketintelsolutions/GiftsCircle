@@ -1,5 +1,5 @@
 const { PrismaClient } = require("@prisma/client");
-const { AdminContactEmail } = require("../../Utils/Email/NodemailerEmailService");
+const { SendContactAdminEmail } = require("../../Utils/Email/EmailService");
 const prisma = new PrismaClient();
 
 const Get = async (email) => {
@@ -32,7 +32,7 @@ const Create = async (data) => {
       phone: data.phone,
     },
   });
-  await AdminContactEmail(Data)
+  await SendContactAdminEmail(Data)
   await prisma.$disconnect();
   return Data;
 };

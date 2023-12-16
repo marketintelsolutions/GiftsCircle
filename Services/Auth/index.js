@@ -1,6 +1,10 @@
 const { PrismaClient } = require("@prisma/client");
 const ResponseDTO = require("../../DTO/Response");
-const { SendEmail, SendResetEmail } = require("../../Utils/Email/EmailService");
+const {
+  SendEmail,
+  SendResetEmail,
+  ResetPasswordEmail,
+} = require("../../Utils/Email/EmailService");
 const {
   comparePassword,
   GenerateOtp,
@@ -91,7 +95,7 @@ const SendVerifyEmail = async (data) => {
     },
   });
 
-  let result = await SendEmail(data.email, data.firstname, otp);
+  let result = await SendVerifyEmail(data.firstname, data.email, otp);
   return result.response;
 };
 
@@ -120,12 +124,9 @@ const SendResetPasswordEmail = async (email) => {
 
   if (user) {
     let token = GenerateToken(email, user.id, "USER", "30m");
-    let url =
-      process.env.env === "development"
-        ? "http://localhost:3000"
-        : "https://giftscircle.netlify.app";
-    let data = `${url}/change_password?token=${token}`;
-    let result = await SendResetEmail(email, user.firstname, data);
+
+    let link = `${process.env.FRONTEND_URL}/change_password?token=${token}`;
+    let result = await ResetPasswordEmail(user.firstname, email, link);
     return result.response;
   }
   return null;
