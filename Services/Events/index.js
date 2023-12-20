@@ -216,7 +216,7 @@ const Update3 = async (data) => {
           referenceEvent: event.id,
         },
       });
-      SendEventPublishedEmail(user.firstname, user.email, event);
+      await SendEventPublishedEmail(user.firstname, user.email, event);
       return { Data, notification };
     }
     const message = `Event: ${event.title} was edited`;
