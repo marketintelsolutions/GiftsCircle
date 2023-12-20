@@ -6,9 +6,7 @@ const {
 } = require("../../Utils/HelperFunctions");
 const prisma = new PrismaClient();
 const ResponseDTO = require("../../DTO/Response");
-const {
-  SendEventPublishEmail,
-} = require("../../Utils/Email/NodemailerEmailService");
+const { SendEventPublishedEmail } = require("../../Utils/Email/EmailService");
 
 const GetEvent = async (id) => {
   const event = await prisma.event.findUnique({
@@ -92,43 +90,41 @@ const GetCoHostGuestCode = async (eventId, userId) => {
 };
 
 const Create = async (data, userId) => {
+  const coHostId = data.coHost ? CreateCoHostId() : "";
+  const guestCode = CreateGuestId();
+  let event = await prisma.event.create({
+    data: {
+      id: CreateEventId(),
+      title: data.title,
+      category: data.category,
+      venue: data.venue,
+      date: new Date(data.date),
+      start_time: data.start_time,
+      end_time: data.end_time,
+      timezone: data.timezone,
+      host: data.host,
+      userId: userId,
+      co_hosts: undefined,
+      published: false,
+      applyDonation: false,
+      coHostCode: coHostId,
+      coHostLink: "",
+      guestCode: guestCode,
+      eventLink: "",
+      percentDonation: 0,
+    },
+  });
 
-    const coHostId = data.coHost ? CreateCoHostId() : "";
-    const guestCode = CreateGuestId();
-    let event = await prisma.event.create({
-      data: {
-        id: CreateEventId(),
-        title: data.title,
-        category: data.category,
-        venue: data.venue,
-        date: new Date(data.date),
-        start_time: data.start_time,
-        end_time: data.end_time,
-        timezone: data.timezone,
-        host: data.host,
-        userId: userId,
-        co_hosts: undefined,
-        published: false,
-        applyDonation: false,
-        coHostCode: coHostId,
-        coHostLink: "",
-        guestCode: guestCode,
-        eventLink: "",
-        percentDonation: 0,
-      },
-    });
+  await prisma.coHostCodes.create({
+    data: {
+      userId: userId,
+      eventId: event.id,
+      code: guestCode,
+    },
+  });
 
-    await prisma.coHostCodes.create({
-      data: {
-        userId: userId,
-        eventId: event.id,
-        code: guestCode,
-      },
-    });
-
-    await prisma.$disconnect();
-    return event;
-
+  await prisma.$disconnect();
+  return event;
 };
 
 const Update1 = async (data) => {
@@ -220,7 +216,7 @@ const Update3 = async (data) => {
           referenceEvent: event.id,
         },
       });
-      SendEventPublishEmail(user.email, user.firstname, event);
+      await SendEventPublishedEmail(user.firstname, user.email, event);
       return { Data, notification };
     }
     const message = `Event: ${event.title} was edited`;
@@ -337,8 +333,7 @@ const AddGuest = async (data) => {
 };
 
 const AddCoHost = async (data) => {
-
-  let prisma = new PrismaClient()
+  let prisma = new PrismaClient();
   let transaction;
   let result;
   try {
