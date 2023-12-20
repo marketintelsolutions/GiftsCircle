@@ -95,7 +95,7 @@ const SendVerifyEmail = async (data) => {
     },
   });
 
-  await SendVerifyEmail(user.firstname, user.email, otp);
+  await SendVerifyEmail(data.firstname, data.email, otp);
   return Otp;
 };
 
