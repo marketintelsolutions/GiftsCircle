@@ -87,7 +87,7 @@ const SendVerifyEmail = async (data) => {
   var expires = new Date(Date.now());
   expires.setMinutes(expires.getMinutes() + 10);
 
-  await prisma.otp.create({
+  const Otp = await prisma.otp.create({
     data: {
       user: data.email,
       code: otp,
@@ -95,8 +95,8 @@ const SendVerifyEmail = async (data) => {
     },
   });
 
-  let result = await SendVerifyEmail(data.firstname, data.email, otp);
-  return result.response;
+  await SendVerifyEmail(data.firstname, data.email, otp);
+  return Otp;
 };
 
 const VerifyOtp = async (data) => {
@@ -126,8 +126,8 @@ const SendResetPasswordEmail = async (email) => {
     let token = GenerateToken(email, user.id, "USER", "30m");
 
     let link = `${process.env.FRONTEND_URL}/change_password?token=${token}`;
-    let result = await ResetPasswordEmail(user.firstname, email, link);
-    return result.response;
+    await ResetPasswordEmail(user.firstname, email, link);
+    return user;
   }
   return null;
 };
