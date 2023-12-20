@@ -83,7 +83,7 @@ const SendVerifyEmail = async (data) => {
   var expires = new Date(Date.now());
   expires.setMinutes(expires.getMinutes() + 10);
 
-  await prisma.otp.create({
+  const Otp = await prisma.otp.create({
     data: {
       user: data.email,
       code: otp,
@@ -91,8 +91,8 @@ const SendVerifyEmail = async (data) => {
     },
   });
 
-  let result = await SendEmail(data.email, data.firstname, otp);
-  return result.response;
+  await SendVerifyEmail(user.firstname, user.email, otp);
+  return Otp;
 };
 
 const VerifyOtp = async (data) => {
