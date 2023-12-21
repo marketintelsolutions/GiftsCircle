@@ -9,6 +9,7 @@ const {
   SendResetPasswordEmail,
   RefreshToken,
   Logout,
+  SendEmailVerification,
 } = require("../../Services/Auth");
 const { Create, SetPassword } = require("../../Services/Users");
 const { UserAuthenticated } = require("../../Utils/EnsureAuthenticated");
@@ -107,7 +108,7 @@ router.post("/verifyEmail", async (req, res) => {
 
 router.post("/sendVerifyEmail", async (req, res) => {
   try {
-    let data = await SendVerifyEmail(req.body);
+    let data = await SendEmailVerification(req.body);
     if (data) {
       return res
         .status(201)

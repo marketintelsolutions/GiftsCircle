@@ -4,6 +4,7 @@ const {
   SendEmail,
   SendResetEmail,
   ResetPasswordEmail,
+  SendVerifyEmail,
 } = require("../../Utils/Email/EmailService");
 const {
   comparePassword,
@@ -72,7 +73,7 @@ const GoogleSignIn = async (data) => {
   return null;
 };
 
-const SendVerifyEmail = async (data) => {
+const SendEmailVerification = async (data) => {
   const user = await prisma.user.findFirst({
     where: {
       email: data.email,
@@ -94,7 +95,6 @@ const SendVerifyEmail = async (data) => {
       expires: expires,
     },
   });
-
   await SendVerifyEmail(data.firstname, data.email, otp);
   return Otp;
 };
@@ -172,7 +172,7 @@ module.exports = {
   Login,
   GoogleSignIn,
   VerifyOtp,
-  SendVerifyEmail,
+  SendEmailVerification,
   SendResetPasswordEmail,
   RefreshToken,
   Logout,
