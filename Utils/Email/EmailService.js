@@ -1,4 +1,4 @@
-const MailJet = require("node-mailjet");
+const sgMail = require('@sendgrid/mail')
 const { formatAmount } = require("../HelperFunctions");
 const { resolve } = require("path");
 const pug = require("pug");
@@ -13,7 +13,7 @@ const SendVerifyEmail = async (recieverName, recieverEmail, otp) => {
     code: otp,
   });
 
-  return await SendEmailMJ({
+  return await SendMail({
     recieverEmail: recieverEmail,
     recieverName: recieverName,
     html,
@@ -35,7 +35,7 @@ const ResetPasswordEmail = async (recieverName, recieverEmail, link) => {
     link: link,
   });
 
-  return await SendEmailMJ({
+  return await SendMail({
     recieverEmail: recieverEmail,
     recieverName: recieverName,
     html,
@@ -63,7 +63,7 @@ const AdminSetPasswordEmail = async (
     link: link,
   });
 
-  return await SendEmailMJ({
+  return await SendMail({
     recieverEmail: recieverEmail,
     recieverName: recieverName,
     html,
@@ -96,7 +96,7 @@ const SendWebHookEmail = async (
     recieverName: recieverName,
   });
 
-  return await SendEmailMJ({
+  return await SendMail({
     recieverEmail: recieverEmail,
     recieverName: recieverName,
     html,
@@ -127,7 +127,7 @@ const SendEventPublishedEmail = async (recieverName, recieverEmail, event) => {
     link: `${process.env.FRONTEND_URL}/dashboard/event_details/${event.id}`,
   });
 
-  return await SendEmailMJ({
+  return await SendMail({
     recieverEmail: recieverEmail,
     recieverName: recieverName,
     html,
@@ -158,7 +158,7 @@ const SendContactAdminEmail = async (data) => {
     time: formattedTime,
   });
 
-  return await SendEmailMJ({
+  return await SendMail({
     recieverEmail: 'eventcircle01@gmail.com',
     recieverName: 'Admin',
     html,
@@ -167,44 +167,27 @@ const SendContactAdminEmail = async (data) => {
   });
 };
 
-const SendEmailMJ = async ({
+const SendMail = async ({
   recieverEmail,
-  recieverName,
   subject,
-  html,
-  customID,
+  html
 }) => {
-  const mailjet = MailJet.apiConnect(
-    process.env.MJ_APIKEY_PUBLIC,
-    process.env.MJ_APIKEY_PRIVATE
-  );
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
-  const request = mailjet.post("send", { version: "v3.1" }).request({
-    Messages: [
-      {
-        From: {
-          Email: '"EventCircle" <eventcircle01@gmail.com>',
-          Name: "EventCircle",
-        },
-        To: [
-          {
-            Email: recieverEmail,
-            Name: recieverName,
-          },
-        ],
-        Subject: subject,
-        HTMLPart: html,
-        CustomID: customID,
-      },
-    ],
-  });
-  return request
-    .then((result) => {
-      console.log(result.body);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  const msg = {
+    to: recieverEmail, 
+    from: '"EventCircle" <eventcircle01@gmail.com>', // Change to your verified sender
+    subject: subject,
+    html: html,
+  }
+  sgMail
+  .send(msg)
+  .then((response) => {
+    console.log(response)
+  })
+  .catch((error) => {
+    console.error(error)
+  })
 };
 
 module.exports = {
