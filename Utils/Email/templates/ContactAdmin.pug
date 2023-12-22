@@ -1,0 +1,63 @@
+doctype html
+html(xmlns='http://www.w3.org/1999/xhtml', xmlns:v='urn:schemas-microsoft-com:vml', xmlns:o='urn:schemas-microsoft-com:office:office')
+  head
+    title intive
+    meta(http-equiv='X-UA-Compatible' content='IE=edge')
+    meta(http-equiv='Content-Type' content='text/html; charset=UTF-8')
+    meta(name='viewport' content='width=device-width,initial-scale=1')
+ 
+  body(style='word-spacing:normal;background-color:#F4F4F4;')
+    div(style='background-color:#F4F4F4;')
+      div(style='background-color:#ffffff;margin:40px auto;padding-bottom:40px;max-width:700px;')
+        table(cellpadding='0' cellspacing='0' role='presentation' style='background:#ffffff;background-color:#ffffff;width:100%;')
+          tbody
+            tr
+              td(style='font-size:0px;padding-bottom:20px;')
+                  table(cellpadding='0' cellspacing='0' role='presentation' style='vertical-align:top;' width='100%')
+                    tbody
+                      include includes/header
+                              
+                      tr
+                        td()
+                          div(style='word-break:break-word;width:85%;margin:20px auto 0px;')
+                            h3(data-testid='kRCGXK-CneANy-XPXRZzv' style='font-weight: 700;')
+                              p(style='color:#000;font-family:Nunito Sans, Helvetica, Nunito Sans, sans-serif;font-size:18px;')
+                               | Hello Admin,
+                           
+                            h3(data-testid='kRCGXK-CneANy-XPXRZzv' style='font-weight: 400;flex-wrap:wrap')
+                              p(style='color:#5C5C5C;font-family:Nunito Sans, Helvetica, Nunito Sans, sans-serif;font-size:14px;')
+                               | You have a new message from a user.
+                            h3(data-testid='kRCGXK-CneANy-XPXRZzv' style='font-weight: 400;flex-wrap:wrap')
+                              p(style='color:#5C5C5C;font-family:Nunito Sans, Helvetica, Nunito Sans, sans-serif;font-size:14px;')
+                               | Below are the details:
+                      tr
+                        td()
+                          div(style='word-break:break-word;width:85%;margin:0px auto;')
+                            span(style='display:flex;gap:5px;')
+                              p(style='color:#000;font-family:Nunito Sans, Helvetica, Nunito Sans, sans-serif;font-weight:600;font-size:14px;margin-right:5px;')
+                               | Name:
+                              p(style='color:#000;font-family:Nunito Sans, Helvetica, Nunito Sans, sans-serif;font-size:14px;')
+                               | #{title}
+                            span(style='display:flex;gap:5px;')
+                              p(style='color:#000;font-family:Nunito Sans, Helvetica, Nunito Sans, sans-serif;font-weight:600;font-size:14px;margin-right:5px;')
+                               | Email:
+                              p(style='color:#000;font-family:Nunito Sans, Helvetica, Nunito Sans, sans-serif;font-size:14px;')
+                               | #{email}
+                            span(style='display:flex;gap:5px;')
+                              p(style='color:#000;font-family:Nunito Sans, Helvetica, Nunito Sans, sans-serif;font-weight:600;font-size:14px;margin-right:5px;')
+                               | Phone:
+                              p(style='color:#000;font-family:Nunito Sans, Helvetica, Nunito Sans, sans-serif;font-size:14px;')
+                               | #{phone}
+                            span(style='display:flex;gap:5px;')
+                              p(style='color:#000;font-family:Nunito Sans, Helvetica, Nunito Sans, sans-serif;font-weight:600;font-size:14px;margin-right:5px;')
+                               | Message:
+                              p(style='color:#000;font-family:Nunito Sans, Helvetica, Nunito Sans, sans-serif;font-size:14px;')
+                               | #{message}
+                           
+                                   
+                      tr
+                        td()
+                          div(style='word-break:break-word;width:85%;margin:20px auto 0px;')
+                            span(style='display:flex;gap:5px;')
+                              p(style='color:#000;font-family:Nunito Sans, Helvetica, Nunito Sans, sans-serif;font-weight:400;font-size:14px;')
+                               | Submitted #{time} - #{date}

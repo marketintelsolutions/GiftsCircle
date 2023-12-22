@@ -1,6 +1,5 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const { v4: uuidv4 } = require("uuid");
 
 const GetFundRaising = async (id) => {
   const fundRaising = await prisma.fundRaising.findMany({
@@ -12,7 +11,19 @@ const GetFundRaising = async (id) => {
   return fundRaising;
 };
 
-const Create = async (data, image) => {
+const GetCoHostFundRaising = async (eventId, coHostId) => {
+  const fundRaising = await prisma.fundRaising.findFirst({
+    where: {
+      eventId: eventId,
+      created_by: coHostId,
+    },
+  });
+  await prisma.$disconnect();
+
+  return fundRaising;
+};
+
+const Create = async (data, image, userId) => {
   const event = await prisma.event.findUnique({
     where: {
       id: data.eventId,
@@ -23,8 +34,10 @@ const Create = async (data, image) => {
     const FundRaising = await prisma.fundRaising.findFirst({
       where: {
         eventId: data.eventId,
+        created_by: userId,
       },
     });
+
     if (FundRaising) {
       return FundRaising;
     }
@@ -37,13 +50,14 @@ const Create = async (data, image) => {
         image: image,
         title: data.title,
         description: data.description,
+        created_by: userId,
       },
     });
 
     const message = `FundRaising has been created and is active`;
     const notification = await prisma.notifications.create({
       data: {
-        userId: event.userId,
+        userId: userId,
         type: "FUNDRAISING",
         message: message,
         referenceEvent: event.id,
@@ -92,7 +106,7 @@ const UpdateAmount = async (data) => {
         id: data.id,
       },
       data: {
-        amount: data.amount
+        amount: data.amount,
       },
     });
 
@@ -102,61 +116,28 @@ const UpdateAmount = async (data) => {
   return null;
 };
 
-const Donate = async (data) => {
+const Donate = async (data, userId) => {
   const fundRaising = await prisma.fundRaising.findUnique({
     where: {
       id: data.fundId,
     },
   });
 
-  if (fundRaising) {
-    const donation = await prisma.fundRaisingDonation.create({
-      data: {
-        firstName: data.firstName,
-        lastName: data.lastName,
-        email: data.email,
-        phone: data.tel,
-        amount: parseInt(data.amount),
-        fundId: data.fundId,
-        created_by: data.userId
-      },
-    });
+  if (!fundRaising) return null;
 
-    await prisma.fundRaising.update({
-      where: {
-        id: fundRaising.id,
-      },
-      data: {
-        amountPaid: fundRaising.amountPaid + parseInt(data.amount)
-      },
-    });
-    const event = await prisma.event.findUnique({
-      where: { id: fundRaising.eventId },
-    });
-    const message = `FundRaising: ${data.firstName} donated ${data.amount} to the FundRaising`;
-    const notification = await prisma.notifications.create({
-      data: {
-        userId: event.userId,
-        type: "FUNDRAISING",
-        message: message,
-        referenceEvent: event.id,
-      },
-    });
+  const donation = await prisma.fundRaisingDonation.create({
+    data: {
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      phone: data.tel,
+      amount: parseInt(data.amount),
+      fundId: data.fundId,
+      created_by: userId,
+    },
+  });
 
-    const guestMessage = `FundRaising: You made a donation to ${event.title} event fundRaising`;
-    const guestNotification = await prisma.notifications.create({
-      data: {
-        userId: data.userId,
-        type: "FUNDRAISING",
-        message: guestMessage,
-        referenceEvent: event.id,
-      },
-    });
-    await prisma.$disconnect();
-
-    return { donation, notification, guestNotification };
-  }
-  return null;
+  return donation;
 };
 
 const GetFundDonors = async (id) => {
@@ -191,6 +172,7 @@ const DeleteFundRaising = async (id) => {
 module.exports = {
   Create,
   GetFundRaising,
+  GetCoHostFundRaising,
   UpdateAmount,
   UpdateStatus,
   Donate,

@@ -102,6 +102,7 @@ const GetEventGiftTransactions = async (id) => {
           giftitemId: true,
           status: true,
           complimentaryGift: true,
+          created_by: true,
         },
       },
       complimentaryGift: {
@@ -150,7 +151,7 @@ const GetCoHostEventGiftTransactions = async (userId, id) => {
   return transactions;
 };
 
-const Create = async (data) => {
+const Create = async (data, userId) => {
   let id = uuidv4();
   await prisma.gift.create({
     data: {
@@ -162,7 +163,7 @@ const Create = async (data) => {
       status: "UnPaid",
       user: {
         connect: {
-          userId: data.created_by,
+          userId: userId,
         },
       },
       amountPaid: 0,
@@ -175,14 +176,14 @@ const Create = async (data) => {
   return data;
 };
 
-const CreateMany = async (data) => {
+const CreateMany = async (data, userId) => {
   data.forEach((element) => {
     element.id = uuidv4();
     (element.purchased = false),
       (element.status = "UnPaid"),
       (element.amountPaid = 0);
     element.giftitemId = element.giftitemId;
-    element.userId = element.created_by;
+    element.created_by = userId;
 
     return element;
   });
@@ -229,32 +230,16 @@ const EnableContribution = async (data, id) => {
   return null;
 };
 
-const Buy = async (data) => {
-  data.forEach(async (ele) => {
-    let check =
-      ele.amountPaid + ele.amount >
-      ele.giftItemAmount * ele.quantity + ele.deliveryAmount;
-
-    await prisma.gift.update({
-      where: {
-        id: ele.giftId,
-      },
-      data: {
-        purchased: check,
-        status: ele.status,
-        complimentaryGift: ele.complimentaryGift,
-        amountPaid: ele.amountPaid + ele.amount,
-        updated_at: new Date(Date.now()),
-      },
-    });
-  });
-
+const Buy = async (data, userId) => {
   data.forEach((element) => {
     delete element.status;
     delete element.complimentaryGift;
     delete element.amountPaid;
     delete element.giftItemAmount;
     delete element.deliveryAmount;
+
+    element.amount = parseInt(element.amount);
+    element.userId = userId;
 
     element.quantity = 1;
     return element;
@@ -263,33 +248,7 @@ const Buy = async (data) => {
     data: [...data],
     skipDuplicates: true,
   });
-
-  const user = await prisma.user.findFirst({ where: { id: data.userId } });
-  const event = await prisma.event.findUnique({
-    where: { id: data[0].eventId },
-  });
-  const message = `${user.firstname} paid for some gifts for ${event.title} event`;
-  const notification = await prisma.notifications.create({
-    data: {
-      userId: event.userId,
-      type: "PURCHASE",
-      message: message,
-      referenceEvent: event.id,
-    },
-  });
-
-  const guestMessage = `Gifts for ${event.title} bought successfully`;
-  const guestNotification = await prisma.notifications.create({
-    data: {
-      userId: data[0].userId,
-      type: "PURCHASE",
-      message: guestMessage,
-      referenceEvent: event.id,
-    },
-  });
-  await prisma.$disconnect();
-
-  return { transactions, notification, guestNotification };
+  return transactions;
 };
 
 const Delete = async (id) => {

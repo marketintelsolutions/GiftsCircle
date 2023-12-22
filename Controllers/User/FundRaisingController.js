@@ -10,6 +10,7 @@ const {
   Donate,
   GetFundDonors,
   DeleteFundRaising,
+  GetCoHostFundRaising,
 } = require("../../Services/FundRaising");
 const cloudinary = require("../../config/Cloudinary");
 const { upload, dataUri } = require("../../config/multer");
@@ -32,6 +33,24 @@ router.get("/:id", EnsureAuthenticated, async (req, res) => {
   }
 });
 
+router.get("/:eventId/:coHostId", EnsureAuthenticated, async (req, res) => {
+  try {
+    let data = await GetCoHostFundRaising(
+      req.params.eventId,
+      req.params.coHostId
+    );
+    if (data) {
+      return res.status(200).send(data);
+    } else {
+      return res.status(400).send(ResponseDTO("Failed", "Not found"));
+    }
+  } catch (err) {
+    console.log(err);
+    await prisma.$disconnect();
+    return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
+  }
+});
+
 router.post(
   "/create",
   upload.single("image"),
@@ -42,10 +61,13 @@ router.post(
       const response = await cloudinary.uploader.upload(file, {
         folder: "eventcircle/fundRaising",
       });
-      let data = await Create(req.body, response.url);
+      let data = await Create(req.body, response.url, req.user.id);
       if (data) {
-        req.io.emit(data.notification.userId, data.notification);
-        return res.status(200).send(data.fundRaising);
+        if (data.notification) {
+          req.io.emit(data.notification.userId, data.notification);
+          return res.status(200).send(data.fundRaising);
+        }
+        return res.status(200).send(data);
       }
       return res.status(400).send(ResponseDTO("Failed", "Event not found"));
     } catch (err) {
@@ -90,11 +112,9 @@ router.put("/UpdateStatus", UserAuthenticated, async (req, res) => {
 
 router.post("/Donate", UserAuthenticated, async (req, res) => {
   try {
-    let data = await Donate(req.body);
+    let data = await Donate(req.body,  req.user.id);
     if (data) {
-      req.io.emit(data.notification.userId, data.notification);
-      req.io.emit(data.guestNotification.userId, data.guestNotification);
-      return res.status(200).send(data.donation);
+      return res.status(200).send(data);
     }
     return res
       .status(400)
@@ -106,10 +126,9 @@ router.post("/Donate", UserAuthenticated, async (req, res) => {
   }
 });
 
-router.get("/GetFundDonors/:id", EnsureAuthenticated, async (req, res) => {
+router.get("/CoHost/GetFundDonors/:id", EnsureAuthenticated, async (req, res) => {
   try {
     let data = await GetFundDonors(req.params.id);
-
     return res.status(200).send(data);
   } catch (err) {
     console.log(err);

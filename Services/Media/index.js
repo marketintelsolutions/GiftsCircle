@@ -1,5 +1,4 @@
 const { PrismaClient } = require("@prisma/client");
-const { v4: uuidv4 } = require("uuid");
 const prisma = new PrismaClient();
 
 const GetEventMediaFiles = async (id) => {
@@ -93,12 +92,12 @@ const GetComplimentaryMessage = async (eventId) => {
   return messages;
 };
 
-const CreateMany = async (data, url) => {
+const CreateMany = async (data, url, userId) => {
   const Data = await prisma.media.create({
     data: {
       user: {
         connect: {
-          id: data.userId,
+          id: userId,
         },
       },
       eventId: data.eventId,
@@ -110,12 +109,12 @@ const CreateMany = async (data, url) => {
   return { Data };
 };
 
-const Create = async (data, url) => {
+const Create = async (data, url, userId) => {
   let Data = await prisma.media.create({
     data: {
       user: {
         connect: {
-          id: data.userId,
+          id: userId,
         },
       },
       eventId: data.eventId,
@@ -124,7 +123,7 @@ const Create = async (data, url) => {
     },
   });
 
-  const user = await prisma.user.findFirst({ where: { id: data.userId } });
+  const user = await prisma.user.findFirst({ where: { id: userId } });
   const event = await prisma.event.findFirst({ where: { id: data.eventId } });
   const message = `Media : ${user.firstname} sent you a media file`;
   const notification = await prisma.notifications.create({
@@ -139,7 +138,7 @@ const Create = async (data, url) => {
   const guestMessage = `Media : Media file has been sent to the host`;
   const guestNotification = await prisma.notifications.create({
     data: {
-      userId: data.userId,
+      userId: userId,
       type: "MEDIA",
       message: guestMessage,
       referenceEvent: event.id,
@@ -165,15 +164,15 @@ const UpdateVisibility = async (id, data) => {
   return Data;
 };
 
-const CreateComplimentaryMessage = async (data) => {
+const CreateComplimentaryMessage = async (data, userId) => {
   const Data = await prisma.complimentaryMessage.create({
     data: {
-      userId: data.userId,
+      userId: userId,
       eventId: data.eventId,
       message: data.message,
     },
   });
-  const user = await prisma.user.findFirst({ where: { id: data.userId } });
+  const user = await prisma.user.findFirst({ where: { id: userId } });
   const event = await prisma.event.findFirst({ where: { id: data.eventId } });
   const message = `Media : ${user.firstname} sent you a complimentary message`;
   const notification = await prisma.notifications.create({
@@ -188,7 +187,7 @@ const CreateComplimentaryMessage = async (data) => {
   const guestMessage = `Media : Complimentary mesage has been sent to the host`;
   const guestNotification = await prisma.notifications.create({
     data: {
-      userId: data.userId,
+      userId: userId,
       type: "MEDIA",
       message: guestMessage,
       referenceEvent: event.id,

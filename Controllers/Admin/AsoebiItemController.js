@@ -3,8 +3,9 @@ const express = require("express");
 const router = express.Router();
 const { Create, Update, Delete } = require("../../Services/asoebiItem");
 const { AdminAuthenticated } = require("../../Utils/EnsureAuthenticated");
-const { cloudinary } = require("../../config/Cloudinary");
+const cloudinary = require("../../config/Cloudinary");
 const { upload, dataUri } = require("../../config/multer");
+const ResponseDTO = require("../../DTO/Response");
 const prisma = new PrismaClient();
 
 router.post(
@@ -18,8 +19,10 @@ router.post(
         folder: "eventcircle/asoebi",
       });
       let data = await Create(req.body, response.url);
-
-      return res.status(200).send(data);
+      if(data){
+        return res.status(200).send(data);
+      }
+      return res.status(400).send(ResponseDTO("Failed", "Error occured while adding asoebiItem"));
     } catch (err) {
       console.log(err);
       await prisma.$disconnect();
@@ -28,17 +31,31 @@ router.post(
   }
 );
 
-router.put("/:id", AdminAuthenticated, async (req, res) => {
+router.put("/:id", upload.single("image"), AdminAuthenticated, async (req, res) => {
   try {
-    const file = dataUri(req).content;
-    const response = await cloudinary.uploader.upload(file, {
-      folder: "eventcircle/asoebi",
-    });
-    let data = await Update(req.params.id, req.body, response.url);
-    if (data) {
-      return res.status(200).send(data);
+    let data = null;
+    if (req.file) {
+      const file = dataUri(req).content;
+      const response = await cloudinary.uploader.upload(file, {
+        folder: "eventcircle/asoebi",
+      });
+
+      data = await Update(req.params.id, req.body, response.url);
+      if (data) {
+        return res.status(200).send(data);
+      }
+      return res
+        .status(400)
+        .send(ResponseDTO("Failed", "AsoebiItem not found"));
+    } else {
+      data = await Update(req.params.id, req.body, null);
+      if (data) {
+        return res.status(200).send(data);
+      }
+      return res
+        .status(400)
+        .send(ResponseDTO("Failed", "AsoebiItem not found"));
     }
-    return res.status(400).send(ResponseDTO("Failed", "Asoebi Item not found"));
   } catch (err) {
     console.log(err);
     await prisma.$disconnect();

@@ -1,12 +1,9 @@
 const { PrismaClient } = require("@prisma/client");
-const { SendEmail } = require("../../Utils/Email/EmailService");
 const {
   comparePassword,
-  GenerateOtp,
   VerifyToken,
-} = require("../Auth/services");
-const { hashPassword } = require("./service");
-const { v4: uuidv4 } = require("uuid");
+  hashPassword,
+} = require("../../Utils/HelperFunctions");
 const prisma = new PrismaClient();
 
 const GetUserNotifications = async (id) => {
@@ -43,40 +40,23 @@ const Create = async (data) => {
   const user = await prisma.user.findFirst({
     where: {
       email: data.email,
-      role: "USER",
     },
   });
 
   if (!user) {
-    await prisma.user.create({
+    let Data = await prisma.user.create({
       data: {
         password: "",
         email: data.email,
         lastname: data.lastname,
         firstname: data.firstname,
         emailVerified: false,
-        role: "USER",
       },
     });
 
-    let otp = GenerateOtp();
-    var expires = new Date();
-    expires.setMinutes(expires.getMinutes() + 1);
-    expires = new Date(expires);
-
-    await prisma.otp.create({
-      data: {
-        id: uuidv4(),
-        user: data.email,
-        code: otp,
-        expires: expires,
-      },
-    });
-
-    await SendEmail(data.email, data.firstname, otp);
     await prisma.$disconnect();
 
-    return data;
+    return Data;
   }
   return null;
 };
@@ -110,10 +90,10 @@ const SetPassword = async (data, type) => {
   return null;
 };
 
-const ChangePassword = async (data) => {
-  const user = await prisma.user.findFirst({
+const ChangePassword = async (data, userId) => {
+  const user = await prisma.user.findUnique({
     where: {
-      email: data.email,
+      id: userId,
     },
   });
 
@@ -148,6 +128,7 @@ const GetUser = async (id) => {
 
   await prisma.$disconnect();
   return user;
+  
 };
 
 const GetUsers = async () => {

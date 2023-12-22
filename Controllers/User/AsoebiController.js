@@ -11,7 +11,10 @@ const {
   GetAsoebiBuyers,
   Buy,
 } = require("../../Services/asoebi");
-const {EnsureAuthenticated, UserAuthenticated} = require("../../Utils/EnsureAuthenticated");
+const {
+  EnsureAuthenticated,
+  UserAuthenticated,
+} = require("../../Utils/EnsureAuthenticated");
 
 const prisma = new PrismaClient();
 
@@ -53,7 +56,7 @@ router.get("/Get/AsoebiBuyers/:id", EnsureAuthenticated, async (req, res) => {
 
 router.post("/create", UserAuthenticated, async (req, res) => {
   try {
-    let data = await Create(req.body);
+    let data = await Create(req.body, req.user.id);
     return res.status(200).send(data);
   } catch (err) {
     console.log(err);
@@ -64,7 +67,7 @@ router.post("/create", UserAuthenticated, async (req, res) => {
 
 router.post("/createMany", UserAuthenticated, async (req, res) => {
   try {
-    let data = await CreateMany(req.body);
+    let data = await CreateMany(req.body, req.user.id);
     req.io.emit(data.notification.userId, data.notification);
     return res.status(200).send(data.data);
   } catch (err) {
@@ -76,11 +79,9 @@ router.post("/createMany", UserAuthenticated, async (req, res) => {
 
 router.post("/Buy", UserAuthenticated, async (req, res) => {
   try {
-    let data = await Buy(req.body);
+    let data = await Buy(req.body, req.user.id);
     if (data) {
-      req.io.emit(data.notification.userId, data.notification);
-      req.io.emit(data.guestNotification.userId, data.guestNotification);
-      return res.status(200).send(data.buy);
+      return res.status(200).send(data);
     }
     return res
       .status(400)
