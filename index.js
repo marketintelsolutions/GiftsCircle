@@ -17,13 +17,10 @@ const run = async () => {
   const io = new Server(server, {
     cors: {
       origin: [
-        "http://localhost:3000",
-        "http://localhost:3001",
         "http://localhost:5173",
-        "http://localhost:5174",
-        "http://127.0.0.1:5173",
         "https://giftscircle.netlify.app",
         "https://eventcircleadmin.netlify.app",
+        "https://eventcirco.com"
       ],
     },
   });
@@ -48,15 +45,10 @@ const run = async () => {
   app.use(
     cors({
       origin: [
-        "http://localhost:3000",
-        "http://localhost:3001",
         "https://giftscircle.netlify.app",
-        "https://demo.twilio.com",
         "http://localhost:5173",
-        "http://localhost:5174",
-        "http://127.0.0.1:5173",
-        "https://finddmee.netlify.app",
         "https://eventcircleadmin.netlify.app",
+        "https://eventcirco.com",
       ],
     })
   );
