@@ -45,7 +45,7 @@ const run = async () => {
   app.use(
     cors({
       origin: [
-        "https://giftscircle.netlify.app",
+        "https://staging.eventcirco.com",
         "http://localhost:5173",
         "https://eventcircleadmin.netlify.app",
         "https://eventcirco.com",
