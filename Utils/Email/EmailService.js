@@ -176,14 +176,14 @@ const SendMail = async ({
 
   const msg = {
     to: recieverEmail, 
-    from: 'ziltch1technologies@gmail.com', // Change to your verified sender
+    from: 'eventcircle01@gmail.com', // Change to your verified sender
     subject: subject,
     html: html,
   }
   sgMail
   .send(msg)
   .then((response) => {
-    console.log(response.body)
+    console.log(response)
   })
   .catch((error) => {
     console.error(error)
