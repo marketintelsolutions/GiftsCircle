@@ -20,7 +20,8 @@ const run = async () => {
         "http://localhost:5173",
         "https://eventcircleadmin.netlify.app",
         "https://eventcirco.com",
-        "https://staging.eventcirco.com"
+        "https://staging.eventcirco.com",
+        "https://eventsadmin.eventcirco.com"
       ],
     },
   });
@@ -49,6 +50,7 @@ const run = async () => {
         "http://localhost:5173",
         "https://eventcircleadmin.netlify.app",
         "https://eventcirco.com",
+        "https://eventsadmin.eventcirco.com"
       ],
     })
   );
