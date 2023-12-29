@@ -365,7 +365,7 @@ model complimentarygift {
   title           String?           @db.VarChar(255)
   category        String            @db.VarChar(255)
   image           String?           @db.VarChar(255)
-  details         String?           @db.VarChar(255)
+  details         String?           @db.VarChar
   amount          Decimal           @db.Decimal(32, 16)
   giftTransaction giftTransaction[]
   created_at      DateTime          @default(now())
