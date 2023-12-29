@@ -16,21 +16,6 @@ const Create = async (data, image) => {
   return Data;
 };
 
-const Buy = async (data, userId) => {
-  data.forEach((element) => {
-    element.date = new Date(Date.now());
-    element.quantity = 1;
-    element.userId = userId
-    return element;
-  });
-  let transactions = await prisma.giftTransaction.createMany({
-    data: [...data],
-    skipDuplicates: true,
-  });
-  await prisma.$disconnect();
-
-  return transactions;
-};
 
 const Update = async (id, data, image) => {
   const complimentaryItem = await prisma.complimentarygift.findUnique({
@@ -60,7 +45,7 @@ const Update = async (id, data, image) => {
 };
 
 const Delete = async (id) => {
-  let complimentarygift = await prisma.giftTransaction.delete({
+  let complimentarygift = await prisma.complimentarygift.delete({
     where: {
       id: id,
     },
@@ -70,4 +55,4 @@ const Delete = async (id) => {
   return complimentarygift;
 };
 
-module.exports = { Create, Buy,Update, Delete };
+module.exports = { Create,Update, Delete };
