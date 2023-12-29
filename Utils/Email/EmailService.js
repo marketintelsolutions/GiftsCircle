@@ -149,7 +149,6 @@ const SendContactAdminEmail = async (data) => {
 
   const compiledFunction = pug.compileFile(templatePath);
   const html = compiledFunction({
-    recieverName: recieverName,
     name: data.name,
     email: data.email,
     phone: data.phone,
