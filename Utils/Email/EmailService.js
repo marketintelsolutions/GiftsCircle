@@ -2,6 +2,7 @@ const sgMail = require('@sendgrid/mail')
 const { formatAmount } = require("../HelperFunctions");
 const { resolve } = require("path");
 const pug = require("pug");
+const moment = require('moment'); 
 
 const SendVerifyEmail = async (recieverName, recieverEmail, otp) => {
   const templatePath = resolve(__dirname, "./templates/VerifyEmail.pug");
