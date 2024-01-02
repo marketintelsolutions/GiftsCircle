@@ -13,6 +13,14 @@ const GetEvent = async (id) => {
     where: {
       id: id,
     },
+    include: {
+      user: {
+        select: {
+          firstname: true,
+          lastname: true
+        }
+      }
+    }
   });
 
   await prisma.$disconnect();
