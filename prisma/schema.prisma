@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgres"
-  url      = env("DATABASE_URL")
+  url      = env("DATABASE_STAGING_URL")
 }
 
 model admin {
@@ -73,6 +73,8 @@ model Category {
   sourvenirItem         sourvenirItem[]
   SourvenirItemCategory SourvenirItemCategory[]
   subCategories         Category[]              @relation("Subcategories")
+  seasonalitem          seasonalitem[]
+  SeasonalItemCategory  SeasonalItemCategory[]
 }
 
 model giftitem {
@@ -109,7 +111,7 @@ model asoebiitem {
   image              String?              @db.VarChar(255)
   details            String?              @db.VarChar
   amount             Decimal              @db.Decimal(32, 16)
-  weight             Decimal?              @db.Decimal(32, 16)
+  weight             Decimal?             @db.Decimal(32, 16)
   categoryId         Int? // Reference to Category
   category           Category?            @relation(fields: [categoryId], references: [id])
   created_at         DateTime             @default(now())
@@ -137,7 +139,7 @@ model sourvenirItem {
   image                 String?                 @db.VarChar(255)
   details               String?                 @db.VarChar
   amount                Decimal                 @db.Decimal(32, 16)
-  weight                Decimal?                 @db.Decimal(32, 16)
+  weight                Decimal?                @db.Decimal(32, 16)
   categoryId            Int? // Reference to Category
   category              Category?               @relation(fields: [categoryId], references: [id])
   created_at            DateTime                @default(now())
@@ -157,6 +159,30 @@ model SourvenirItemCategory {
   category        Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@id([sourvenirItemId, categoryId])
+}
+
+model seasonalitem {
+  id                   String                 @id @default(uuid())
+  title                String?                @db.VarChar(255)
+  image                String?                @db.VarChar(255)
+  details              String?                @db.VarChar
+  amount               Decimal                @db.Decimal(32, 16)
+  weight               Decimal?               @db.Decimal(32, 16)
+  created_at           DateTime               @default(now())
+  updated_at           DateTime?              @updatedAt
+  created_by           String?                @db.VarChar(255)
+  categoryId           Int? // Reference to Category
+  category             Category?              @relation(fields: [categoryId], references: [id])
+  SeasonalItemCategory SeasonalItemCategory[]
+}
+
+model SeasonalItemCategory {
+  seasonalItemId String
+  categoryId     Int
+  seasonalitem   seasonalitem @relation(fields: [seasonalItemId], references: [id], onDelete: Cascade)
+  category       Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([seasonalItemId, categoryId])
 }
 
 model event {
@@ -377,21 +403,26 @@ model complimentarygift {
 }
 
 model marketGiftTransaction {
-  id          String         @id @default(uuid())
-  ItemId      String         @db.VarChar(255)
-  quantity    Int
-  purchasedBy user           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  status      Status
-  delivered   Boolean        @default(false)
-  amountPaid  Int
-  category    MarketCategory
-  userId      String         @db.VarChar(255)
-  created_at  DateTime       @default(now())
-  updated_at  DateTime?      @updatedAt
-  deleted_at  DateTime?
-  created_by  String?        @db.VarChar(255)
-  updated_by  String?        @db.VarChar(255)
-  deleted_by  String?        @db.VarChar(255)
+  id              String         @id @default(uuid())
+  ItemId          String         @db.VarChar(255)
+  quantity        Int
+  purchasedBy     user           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status          Status
+  delivered       Boolean        @default(false)
+  amountPaid      Int
+  category        MarketCategory
+  recieverAddress String?        @db.VarChar
+  recieverName    String?        @db.VarChar
+  recieverPhone   String?        @db.VarChar
+  message         String?        @db.VarChar
+  isGift          Boolean        @default(false)
+  userId          String         @db.VarChar(255)
+  created_at      DateTime       @default(now())
+  updated_at      DateTime?      @updatedAt
+  deleted_at      DateTime?
+  created_by      String?        @db.VarChar(255)
+  updated_by      String?        @db.VarChar(255)
+  deleted_by      String?        @db.VarChar(255)
 
   @@index([userId], type: SpGist)
   @@index([status])
@@ -556,7 +587,7 @@ model Cart {
   image      String?        @db.VarChar(255)
   details    String?        @db.VarChar
   amount     Decimal        @db.Decimal(32, 16)
-  weight     Decimal?        @db.Decimal(32, 16)
+  weight     Decimal?       @db.Decimal(32, 16)
   created_at DateTime       @default(now())
 }
 
@@ -616,6 +647,7 @@ enum MarketCategory {
   GIFT
   SOURVENIR
   COMPLIMENTARYGIFT
+  SEASONAL
 }
 
 enum Role {

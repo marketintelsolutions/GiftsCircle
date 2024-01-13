@@ -12,7 +12,7 @@
       "name": "authorization"
     }
   },
-  "host": "localhost:4000o",
+  "host": "localhost:4000",
   "basePath": "/api",
   "schemes": ["http", "https"],
   "consumes": ["application/json"],
@@ -150,6 +150,14 @@
     {
       "name": "Transactions",
       "description": "Apis handling Transaction endpoints"
+    },
+    {
+      "name": "SeasonalItem",
+      "description": "Apis handling SeasonalItems"
+    },
+    {
+      "name": "Admin_SeasonalItem",
+      "description": "Apis handling Admin SeasonalItems enpoints"
     }
   ],
   "paths": {
@@ -4034,6 +4042,167 @@
           }
         }
       }
+    },
+    "/seasonalItem/{id}": {
+      "get": {
+        "description": "",
+        "tags": ["seasonalItem"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/seasonalItem/Get/All": {
+      "get": {
+        "description": "",
+        "tags": ["seasonalItem"],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/seasonalItem/Get/BySlug/{slug}": {
+      "get": {
+        "description": "",
+        "tags": ["seasonalItem"],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+
+    "/admin/seasonalItem/create": {
+      "post": {
+        "description": "Note the categories field is an array instead of an object",
+        "tags": ["Admin_SeasonalItem"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/schema/SeasonalItem" }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/seasonalItem/{id}": {
+      "put": {
+        "description": "",
+        "tags": ["Admin_SeasonalItem"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/schema/SeasonalItem" }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/seasonalItem//{id}": {
+      "delete": {
+        "description": "",
+        "tags": ["Admin_SeasonalItem"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
     }
 
   },
@@ -4711,7 +4880,6 @@
             "type": "number",
             "required": true
           },
-
           "amountPaid": {
             "type": "number",
             "required": true
@@ -4723,6 +4891,22 @@
           "category": {
             "type": "string",
             "required": true
+          }, 
+          "recieverName": {
+            "type": "string",
+            "required": false
+          },
+          "recieverPhone": {
+            "type": "string",
+            "required": false
+          },
+          "recieverAddress": {
+            "type": "string",
+            "required": false
+          },
+          "isGift": {
+            "type": "boolean",
+            "required": false
           }
         }
       },
@@ -4905,6 +5089,35 @@
           "message": {
             "type": "string",
             "required": true
+          }
+        }
+      },
+      "SeasonalItem": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "required": true
+          },
+          "image": {
+            "type": "object",
+            "required": true
+          },
+          "categories": {
+            "type": "object",
+            "required": true
+          },
+          "details": {
+            "type": "string",
+            "required": false
+          },
+          "amount": {
+            "type": "number",
+            "required": true
+          },
+          "weight": {
+            "type": "number",
+            "required": false
           }
         }
       }
