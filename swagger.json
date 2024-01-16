@@ -4907,6 +4907,10 @@
           "isGift": {
             "type": "boolean",
             "required": false
+          },
+          "message": {
+            "type": "string",
+            "required": false
           }
         }
       },
@@ -5119,6 +5123,7 @@
             "type": "number",
             "required": false
           }
+          
         }
       }
     }
