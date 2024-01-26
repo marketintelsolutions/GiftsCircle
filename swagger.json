@@ -4203,6 +4203,32 @@
           }
         }
       }
+    },
+    "/admin/giftImages/UploadImages": {
+      "post": {
+        "description": "This will be an array of the images, it will return an array of the image's urls",
+        "parameters": [
+          {
+            "name": "images",
+            "in": "body",
+            "required": true,
+            "type": "object"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
     }
 
   },
@@ -4925,6 +4951,10 @@
             "type": "object",
             "required": true
           },
+          "altImages": {
+            "type": "object",
+            "required": false
+          },
           "categories": {
             "type": "object",
             "required": true
@@ -4954,6 +4984,10 @@
             "type": "object",
             "required": true
           },
+          "altImages": {
+            "type": "object",
+            "required": false
+          },
           "category": {
             "type": "string",
             "required": true
@@ -4978,6 +5012,10 @@
           "image": {
             "type": "object",
             "required": true
+          },
+          "altImages": {
+            "type": "object",
+            "required": false
           },
           "categories": {
             "type": "object",
@@ -5110,6 +5148,10 @@
           "categories": {
             "type": "object",
             "required": true
+          },
+          "altImages": {
+            "type": "object",
+            "required": false
           },
           "details": {
             "type": "string",

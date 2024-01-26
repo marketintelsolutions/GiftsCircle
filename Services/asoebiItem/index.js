@@ -63,11 +63,12 @@ const searchAsoebiItemsByCategorySlug = async (categorySlug) => {
 };
 
 const Create = async (data, image) => {
-  let prisma = new PrismaClient()
+  let prisma = new PrismaClient();
   let transaction;
   let result;
   try {
     transaction = await prisma.$transaction(async (prisma) => {
+      
       result = await prisma.asoebiitem.create({
         data: {
           title: data.title,
@@ -75,6 +76,7 @@ const Create = async (data, image) => {
           amount: parseFloat(data.amount),
           image: image,
           weight: parseFloat(data.weight),
+          altImages: data.altImages || [],
           AsoebiItemCategory: {
             create: data.categories.map((c) => ({ categoryId: parseInt(c) })),
           },
@@ -112,6 +114,7 @@ const Update = async (id, data, image) => {
         details: data.details ? data.details : asoebiItem.details,
         title: data.title ? data.title : asoebiItem.title,
         weight: data.weight ? parseFloat(data.weight) : asoebiItem.weight,
+        altImages: data.altImages ? data.altImages : asoebiItem.altImages,
       },
     });
     await prisma.$disconnect();

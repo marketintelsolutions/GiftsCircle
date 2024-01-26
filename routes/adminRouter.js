@@ -18,7 +18,9 @@ const categoryController = require('../Controllers/Admin/CategoryController');
 const contactController = require('../Controllers/Admin/ContactController');
 const authController = require('../Controllers/Admin/AuthController');
 const transactionController  = require('../Controllers/Admin/TransactionController')
+const giftImageController = require('../Controllers/Admin/MediaController')
 
+router.use("/giftImages", giftImageController);
 router.use("/transaction", transactionController);
 router.use("/marketPlace", marketplaceController);
 router.use("/complimentaryGift", complimentaryGiftController);

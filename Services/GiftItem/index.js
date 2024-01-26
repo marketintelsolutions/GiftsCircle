@@ -69,6 +69,7 @@ const Create = async (data, image) => {
           amount: parseFloat(data.amount),
           image: image,
           weight: parseFloat(data.weight),
+          altImages: data.altImages || [],
           GiftItemCategory: {
             create: data.categories.map((c) => ({ categoryId: parseInt(c) })),
           },
@@ -105,6 +106,7 @@ const Update = async (id, data, image) => {
         details: data.details ? data.details : giftItem.details,
         title: data.title ? data.title : giftItem.title,
         weight: data.weight ? parseFloat(data.weight) : giftItem.weight,
+        altImages: data.altImages ? data.altImages : giftItem.altImages,
       },
     });
 

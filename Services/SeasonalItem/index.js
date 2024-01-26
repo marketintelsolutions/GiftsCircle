@@ -69,8 +69,9 @@ const Create = async (data, image) => {
           amount: parseFloat(data.amount),
           image: image,
           weight: parseFloat(data.weight),
+          altImages: JSON.parse(data.altImages) || [],
           SeasonalItemCategory: {
-            create: data.categories.map((c) => ({ categoryId: parseInt(c) })),
+            create: JSON.parse(data?.categories).map((c) => ({ categoryId: parseInt(c) })),
           },
         },
       });
@@ -105,6 +106,7 @@ const Update = async (id, data, image) => {
         details: data.details ? data.details : seasonalItem.details,
         title: data.title ? data.title : seasonalItem.title,
         weight: data.weight ? parseFloat(data.weight) : seasonalItem.weight,
+        altImages: data.altImages ? data.altImages : seasonalItem.altImages,
       },
     });
 
