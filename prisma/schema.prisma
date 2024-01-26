@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgres"
-  url      = env("DATABASE_STAGING_URL")
+  url      = env("DATABASE_URL")
 }
 
 model admin {
@@ -81,6 +81,7 @@ model giftitem {
   id               String             @id @default(uuid())
   title            String?            @db.VarChar(255)
   image            String?            @db.VarChar(255)
+  altImages        String[]           @default([])
   details          String?            @db.VarChar
   amount           Decimal            @db.Decimal(32, 16)
   weight           Decimal?           @db.Decimal(32, 16)
@@ -109,6 +110,7 @@ model asoebiitem {
   id                 String               @id @default(uuid())
   title              String?              @db.VarChar(255)
   image              String?              @db.VarChar(255)
+  altImages          String[]             @default([])
   details            String?              @db.VarChar
   amount             Decimal              @db.Decimal(32, 16)
   weight             Decimal?             @db.Decimal(32, 16)
@@ -137,6 +139,7 @@ model sourvenirItem {
   id                    String                  @id @default(uuid())
   title                 String?                 @db.VarChar(255)
   image                 String?                 @db.VarChar(255)
+  altImages             String[]                @default([])
   details               String?                 @db.VarChar
   amount                Decimal                 @db.Decimal(32, 16)
   weight                Decimal?                @db.Decimal(32, 16)
@@ -165,6 +168,7 @@ model seasonalitem {
   id                   String                 @id @default(uuid())
   title                String?                @db.VarChar(255)
   image                String?                @db.VarChar(255)
+  altImages            String[]               @default([])
   details              String?                @db.VarChar
   amount               Decimal                @db.Decimal(32, 16)
   weight               Decimal?               @db.Decimal(32, 16)
@@ -391,6 +395,7 @@ model complimentarygift {
   title           String?           @db.VarChar(255)
   category        String            @db.VarChar(255)
   image           String?           @db.VarChar(255)
+  altImages       String[]          @default([])
   details         String?           @db.VarChar
   amount          Decimal           @db.Decimal(32, 16)
   giftTransaction giftTransaction[]
