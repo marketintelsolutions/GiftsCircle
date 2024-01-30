@@ -4,6 +4,7 @@ const cloudinary = require("../../config/Cloudinary");
 const { upload, dataUriMultiple } = require("../../config/multer");
 const { AdminAuthenticated } = require("../../Utils/EnsureAuthenticated");
 const ResponseDTO = require("../../DTO/Response");
+
 router.post(
   "/UploadImages",
   upload.array("images"),
@@ -11,6 +12,8 @@ router.post(
   async (req, res) => {
     try {
       const data = req.files;
+      if (data.length === 0)
+        return res.status(400).send(ResponseDTO("Failed", "At least one image required"));
       const uploadPromises = data.map((ele) => {
         const file = dataUriMultiple(ele).content;
 
