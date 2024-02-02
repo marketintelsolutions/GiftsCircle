@@ -2,37 +2,31 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const Get = async (id) => {
-  const asoebiItem = await prisma.asoebiitem.findUnique({
+  const seasonalItem = await prisma.seasonalitem.findUnique({
     where: {
       id: id,
     },
+  });
+
+  await prisma.$disconnect();
+  return seasonalItem;
+};
+
+const GetAll = async () => {
+  const seasonalItems = await prisma.seasonalitem.findMany({
     include: {
-      AsoebiItemCategory: {
+      SeasonalItemCategory: {
         include: {
           category: true,
         },
       },
     },
   });
-
   await prisma.$disconnect();
-  return asoebiItem;
+  return seasonalItems;
 };
 
-const GetAll = async () => {
-  const asoebiItems = await prisma.asoebiitem.findMany({
-    // include: {
-    //   AsoebiItemCategory: {
-    //     include: {
-    //       category: true, // Include the related category
-    //     },
-    //   },
-    // },
-  });
-  await prisma.$disconnect();
-  return asoebiItems;
-};
-const searchAsoebiItemsByCategorySlug = async (categorySlug) => {
+const searchSeasonalItemsByCategorySlug = async (categorySlug) => {
   try {
     const category = await prisma.category.findMany({
       where: {
@@ -42,9 +36,9 @@ const searchAsoebiItemsByCategorySlug = async (categorySlug) => {
         ],
       },
       include: {
-        AsoebiItemCategory: {
+        SeasonalItemCategory: {
           include: {
-            asoebiItem: true,
+            seasonalitem: true,
           },
         },
       },
@@ -63,13 +57,12 @@ const searchAsoebiItemsByCategorySlug = async (categorySlug) => {
 };
 
 const Create = async (data, image) => {
-  let prisma = new PrismaClient();
+  const prisma = new PrismaClient();
   let transaction;
   let result;
   try {
     transaction = await prisma.$transaction(async (prisma) => {
-      
-      result = await prisma.asoebiitem.create({
+      result = await prisma.seasonalitem.create({
         data: {
           title: data.title,
           details: data.details,
@@ -77,13 +70,12 @@ const Create = async (data, image) => {
           image: image,
           weight: parseFloat(data.weight),
           altImages: data.altImages || [],
-          AsoebiItemCategory: {
-            create: data.categories.map((c) => ({ categoryId: parseInt(c) })),
+          SeasonalItemCategory: {
+            create: data?.categories.map((c) => ({ categoryId: parseInt(c) })),
           },
         },
       });
     });
-
     return result;
   } catch (error) {
     console.log(error);
@@ -97,26 +89,27 @@ const Create = async (data, image) => {
 };
 
 const Update = async (id, data, image) => {
-  const asoebiItem = await prisma.asoebiitem.findUnique({
+  const seasonalItem = await prisma.seasonalitem.findUnique({
     where: {
       id: id,
     },
   });
 
-  if (asoebiItem) {
-    let Data = await prisma.asoebiitem.update({
+  if (seasonalItem) {
+    let Data = await prisma.seasonalitem.update({
       where: {
         id: id,
       },
       data: {
-        image: image ? image : asoebiItem.image,
-        amount: data.amount ? parseFloat(data.amount) : asoebiItem.amount,
-        details: data.details ? data.details : asoebiItem.details,
-        title: data.title ? data.title : asoebiItem.title,
-        weight: data.weight ? parseFloat(data.weight) : asoebiItem.weight,
-        altImages: data.altImages ? data.altImages : asoebiItem.altImages,
+        image: image ? image : seasonalItem.image,
+        amount: data.amount ? parseFloat(data.amount) : seasonalItem.amount,
+        details: data.details ? data.details : seasonalItem.details,
+        title: data.title ? data.title : seasonalItem.title,
+        weight: data.weight ? parseFloat(data.weight) : seasonalItem.weight,
+        altImages: data.altImages ? data.altImages : seasonalItem.altImages,
       },
     });
+
     await prisma.$disconnect();
     return Data;
   }
@@ -124,14 +117,14 @@ const Update = async (id, data, image) => {
 };
 
 const Delete = async (id) => {
-  let asoebiItem = await prisma.asoebiitem.delete({
+  let seasonalItem = await prisma.seasonalitem.delete({
     where: {
       id: id,
     },
   });
 
   await prisma.$disconnect();
-  return asoebiItem;
+  return seasonalItem;
 };
 
 module.exports = {
@@ -140,5 +133,5 @@ module.exports = {
   GetAll,
   Update,
   Delete,
-  searchAsoebiItemsByCategorySlug,
+  searchSeasonalItemsByCategorySlug,
 };

@@ -10,6 +10,7 @@ const eventController = require("../Controllers/Admin/EventController");
 const giftItemController = require("../Controllers/Admin/GiftItemController");
 const asoebiItemController = require("../Controllers/Admin/AsoebiItemController");
 const sourvenirItemController = require("../Controllers/Admin/SourvenirItemController");
+const seasonalItemController = require("../Controllers/Admin/SeasonalItemController");
 const asoebiController = require('../Controllers/Admin/AsoebiController');
 const smsController = require('../Controllers/User/SmsController');
 const sourvenirController = require('../Controllers/Admin/SourvenirController');
@@ -17,7 +18,9 @@ const categoryController = require('../Controllers/Admin/CategoryController');
 const contactController = require('../Controllers/Admin/ContactController');
 const authController = require('../Controllers/Admin/AuthController');
 const transactionController  = require('../Controllers/Admin/TransactionController')
+const giftImageController = require('../Controllers/Admin/MediaController')
 
+router.use("/giftImages", giftImageController);
 router.use("/transaction", transactionController);
 router.use("/marketPlace", marketplaceController);
 router.use("/complimentaryGift", complimentaryGiftController);
@@ -28,6 +31,7 @@ router.use("/event", eventController);
 router.use("/giftItem", giftItemController);
 router.use("/asoebiItem", asoebiItemController);
 router.use("/sourvenirItem", sourvenirItemController);
+router.use("/seasonalItem", seasonalItemController);
 router.use('/asoebi', asoebiController);
 router.use('/sms', smsController);
 router.use('/sourvenir', sourvenirController);

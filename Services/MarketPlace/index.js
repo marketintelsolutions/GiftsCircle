@@ -6,6 +6,11 @@ const GetMarketTransactions = async (id) => {
     where: {
       userId: id,
     },
+    orderBy: [
+      {
+        created_at: 'asc'
+      }
+    ]
   });
 
   await prisma.$disconnect();
@@ -22,8 +27,6 @@ const BuyMarketItems = async (data, userId) => {
     data: [...data],
     skipDuplicates: true,
   });
-
-
 
   await prisma.$disconnect();
   return Data;
