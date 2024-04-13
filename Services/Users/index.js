@@ -4,9 +4,9 @@ const {
   comparePassword,
   GenerateOtp,
   VerifyToken,
-} = require("../Auth/services");
-const { hashPassword } = require("./service");
-const { v4: uuidv4 } = require("uuid");
+  hashPassword,
+  Id_Generator,
+} = require("../../Utils/HelperFunctions");
 const prisma = new PrismaClient();
 
 const GetUserNotifications = async (id) => {
@@ -40,45 +40,66 @@ const UpdateNotifications = async (id) => {
 };
 
 const Create = async (data) => {
-  const user = await prisma.user.findFirst({
-    where: {
-      email: data.email,
-      role: "USER",
-    },
-  });
+  let prisma = new PrismaClient();
+  let transaction;
+  let result;
+  try {
+    transaction = await prisma.$transaction(async (prisma) => {
+      if (data.referralCode) {
+        const referrer = await prisma.user.findFirst({
+          where: {
+            referralCode: data.referralCode,
+            referralActive: true,
+          },
+        });
+        if (referrer) data.referredBy = referrer.id;
+      }
+      const referralCode = Id_Generator(7, true, false, false, false);
+      const user = await prisma.user.findFirst({
+        where: {
+          email: data.email,
+          referralCode: referralCode,
+        },
+      });
 
-  if (!user) {
-    await prisma.user.create({
-      data: {
-        password: "",
-        email: data.email,
-        lastname: data.lastname,
-        firstname: data.firstname,
-        emailVerified: false,
-        role: "USER",
-      },
+      if (!user) {
+        let Data = await prisma.user.create({
+          data: {
+            password: "",
+            email: data.email,
+            lastname: data.lastname,
+            firstname: data.firstname,
+            emailVerified: false,
+            referralCode: referralCode,
+          },
+        });
+
+        await prisma.wallet.create({
+          data: {
+            user: {
+              connect: {
+                id: user.id,
+              },
+            },
+          },
+        });
+
+        await prisma.$disconnect();
+
+        result = Data;
+      }
+      result = null;
     });
-
-    let otp = GenerateOtp();
-    var expires = new Date();
-    expires.setMinutes(expires.getMinutes() + 1);
-    expires = new Date(expires);
-
-    await prisma.otp.create({
-      data: {
-        id: uuidv4(),
-        user: data.email,
-        code: otp,
-        expires: expires,
-      },
-    });
-
-    await SendEmail(data.email, data.firstname, otp);
+    return result;
+  } catch (error) {
+    console.log(error);
+    if (transaction) {
+      console.log("Transaction rolled back due to an error.");
+      await prisma.$queryRaw`ROLLBACK;`;
+    }
+  } finally {
     await prisma.$disconnect();
-
-    return data;
   }
-  return null;
 };
 
 const SetPassword = async (data, type) => {

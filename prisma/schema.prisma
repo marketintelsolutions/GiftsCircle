@@ -21,6 +21,10 @@ model user {
   emailVerified         Boolean?
   password              String                  @db.VarChar(255)
   role                  Role                    @default(USER)
+  refreshToken          String?                 @db.VarChar(255)
+  referralCode           String?                 @db.VarChar(7)
+  referralActive         Boolean                 @default(false)
+  referredBy            String?                 @db.VarChar(255)
   created_at            DateTime                @default(now())
   updated_at            DateTime?               @updatedAt
   deleted_at            DateTime?
@@ -33,9 +37,42 @@ model user {
   deliveryTransactions  deliveryTransactions[]
   Guests                Guests[]
   gift                  gift[]
+  Cart                  Cart[]
+  Transaction           Transaction[]
+  Wallet                wallet[]
 
-  @@index([id], type: SpGist)
-  @@index([email, role])
+  @@index([email])
+}
+
+model wallet {
+  id      String  @id @default(uuid())
+  balance Decimal @db.Decimal(32, 16) @default(0)
+  user    user    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId  String
+  created_at DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Category {
+  id                    Int                     @id @default(autoincrement())
+  name                  String
+  slug                  String                  @unique
+  parentCategory        Category?               @relation("Subcategories", fields: [parentCategoryId], references: [id])
+  parentCategoryId      Int?
+  created_at            DateTime                @default(now())
+  updated_at            DateTime?               @updatedAt
+  created_by            String?                 @db.VarChar(255)
+  updated_by            String?                 @db.VarChar(255)
+  GiftItemCategory      GiftItemCategory[]
+  giftitem              giftitem[]
+  asoebiitem            asoebiitem[]
+  AsoebiItemCategory    AsoebiItemCategory[]
+  sourvenirItem         sourvenirItem[]
+  SourvenirItemCategory SourvenirItemCategory[]
+  subCategories         Category[]              @relation("Subcategories")
+  seasonalitem          seasonalitem[]
+  SeasonalItemCategory  SeasonalItemCategory[]
 }
 
 model giftitem {
