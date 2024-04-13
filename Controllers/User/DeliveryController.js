@@ -18,9 +18,9 @@ const {
 } = require("../../Utils/EnsureAuthenticated");
 const prisma = new PrismaClient();
 
-router.get("/:id", EnsureAuthenticated, async (req, res) => {
+router.get("/", EnsureAuthenticated, async (req, res) => {
   try {
-    let data = await Get(req.params.id);
+    let data = await Get(req.user.id);
     return res.status(200).send(data);
   } catch (err) {
     console.log(err);
@@ -51,9 +51,9 @@ router.get("/deliveryTrans/:id", EnsureAuthenticated, async (req, res) => {
   }
 });
 
-router.get("/:userId/deliveryTrans", EnsureAuthenticated, async (req, res) => {
+router.get("/user/deliveryTrans", EnsureAuthenticated, async (req, res) => {
   try {
-    let data = await GetUserDeliveryTrans(req.params.userId);
+    let data = await GetUserDeliveryTrans(req.user.id);
     return res.status(200).send(data);
   } catch (err) {
     console.log(err);
@@ -64,13 +64,9 @@ router.get("/:userId/deliveryTrans", EnsureAuthenticated, async (req, res) => {
 
 router.post("/create", UserAuthenticated, async (req, res) => {
   try {
-    let data = await Create(req.body);
+    let data = await Create(req.body, req.user.id);
     if (data) {
       return res.status(200).send(data);
-    } else {
-      return res
-        .status(400)
-        .send(ResponseDTO("Failed", "Delivery Details already Exists"));
     }
   } catch (err) {
     console.log(err);
@@ -79,9 +75,9 @@ router.post("/create", UserAuthenticated, async (req, res) => {
   }
 });
 
-router.post("/deliveryTrans/:userId", EnsureAuthenticated, async (req, res) => {
+router.post("/deliveryTrans/", EnsureAuthenticated, async (req, res) => {
   try {
-    let data = await CreateDeliveryTrans(req.body, req.params.userId);
+    let data = await CreateDeliveryTrans(req.body, req.user.id);
     if (data) {
       req.io.emit(data.notification.userId, data.notification);
       return res.status(200).send(data.deliveries);

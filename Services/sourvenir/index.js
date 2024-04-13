@@ -30,7 +30,7 @@ const GetUserSourvenir = async (id) => {
   return sourvenirs;
 };
 
-const Create = async (data) => {
+const Create = async (data, userId) => {
   let id = uuidv4();
   let Data = await prisma.sourvenir.create({
     data: {
@@ -41,7 +41,7 @@ const Create = async (data) => {
           id: data.sourvenirItemId,
         },
       },
-      userId: data.userId,
+      userId: userId,
     },
   });
 
@@ -49,7 +49,12 @@ const Create = async (data) => {
   return Data;
 };
 
-const CreateMany = async (data) => {
+const CreateMany = async (data, userId) => {
+
+  data.map((ele) => {
+    ele.userId = userId
+    return ele
+  })
 
   await prisma.sourvenir.createMany({
     data: [...data],

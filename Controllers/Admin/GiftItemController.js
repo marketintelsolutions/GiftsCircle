@@ -25,8 +25,10 @@ router.post(
         folder: "eventcircle/gifts",
       });
       let data = await Create(req.body, response.url);
-
-      return res.status(200).send(data);
+      if(data){      
+        return res.status(200).send(data);
+      }
+      return res.status(400).send(ResponseDTO("Failed", "Error occured while adding giftItem"));
     } catch (err) {
       console.log(err);
       await prisma.$disconnect();
@@ -45,8 +47,9 @@ router.put(
       if (req.file) {
         const file = dataUri(req).content;
         const response = await cloudinary.uploader.upload(file, {
-          folder: "eventcircle",
+          folder: "eventcircle/gifts",
         });
+        
         data = await Update(req.params.id, req.body, response.url);
         if (data) {
           return res.status(200).send(data);

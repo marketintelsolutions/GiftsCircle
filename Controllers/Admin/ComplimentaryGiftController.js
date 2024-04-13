@@ -2,11 +2,7 @@ const { PrismaClient } = require("@prisma/client");
 const express = require("express");
 const ResponseDTO = require("../../DTO/Response");
 const router = express.Router();
-const {
-  Create,
-  Update,
-  Delete,
-} = require("../../Services/ComplimentaryGift");
+const { Create, Update, Delete } = require("../../Services/Admin/complimentaryGift");
 const cloudinary = require("../../config/Cloudinary");
 const { upload, dataUri } = require("../../config/multer");
 const { AdminAuthenticated } = require("../../Utils/EnsureAuthenticated");
@@ -20,7 +16,7 @@ router.post(
     try {
       const file = dataUri(req).content;
       const response = await cloudinary.uploader.upload(file, {
-        folder: "eventcircle",
+        folder: "eventcircle/complimentaryGift",
       });
       let data = await Create(req.body, response.url);
 
@@ -33,17 +29,30 @@ router.post(
   }
 );
 
-router.put("/:id", AdminAuthenticated, async (req, res) => {
+router.put("/:id", upload.single("image"), AdminAuthenticated, async (req, res) => {
   try {
-    const file = dataUri(req).content;
-    const response = await cloudinary.uploader.upload(file, {
-      folder: "eventcircle",
-    });
-    let data = await Update(req.params.id, req.body, response.url);
-    if (data) {
-      return res.status(200).send(data);
+    let data = null;
+    if (req.file) {
+      const file = dataUri(req).content;
+      const response = await cloudinary.uploader.upload(file, {
+        folder: "eventcircle/complimentaryGift",
+      });
+      data = await Update(req.params.id, req.body, response.url);
+      if (data) {
+        return res.status(200).send(data);
+      }
+      return res
+        .status(400)
+        .send(ResponseDTO("Failed", "ComplimentaryGiftItem not found"));
+    } else {
+      data = await Update(req.params.id, req.body, null);
+      if (data) {
+        return res.status(200).send(data);
+      }
+      return res
+        .status(400)
+        .send(ResponseDTO("Failed", "ComplimentaryGiftItem not found"));
     }
-    return res.status(400).send(ResponseDTO("Failed", "GiftItem not found"));
   } catch (err) {
     console.log(err);
     await prisma.$disconnect();
@@ -59,7 +68,7 @@ router.delete("/:id", AdminAuthenticated, async (req, res) => {
       .send(
         ResponseDTO(
           "Success",
-          `GiftItem with id ${req.params.id} deleted successfully`
+          `Complimentary gift with id ${req.params.id} deleted successfully`
         )
       );
   } catch (err) {

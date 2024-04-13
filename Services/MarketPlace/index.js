@@ -1,5 +1,4 @@
 const { PrismaClient } = require("@prisma/client");
-const { v4: uuidv4 } = require("uuid");
 const prisma = new PrismaClient();
 
 const GetMarketTransactions = async (id) => {
@@ -7,29 +6,30 @@ const GetMarketTransactions = async (id) => {
     where: {
       userId: id,
     },
+    orderBy: [
+      {
+        created_at: 'asc'
+      }
+    ]
   });
 
   await prisma.$disconnect();
   return trans;
 };
 
-const BuyMarketItems = async (data) => {
+const BuyMarketItems = async (data, userId) => {
+  data.map((ele) => {
+    ele.userId = userId
+    ele.amountPaid = parseInt(ele.amountPaid)
+    return ele;
+  })
   let Data = await prisma.marketGiftTransaction.createMany({
     data: [...data],
     skipDuplicates: true,
   });
 
-  const message = `Market Items purchased`;
-  const notification = await prisma.notifications.create({
-    data: {
-      userId: data[0].userId,
-      type: "PURCHASE",
-      message: message,
-    },
-  });
-
   await prisma.$disconnect();
-  return { Data, notification };
+  return Data;
 };
 
 const UpdateTransaction = async (id, data) => {
@@ -38,7 +38,7 @@ const UpdateTransaction = async (id, data) => {
       id: id,
     },
     data: {
-      status: data.status,
+      delivered: data.delivered,
     },
   });
 

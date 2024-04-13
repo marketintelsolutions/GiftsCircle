@@ -7,6 +7,23 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model admin {
+  id              String    @id @default(uuid())
+  email           String    @unique @db.VarChar(255)
+  firstname       String    @db.VarChar(255)
+  lastname        String    @db.VarChar(255)
+  password        String    @db.VarChar(255)
+  defaultPassword String    @default("") @db.VarChar(255)
+  image           String    @db.VarChar(255)
+  refreshToken    String?   @db.VarChar(255)
+  updated_at      DateTime? @updatedAt
+  created_at      DateTime? @default(now())
+
+  role AdminRole @default(ADMIN)
+
+  @@index([email])
+}
+
 model user {
   id                    String                  @id @default(uuid())
   email                 String                  @db.VarChar(255)
@@ -75,59 +92,115 @@ model Category {
 }
 
 model giftitem {
-  id         String    @id @default(uuid())
-  title      String?   @db.VarChar(255)
-  category   String    @db.VarChar(255)
-  image      String?   @db.VarChar(255)
-  details    String?   @db.VarChar(255)
-  amount     Int
-  weight     Int
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
-  deleted_at DateTime?
-  created_by String?   @db.VarChar(255)
-  updated_by String?   @db.VarChar(255)
-  deleted_by String?   @db.VarChar(255)
-  gift       gift[]
+  id               String             @id @default(uuid())
+  title            String?            @db.VarChar(255)
+  image            String?            @db.VarChar(255)
+  altImages        String[]           @default([])
+  details          String?            @db.VarChar
+  amount           Decimal            @db.Decimal(32, 16)
+  weight           Decimal?           @db.Decimal(32, 16)
+  created_at       DateTime           @default(now())
+  updated_at       DateTime?          @updatedAt
+  deleted_at       DateTime?
+  created_by       String?            @db.VarChar(255)
+  updated_by       String?            @db.VarChar(255)
+  deleted_by       String?            @db.VarChar(255)
+  gift             gift[]
+  categoryId       Int? // Reference to Category
+  category         Category?          @relation(fields: [categoryId], references: [id])
+  GiftItemCategory GiftItemCategory[]
+}
 
-  @@index([id], type: SpGist)
+model GiftItemCategory {
+  giftItemId String
+  categoryId Int
+  giftItem   giftitem @relation(fields: [giftItemId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([giftItemId, categoryId])
 }
 
 model asoebiitem {
-  id                String              @id @default(uuid())
-  title             String?             @db.VarChar(255)
-  category          String              @db.VarChar(255)
-  image             String?             @db.VarChar(255)
-  details           String?             @db.VarChar
-  amount            Int
-  created_at        DateTime            @default(now())
-  updated_at        DateTime?           @updatedAt
-  deleted_at        DateTime?
-  created_by        String?             @db.VarChar(255)
-  updated_by        String?             @db.VarChar(255)
-  deleted_by        String?             @db.VarChar(255)
-  asoebiTransaction asoebiTransaction[]
+  id                 String               @id @default(uuid())
+  title              String?              @db.VarChar(255)
+  image              String?              @db.VarChar(255)
+  altImages          String[]             @default([])
+  details            String?              @db.VarChar
+  amount             Decimal              @db.Decimal(32, 16)
+  weight             Decimal?             @db.Decimal(32, 16)
+  categoryId         Int? // Reference to Category
+  category           Category?            @relation(fields: [categoryId], references: [id])
+  created_at         DateTime             @default(now())
+  updated_at         DateTime?            @updatedAt
+  deleted_at         DateTime?
+  created_by         String?              @db.VarChar(255)
+  updated_by         String?              @db.VarChar(255)
+  deleted_by         String?              @db.VarChar(255)
+  asoebiTransaction  asoebiTransaction[]
+  AsoebiItemCategory AsoebiItemCategory[]
+}
 
-  @@index([id], type: SpGist)
+model AsoebiItemCategory {
+  asoebiItemItemId String
+  categoryId       Int
+  asoebiItem       asoebiitem @relation(fields: [asoebiItemItemId], references: [id], onDelete: Cascade)
+  category         Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([asoebiItemItemId, categoryId])
 }
 
 model sourvenirItem {
-  id         String      @id @default(uuid())
-  title      String?     @db.VarChar(255)
-  category   String      @db.VarChar(255)
-  image      String?     @db.VarChar(255)
-  details    String?     @db.VarChar
-  amount     Int
-  weight     Int
-  created_at DateTime    @default(now())
-  updated_at DateTime?   @updatedAt
-  deleted_at DateTime?
-  created_by String?     @db.VarChar(255)
-  updated_by String?     @db.VarChar(255)
-  deleted_by String?     @db.VarChar(255)
-  sourvenir  sourvenir[]
+  id                    String                  @id @default(uuid())
+  title                 String?                 @db.VarChar(255)
+  image                 String?                 @db.VarChar(255)
+  altImages             String[]                @default([])
+  details               String?                 @db.VarChar
+  amount                Decimal                 @db.Decimal(32, 16)
+  weight                Decimal?                @db.Decimal(32, 16)
+  categoryId            Int? // Reference to Category
+  category              Category?               @relation(fields: [categoryId], references: [id])
+  created_at            DateTime                @default(now())
+  updated_at            DateTime?               @updatedAt
+  deleted_at            DateTime?
+  created_by            String?                 @db.VarChar(255)
+  updated_by            String?                 @db.VarChar(255)
+  deleted_by            String?                 @db.VarChar(255)
+  sourvenir             sourvenir[]
+  SourvenirItemCategory SourvenirItemCategory[]
+}
 
-  @@index([id], type: SpGist)
+model SourvenirItemCategory {
+  sourvenirItemId String
+  categoryId      Int
+  sovernirItem    sourvenirItem @relation(fields: [sourvenirItemId], references: [id], onDelete: Cascade)
+  category        Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([sourvenirItemId, categoryId])
+}
+
+model seasonalitem {
+  id                   String                 @id @default(uuid())
+  title                String?                @db.VarChar(255)
+  image                String?                @db.VarChar(255)
+  altImages            String[]               @default([])
+  details              String?                @db.VarChar
+  amount               Decimal                @db.Decimal(32, 16)
+  weight               Decimal?               @db.Decimal(32, 16)
+  created_at           DateTime               @default(now())
+  updated_at           DateTime?              @updatedAt
+  created_by           String?                @db.VarChar(255)
+  categoryId           Int? // Reference to Category
+  category             Category?              @relation(fields: [categoryId], references: [id])
+  SeasonalItemCategory SeasonalItemCategory[]
+}
+
+model SeasonalItemCategory {
+  seasonalItemId String
+  categoryId     Int
+  seasonalitem   seasonalitem @relation(fields: [seasonalItemId], references: [id], onDelete: Cascade)
+  category       Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([seasonalItemId, categoryId])
 }
 
 model event {
@@ -164,7 +237,6 @@ model event {
   FundRaising     FundRaising[]
 
   @@index([host], map: "Event_userId_fkey")
-  @@index([id], type: SpGist)
   @@index([userId], type: SpGist)
 }
 
@@ -177,7 +249,6 @@ model CoHostCodes {
   updated_at DateTime? @updatedAt
   deleted_at DateTime?
 
-  @@index([id], type: SpGist)
   @@index([eventId, userId])
 }
 
@@ -196,7 +267,6 @@ model Guests {
   updated_by String?   @db.VarChar(255)
   deleted_by String?   @db.VarChar(255)
 
-  @@index([id], type: SpGist)
   @@index([eventId, userId, coHost])
   @@index([eventId, userId])
 }
@@ -221,7 +291,6 @@ model delivery {
   deleted_by String?   @db.VarChar(255)
 
   @@index([userId], map: "Delivery_userId_fkey")
-  @@index([id], type: SpGist)
   @@index([eventId], type: SpGist)
 }
 
@@ -241,7 +310,6 @@ model deliveryTransactions {
   deleted_by   String?        @db.VarChar(255)
 
   @@index([userId], map: "DeliveryTransaction_userId_fkey")
-  @@index([id], type: SpGist)
 }
 
 model FundRaising {
@@ -252,6 +320,7 @@ model FundRaising {
   amountPaid          Int
   active              Boolean
   title               String                @db.VarChar(255)
+  withdrawn           Boolean               @default(false)
   description         String                @db.VarChar
   image               String                @db.VarChar(255)
   created_at          DateTime              @default(now())
@@ -262,7 +331,6 @@ model FundRaising {
   deleted_by          String?               @db.VarChar(255)
   FundRaisingDonation FundRaisingDonation[]
 
-  @@index([id], type: SpGist)
   @@index([eventId], type: SpGist)
 }
 
@@ -282,7 +350,6 @@ model FundRaisingDonation {
   updated_by String?     @db.VarChar(255)
   deleted_by String?     @db.VarChar(255)
 
-  @@index([id], type: SpGist)
   @@index([fundId], type: SpGist)
 }
 
@@ -309,7 +376,6 @@ model gift {
   userId             String?
 
   @@index([eventId], map: "Gift_eventId_fkey")
-  @@index([id], type: SpGist)
   @@index([eventId, created_by])
   @@index([eventId, userId])
   @@index([userId])
@@ -321,7 +387,7 @@ model giftTransaction {
   complimentaryGift   complimentarygift? @relation(fields: [complimentarygiftId], references: [id], onDelete: SetNull)
   amount              Int
   giftId              String?            @db.VarChar(255)
-  purchasedBy         user               @relation(fields: [userId], references: [id])
+  purchasedBy         user               @relation(fields: [userId], references: [id], onDelete: Cascade)
   quantity            Int
   delivered           Boolean            @default(false)
   eventId             String             @db.VarChar(50)
@@ -333,7 +399,6 @@ model giftTransaction {
   updated_by          String?            @db.VarChar(255)
   deleted_by          String?            @db.VarChar(255)
 
-  @@index([id], type: SpGist)
   @@index([eventId, userId])
   @@index([eventId], type: SpGist)
   @@index([userId], type: SpGist)
@@ -344,8 +409,9 @@ model complimentarygift {
   title           String?           @db.VarChar(255)
   category        String            @db.VarChar(255)
   image           String?           @db.VarChar(255)
-  details         String?           @db.VarChar(255)
-  amount          Int
+  altImages       String[]          @default([])
+  details         String?           @db.VarChar
+  amount          Decimal           @db.Decimal(32, 16)
   giftTransaction giftTransaction[]
   created_at      DateTime          @default(now())
   updated_at      DateTime?         @updatedAt
@@ -353,27 +419,30 @@ model complimentarygift {
   created_by      String?           @db.VarChar(255)
   updated_by      String?           @db.VarChar(255)
   deleted_by      String?           @db.VarChar(255)
-
-  @@index([id], type: SpGist)
 }
 
 model marketGiftTransaction {
-  id          String         @id @default(uuid())
-  ItemId      String         @db.VarChar(255)
-  quantity    Int
-  purchasedBy user           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  status      Status
-  amountPaid  Int
-  category    MarketCategory
-  userId      String         @db.VarChar(255)
-  created_at  DateTime       @default(now())
-  updated_at  DateTime?      @updatedAt
-  deleted_at  DateTime?
-  created_by  String?        @db.VarChar(255)
-  updated_by  String?        @db.VarChar(255)
-  deleted_by  String?        @db.VarChar(255)
+  id              String         @id @default(uuid())
+  ItemId          String         @db.VarChar(255)
+  quantity        Int
+  purchasedBy     user           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status          Status
+  delivered       Boolean        @default(false)
+  amountPaid      Int
+  category        MarketCategory
+  recieverAddress String?        @db.VarChar
+  recieverName    String?        @db.VarChar
+  recieverPhone   String?        @db.VarChar
+  message         String?        @db.VarChar
+  isGift          Boolean        @default(false)
+  userId          String         @db.VarChar(255)
+  created_at      DateTime       @default(now())
+  updated_at      DateTime?      @updatedAt
+  deleted_at      DateTime?
+  created_by      String?        @db.VarChar(255)
+  updated_by      String?        @db.VarChar(255)
+  deleted_by      String?        @db.VarChar(255)
 
-  @@index([id], type: SpGist)
   @@index([userId], type: SpGist)
   @@index([status])
 }
@@ -397,7 +466,6 @@ model asoebi {
 
   @@index([eventId], type: SpGist)
   @@index([userId], type: SpGist)
-  @@index([id], type: SpGist)
   @@index([eventId, userId])
 }
 
@@ -422,7 +490,6 @@ model asoebiTransaction {
 
   @@index([eventId], type: SpGist)
   @@index([userId], type: SpGist)
-  @@index([id], type: SpGist)
   @@index([eventId, userId])
 }
 
@@ -443,7 +510,6 @@ model sourvenir {
 
   @@index([eventId], type: SpGist)
   @@index([userId], type: SpGist)
-  @@index([id], type: SpGist)
   @@index([eventId, userId])
 }
 
@@ -464,7 +530,6 @@ model Media {
 
   @@index([eventId], type: SpGist)
   @@index([userId], type: SpGist)
-  @@index([id], type: SpGist)
   @@index([eventId, userId])
 }
 
@@ -483,7 +548,6 @@ model ComplimentaryMessage {
 
   @@index([eventId], type: SpGist)
   @@index([userId], type: SpGist)
-  @@index([id], type: SpGist)
   @@index([eventId, userId])
 }
 
@@ -504,7 +568,6 @@ model Notifications {
 
   @@index([eventId], type: SpGist)
   @@index([userId], type: SpGist)
-  @@index([id], type: SpGist)
   @@index([userId, referenceEvent])
   @@index([read, userId])
 }
@@ -519,7 +582,7 @@ model otp {
   deleted_at DateTime?
   created_by String?   @db.VarChar(255)
 
-  @@index([code])
+  @@index([id])
 }
 
 model Sms {
@@ -530,6 +593,58 @@ model Sms {
   created_at DateTime @default(now())
 
   @@index([sender])
+}
+
+model Cart {
+  id         String         @id @default(uuid())
+  user       user           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  itemId     String
+  itemType   MarketCategory
+  quantity   Int
+  title      String?        @db.VarChar(255)
+  image      String?        @db.VarChar(255)
+  details    String?        @db.VarChar
+  amount     Decimal        @db.Decimal(32, 16)
+  weight     Decimal?       @db.Decimal(32, 16)
+  created_at DateTime       @default(now())
+}
+
+model Contact {
+  id         String   @id @default(uuid())
+  name       String   @db.VarChar(50)
+  email      String   @db.VarChar(100)
+  phone      String   @db.VarChar(15)
+  message    String   @db.VarChar
+  created_at DateTime @default(now())
+
+  @@index([email])
+}
+
+model Transaction {
+  id             String            @id @default(uuid())
+  type           TransactionType
+  details        Json
+  amount         Int
+  purchasedBy    user              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status         TransactionStatus
+  transactionRef String            @db.VarChar(50)
+  referenceId    String?           @db.VarChar(50)
+  eventId        String?           @db.VarChar(50)
+  userId         String            @db.VarChar(255)
+  created_at     DateTime          @default(now())
+  updated_at     DateTime?         @updatedAt
+
+  @@index([eventId, userId])
+  @@index([eventId], type: SpGist)
+  @@index([userId], type: SpGist)
+}
+
+enum TransactionType {
+  GIFT
+  MARKET
+  ASOEBI
+  FUNDRAISING
 }
 
 enum Status {
@@ -550,11 +665,17 @@ enum MarketCategory {
   ASOEBI
   GIFT
   SOURVENIR
+  COMPLIMENTARYGIFT
+  SEASONAL
 }
 
 enum Role {
   USER
+}
+
+enum AdminRole {
   ADMIN
+  SUPERADMIN
 }
 
 enum VISBILITY {
@@ -581,4 +702,10 @@ enum NOTIFICATION {
   MEDIA
   DELIVERY
   ASOEBI
+}
+
+enum TransactionStatus {
+  PENDING
+  SUCCESS
+  FAILURE
 }

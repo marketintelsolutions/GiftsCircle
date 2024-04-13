@@ -1,5 +1,4 @@
 const { PrismaClient } = require("@prisma/client");
-const { v4: uuidv4 } = require("uuid");
 const prisma = new PrismaClient();
 
 const Get = async (id) => {
@@ -14,25 +13,79 @@ const Get = async (id) => {
 };
 
 const GetAll = async () => {
-  const giftItems = await prisma.giftitem.findMany({});
+  const giftItems = await prisma.giftitem.findMany({
+    include: {
+      GiftItemCategory: {
+        include: {
+          category: true,
+        },
+      },
+    },
+  });
   await prisma.$disconnect();
   return giftItems;
 };
 
-const Create = async (data, image) => {
-  let Data = await prisma.giftitem.create({
-    data: {
-      title: data.title,
-      category: data.category,
-      details: data.details,
-      amount: parseInt(data.amount),
-      image: image,
-      weight: parseInt(data.weight),
-    },
-  });
+const searchGiftItemsByCategorySlug = async (categorySlug) => {
+  try {
+    const category = await prisma.category.findMany({
+      where: {
+        OR: [
+          { slug: categorySlug },
+          { subCategories: { some: { slug: categorySlug } } },
+        ],
+      },
+      include: {
+        GiftItemCategory: {
+          include: {
+            giftItem: true,
+          },
+        },
+      },
+    });
 
-  await prisma.$disconnect();      
-  return Data;
+    if (!category) {
+      return null;
+    }
+
+    return category;
+  } catch (error) {
+    console.log(error);
+  } finally {
+    await prisma.$disconnect();
+  }
+};
+
+const Create = async (data, image) => {
+  const prisma = new PrismaClient()
+  let transaction;
+  let result;
+  try {
+    transaction = await prisma.$transaction(async (prisma) => {
+      result = await prisma.giftitem.create({
+        data: {
+          title: data.title,
+          details: data.details,
+          amount: parseFloat(data.amount),
+          image: image,
+          weight: parseFloat(data.weight),
+          altImages: data.altImages || [],
+          GiftItemCategory: {
+            create: data.categories.map((c) => ({ categoryId: parseInt(c) })),
+          },
+        },
+      });
+    });
+    return result;
+  } catch (error) {
+    console.log(error)
+    if (transaction) {
+      console.log("Transaction rolled back due to an error.");
+      await prisma.$queryRaw`ROLLBACK;`;
+    }
+  } finally {
+    await prisma.$disconnect();
+  }
 };
 
 const Update = async (id, data, image) => {
@@ -43,17 +96,17 @@ const Update = async (id, data, image) => {
   });
 
   if (giftItem) {
-   let Data = await prisma.giftitem.update({
+    let Data = await prisma.giftitem.update({
       where: {
         id: id,
       },
       data: {
         image: image ? image : giftItem.image,
-        amount: data.amount ? parseInt(data.amount) : giftItem.amount,
+        amount: data.amount ? parseFloat(data.amount) : giftItem.amount,
         details: data.details ? data.details : giftItem.details,
-        category: data.category ? data.category : giftItem.category,
         title: data.title ? data.title : giftItem.title,
-        weight: data.weight ? data.weight : giftItem.weight
+        weight: data.weight ? parseFloat(data.weight) : giftItem.weight,
+        altImages: data.altImages ? data.altImages : giftItem.altImages,
       },
     });
 
@@ -74,4 +127,11 @@ const Delete = async (id) => {
   return giftItem;
 };
 
-module.exports = { Create, Get, GetAll, Update, Delete };
+module.exports = {
+  Create,
+  Get,
+  GetAll,
+  Update,
+  Delete,
+  searchGiftItemsByCategorySlug,
+};

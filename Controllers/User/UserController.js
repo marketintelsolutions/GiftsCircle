@@ -4,8 +4,6 @@ const ResponseDTO = require("../../DTO/Response");
 const {
   ChangePassword,
   GetUser,
-  GetUsers,
-  DeleteUser,
   UpdateUser,
   GetUserNotifications,
   UpdateNotifications,
@@ -14,9 +12,9 @@ const { EnsureAuthenticated, UserAuthenticated } = require("../../Utils/EnsureAu
 const router = express.Router();
 const prisma = new PrismaClient();
 
-router.get("/:id", EnsureAuthenticated, async (req, res) => {
+router.get("/", EnsureAuthenticated, async (req, res) => {
   try {
-    let data = await GetUser(req.params.id);
+    let data = await GetUser(req.user.id);
     if (data) {
       return res.status(200).send({ user: data });
     }
@@ -28,9 +26,9 @@ router.get("/:id", EnsureAuthenticated, async (req, res) => {
   }
 });
 
-router.get("/notifications/:id", UserAuthenticated, async (req, res) => {
+router.get("/notifications/", UserAuthenticated, async (req, res) => {
   try {
-    let data = await GetUserNotifications(req.params.id);
+    let data = await GetUserNotifications(req.user.id);
     if (data) {
       return res.status(200).send(data);
     }
@@ -60,7 +58,7 @@ router.put("/notifications/:id", UserAuthenticated, async (req, res) => {
 
 router.post("/changePassword", UserAuthenticated, async (req, res) => {
   try {
-    let data = await ChangePassword(req.body);
+    let data = await ChangePassword(req.body, req.user.id);
     if (data) {
       res
         .status(201)
@@ -74,9 +72,9 @@ router.post("/changePassword", UserAuthenticated, async (req, res) => {
   }
 });
 
-router.put("/:id", UserAuthenticated, async (req, res) => {
+router.put("/", UserAuthenticated, async (req, res) => {
   try {
-    let data = await UpdateUser(req.body, req.params.id);
+    let data = await UpdateUser(req.body, req.user.id);
     if (data) {
       req.io.emit(data.notification.userId, data.notification);
       return res.status(201).send(data.updatedUser);

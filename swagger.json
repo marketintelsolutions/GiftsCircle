@@ -12,7 +12,7 @@
       "name": "authorization"
     }
   },
-  "host": "gifts-circle.herokuapp.com",
+  "host": "localhost:4000",
   "basePath": "/api",
   "schemes": ["http", "https"],
   "consumes": ["application/json"],
@@ -130,6 +130,34 @@
     {
       "name": "Admin_MarketPlace",
       "description": "Apis handling Admin Marketplace endpoints"
+    },
+    {
+      "name": "Categories",
+      "description": "Apis handling Categories endpoints"
+    },
+    {
+      "name": "Cart",
+      "description": "Apis handling cart endpoints"
+    },
+    {
+      "name": "Contact",
+      "description": "Apis handling Contact Messages"
+    },
+    {
+      "name": "Admin_Contact",
+      "description": "Apis handling Admin Contact Messages endpoints"
+    },
+    {
+      "name": "Transactions",
+      "description": "Apis handling Transaction endpoints"
+    },
+    {
+      "name": "SeasonalItem",
+      "description": "Apis handling SeasonalItems"
+    },
+    {
+      "name": "Admin_SeasonalItem",
+      "description": "Apis handling Admin SeasonalItems enpoints"
     }
   ],
   "paths": {
@@ -274,7 +302,7 @@
             "name": "body",
             "in": "body",
             "required": true,
-            "schema": { "$ref": "#/definitions/schema/GoogleSignin" }
+            "schema": { "$ref": "#/definitions/schema/SendVerifyEmail" }
           }
         ],
         "responses": {
@@ -309,6 +337,50 @@
         }
       }
     },
+    "/refreshToken": {
+      "post": {
+        "description": "",
+        "tags": ["Auth"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/schema/RefreshToken" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/logout": {
+      "post": {
+        "description": "",
+        "tags": ["Auth"],
+        "parameters": [
+         
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
     "/admin/login": {
       "post": {
         "description": "",
@@ -331,7 +403,7 @@
         }
       }
     },
-    "/admin/register": {
+    "/admin/create": {
       "post": {
         "description": "",
         "tags": ["Admin_Auth"],
@@ -340,29 +412,12 @@
             "name": "body",
             "in": "body",
             "required": true,
-            "schema": { "$ref": "#/definitions/schema/Register" }
+            "schema": { "$ref": "#/definitions/schema/CreateAdmin" }
           }
         ],
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          }
-        }
-      }
-    },
-    "/admin/googleSignin": {
-      "post": {
-        "description": "",
-        "tags": ["Admin_Auth"],
-        "parameters": [
+        "security": [
           {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": { "$ref": "#/definitions/schema/GoogleSignin" }
+            "apiKeyAuth": []
           }
         ],
         "responses": {
@@ -376,7 +431,7 @@
       }
     },
     "/admin/setPassword": {
-      "post": {
+      "put": {
         "description": "",
         "tags": ["Admin_Auth"],
         "parameters": [
@@ -384,51 +439,18 @@
             "name": "body",
             "in": "body",
             "required": true,
-            "schema": { "$ref": "#/definitions/schema/Setpassword" }
+            "schema": { "$ref": "#/definitions/schema/SetAdminPassword" }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
           }
         ],
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          }
-        }
-      }
-    },
-    "/admin/resetPassword": {
-      "post": {
-        "description": "",
-        "tags": ["Admin_Auth"],
-        "parameters": [
+        "security": [
           {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": { "$ref": "#/definitions/schema/Setpassword" }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          }
-        }
-      }
-    },
-    "/admin/verifyEmail": {
-      "post": {
-        "description": "",
-        "tags": ["Admin_Auth"],
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": { "$ref": "#/definitions/schema/VerifyEmail" }
+            "apiKeyAuth": []
           }
         ],
         "responses": {
@@ -441,8 +463,8 @@
         }
       }
     },
-    "/admin/sendVerifyEmail": {
-      "post": {
+    "/admin/{id}": {
+      "put": {
         "description": "",
         "tags": ["Admin_Auth"],
         "parameters": [
@@ -450,7 +472,93 @@
             "name": "body",
             "in": "body",
             "required": true,
-            "schema": { "$ref": "#/definitions/schema/GoogleSignin" }
+            "schema": { "$ref": "#/definitions/schema/UpdateAdmin" }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin//{id}": {
+      "delete": {
+        "description": "",
+        "tags": ["Admin_Auth"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/Get/All": {
+      "get": {
+        "description": "",
+        "tags": ["Admin_Auth"],
+        "parameters": [],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin///{id}": {
+      "get": {
+        "description": "",
+        "tags": ["Admin_Auth"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
           }
         ],
         "responses": {
@@ -463,20 +571,47 @@
         }
       }
     },
-    "/admin/sendResetEmail": {
+    "/admin/refreshToken": {
       "post": {
         "description": "",
         "tags": ["Admin_Auth"],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "body",
             "in": "body",
             "required": true,
-            "schema": { "$ref": "#/definitions/schema/GoogleSignin" }
+            "schema": { "$ref": "#/definitions/schema/RefreshToken" }
           }
         ],
         "responses": {
-          "201": {
+          "200": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/logout": {
+      "post": {
+        "description": "",
+        "tags": ["Admin_Auth"],
+        "parameters": [
+         
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
             "description": "Created"
           },
           "400": {
@@ -486,7 +621,28 @@
       }
     },
 
-    "/user/{id}": {
+    "/user/": {
+      "get": {
+        "description": "",
+        "tags": ["User"],
+        "parameters": [
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/user/notifications/": {
       "get": {
         "description": "",
         "tags": ["User"],
@@ -514,33 +670,6 @@
       }
     },
     "/user/notifications/{id}": {
-      "get": {
-        "description": "",
-        "tags": ["User"],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "security": [
-          {
-            "apiKeyAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          }
-        }
-      }
-    },
-    "/user/notifications//{id}": {
       "put": {
         "description": "",
         "tags": ["User"],
@@ -594,7 +723,7 @@
         }
       }
     },
-    "/user///{id}": {
+    "/user//": {
       "put": {
         "description": "",
         "tags": ["User"],
@@ -627,7 +756,7 @@
         }
       }
     },
-    "/admin/users/GetAll": {
+    "/admin/user/users/GetAll": {
       "get": {
         "description": "",
         "tags": ["Admin_User"],
@@ -703,18 +832,11 @@
         }
       }
     },
-    "/event/UserEvents/{id}": {
+    "/event/UserEvents/": {
       "get": {
         "description": "",
         "tags": ["Event"],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
+        "parameters": [],
         "security": [
           {
             "apiKeyAuth": []
@@ -791,19 +913,13 @@
         }
       }
     },
-    "/event/GetCoHostGuestCode/{eventId}/{userId}": {
+    "/event/GetCoHostGuestCode/{eventId}/": {
       "get": {
         "description": "Gets the guest code of a particular coHost",
         "tags": ["Event"],
         "parameters": [
           {
             "name": "eventId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "userId",
             "in": "path",
             "required": true,
             "type": "string"
@@ -1097,6 +1213,33 @@
         }
       }
     },
+    "/admin/event/Fundraising/GetAll/{id}": {
+      "get": {
+        "description": "",
+        "tags": ["Admin_Event"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
 
     "/giftItem/{id}": {
       "get": {
@@ -1144,9 +1287,37 @@
         }
       }
     },
+    "/giftItem/Get/BySlug/{slug}": {
+      "get": {
+        "description": "",
+        "tags": ["GiftItem"],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+
     "/admin/giftItem/create": {
       "post": {
-        "description": "",
+        "description": "Note the categories field is an array instead of an object",
         "tags": ["Admin_GiftItem"],
         "parameters": [
           {
@@ -1652,18 +1823,41 @@
         }
       }
     },
+    "/admin/gift/Update/GiftTrans": {
+      "put": {
+        "description": "",
+        "tags": ["Admin_Gift"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "type": "array",
+            "schema": { "$ref": "#/definitions/schema/UpdateAsoebiTrans" }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
 
-    "/delivery/{id}": {
+    "/delivery/": {
       "get": {
         "description": "",
         "tags": ["Delivery"],
         "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
+      
         ],
         "security": [
           {
@@ -1734,18 +1928,11 @@
         }
       }
     },
-    "/delivery/{userId}/deliveryTrans": {
+    "/delivery/user/deliveryTrans": {
       "get": {
         "description": "",
         "tags": ["Delivery"],
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
+        "parameters": [],
         "security": [
           {
             "apiKeyAuth": []
@@ -1789,7 +1976,7 @@
         }
       }
     },
-    "/delivery/deliveryTrans/{userId}": {
+    "/delivery/deliveryTrans/": {
       "post": {
         "description": "",
         "tags": ["Delivery"],
@@ -1800,12 +1987,6 @@
             "required": true,
             "type": "array",
             "schema": { "$ref": "#/definitions/schema/DeliveryTrans" }
-          },
-          {
-            "name": "userId",
-            "in": "path",
-            "type": "string",
-            "required": true
           }
         ],
         "security": [
@@ -1911,7 +2092,40 @@
         }
       }
     },
-    "/fundRaising/GetFundDonors/{id}": {
+    "/fundRaising/{eventId}/{coHostId}": {
+      "get": {
+        "description": "",
+        "tags": ["FundRaising"],
+        "parameters": [
+          {
+            "name": "eventId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "coHostId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/fundRaising/CoHost/GetFundDonors/{id}": {
       "get": {
         "description": "",
         "tags": ["FundRaising"],
@@ -2069,6 +2283,37 @@
       }
     },
 
+    "/admin/fundRaising/Update/Withdrawal": {
+      "put": {
+        "description": "",
+        "tags": ["Admin_FundRaising"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "type": "array",
+            "schema": {
+              "$ref": "#/definitions/schema/UpdateFundRaisingWithdrawal"
+            }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+
     "/complimentaryGift/{id}": {
       "get": {
         "description": "",
@@ -2203,6 +2448,33 @@
         }
       }
     },
+    "/admin/complimentaryGift//{id}": {
+      "delete": {
+        "description": "",
+        "tags": ["Admin_ComplimentaryGift"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
 
     "/asoebiItem/{id}": {
       "get": {
@@ -2250,9 +2522,36 @@
         }
       }
     },
+    "/asoebiItem/Get/BySlug/{slug}": {
+      "get": {
+        "description": "",
+        "tags": ["AsoebiItem"],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
     "/admin/asoebiItem/create": {
       "post": {
-        "description": "",
+        "description": "Note the categories field is an array instead of an object",
         "tags": ["Admin_AsoebiItem"],
         "parameters": [
           {
@@ -2550,6 +2849,88 @@
         }
       }
     },
+    "/admin/asoebi/AsoebiTrans/{asoebiId}": {
+      "get": {
+        "description": "",
+        "tags": ["Admin_Asoebi"],
+        "parameters": [
+          {
+            "name": "asoebiId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/asoebi/EventAsoebisTrans/{eventId}": {
+      "get": {
+        "description": "",
+        "tags": ["Admin_Asoebi"],
+        "parameters": [
+          {
+            "name": "eventId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/asoebi/Update/AsoebiTrans": {
+      "put": {
+        "description": "",
+        "tags": ["Admin_Asoebi"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "type": "array",
+            "schema": { "$ref": "#/definitions/schema/UpdateAsoebiTrans" }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
 
     "/sourvenirItem/{id}": {
       "get": {
@@ -2582,6 +2963,33 @@
       "get": {
         "description": "",
         "tags": ["SourvenirItem"],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/sourvenirItem/Get/BySlug/{slug}": {
+      "get": {
+        "description": "",
+        "tags": ["SourvenirItem"],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "security": [
           {
             "apiKeyAuth": []
@@ -2932,19 +3340,13 @@
         }
       }
     },
-    "/media/Get/UserUploadedMedia/{eventId}/{userId}": {
+    "/media/Get/UserUploadedMedia/{eventId}/": {
       "get": {
         "description": "Get Media files uploaded by a guest for the event",
         "tags": ["Media"],
         "parameters": [
           {
             "name": "eventId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "userId",
             "in": "path",
             "required": true,
             "type": "string"
@@ -3164,17 +3566,11 @@
       }
     },
 
-    "/marketPlace/Get/All/{id}": {
+    "/marketPlace/Get/All/": {
       "get": {
         "description": "",
         "tags": ["MarketPlace"],
         "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
         ],
         "security": [
           {
@@ -3219,6 +3615,33 @@
         }
       }
     },
+    "/admin/marketPlace/Get/All": {
+      "get": {
+        "description": "",
+        "tags": ["Admin_MarketPlace"],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
     "/admin/marketPlace/{id}": {
       "put": {
         "description": "",
@@ -3228,7 +3651,6 @@
             "name": "body",
             "in": "body",
             "required": true,
-            "type": "array",
             "schema": { "$ref": "#/definitions/schema/MarketplaceTransUpdate" }
           },
           {
@@ -3252,7 +3674,563 @@
           }
         }
       }
+    },
+
+    "/category/": {
+      "get": {
+        "description": "",
+        "tags": ["Categories"],
+        "parameters": [],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/category": {
+      "post": {
+        "description": "",
+        "tags": ["Categories"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "type": "array",
+            "schema": { "$ref": "#/definitions/schema/Category" }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/category/{id}": {
+      "put": {
+        "description": "",
+        "tags": ["Categories"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "number"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/schema/UpdateCategory" }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/category//{id}": {
+      "delete": {
+        "description": "",
+        "tags": ["Categories"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+
+    "/cart/GetAll/": {
+      "get": {
+        "description": "",
+        "tags": ["Cart"],
+        "parameters": [
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/cart": {
+      "post": {
+        "description": "Item Type should be one of this [ASOEBI, GIFT, SOURVENIR, COMPLIMENTARYGIFT]",
+        "tags": ["Cart"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "type": "array",
+            "schema": { "$ref": "#/definitions/schema/Cart" }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/cart/{id}": {
+      "put": {
+        "description": "",
+        "tags": ["Cart"],
+        "parameters": [
+          {
+            "name": "quantity",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/schema/CartUpdate" }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/cart//{id}": {
+      "delete": {
+        "description": "",
+        "tags": ["Cart"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+   
+    "/contact": {
+      "post": {
+        "description": "",
+        "tags": ["Contact"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "type": "array",
+            "schema": { "$ref": "#/definitions/schema/Contact" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/contact/Get/": {
+      "get": {
+        "description": "",
+        "tags": ["Admin_Contact"],
+        "parameters": [
+          {
+            "name":"email",
+            "in":"query",
+            "required":true,
+          "type":"string"          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/contact/GetAll/": {
+      "get": {
+        "description": "",
+        "tags": ["Admin_Contact"],
+        "parameters": [
+          {
+            "name":"page",
+            "in":"query",
+            "required":false,
+          "type":"number"          },
+          {
+            "name":"perPage",
+            "in":"query",
+            "required":false,
+          "type":"number"          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+
+    "/admin/transaction/": {
+      "get": {
+        "description": "",
+        "tags": ["Transactions"],
+        "parameters": [
+          {
+            "name":"page",
+            "in":"query",
+            "required":false,
+          "type":"number"          },
+          {
+            "name":"perPage",
+            "in":"query",
+            "required":false,
+          "type":"number"          },
+          {
+            "name":"type",
+            "in":"query",
+            "required":false,
+          "type":"string"          },{
+            "name":"status",
+            "in":"query",
+            "required":false,
+          "type":"string"          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/transaction/{id}": {
+      "get": {
+        "description": "",
+        "tags": ["Transactions"],
+        "parameters": [
+          {
+            "name":"id",
+            "in":"path",
+            "required":true,
+          "type":"string"          }
+          
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/seasonalItem/{id}": {
+      "get": {
+        "description": "",
+        "tags": ["seasonalItem"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/seasonalItem/Get/All": {
+      "get": {
+        "description": "",
+        "tags": ["seasonalItem"],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/seasonalItem/Get/BySlug/{slug}": {
+      "get": {
+        "description": "",
+        "tags": ["seasonalItem"],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+
+    "/admin/seasonalItem/create": {
+      "post": {
+        "description": "Note the categories field is an array instead of an object",
+        "tags": ["Admin_SeasonalItem"],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/schema/SeasonalItem" }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/seasonalItem/{id}": {
+      "put": {
+        "description": "",
+        "tags": ["Admin_SeasonalItem"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/schema/SeasonalItem" }
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/seasonalItem//{id}": {
+      "delete": {
+        "description": "",
+        "tags": ["Admin_SeasonalItem"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/admin/giftImages/UploadImages": {
+      "post": {
+        "description": "This will be an array of the images, it will return an array of the image's urls",
+        "parameters": [
+          {
+            "name": "images",
+            "in": "body",
+            "required": true,
+            "type": "object"
+          }
+        ],
+        "security": [
+          {
+            "apiKeyAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
     }
+
   },
   "definitions": {
     "schema": {
@@ -3286,10 +4264,87 @@
           }
         }
       },
+      "CreateAdmin": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "required": true
+          },
+          "firstname": {
+            "type": "string",
+            "required": true
+          },
+          "lastname": {
+            "type": "string",
+            "required": true
+          },
+          "image": {
+            "type": "object",
+            "required": true
+          }
+        }
+      },
+      "SetAdminPassword": {
+        "type": "object",
+        "properties": {
+          "defaultPassword": {
+            "type": "string",
+            "required": true
+          },
+          "password": {
+            "type": "string",
+            "required": true
+          }
+        }
+      },
+      "UpdateAdmin": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "required": true
+          },
+          "firstname": {
+            "type": "string",
+            "required": true
+          },
+          "lastname": {
+            "type": "string",
+            "required": true
+          }
+        }
+      },
       "GoogleSignin": {
         "type": "object",
         "properties": {
           "email": {
+            "type": "string",
+            "required": true
+          }
+        }
+      },
+      "SendVerifyEmail": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "required": true
+          },
+          "firstname": {
+            "type": "string",
+            "required": true
+          }
+        }
+      },
+      "RefreshToken": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "required": true
+          },
+          "refresh_token": {
             "type": "string",
             "required": true
           }
@@ -3324,10 +4379,6 @@
       "ChangePassword": {
         "type": "object",
         "properties": {
-          "email": {
-            "type": "string",
-            "required": true
-          },
           "oldPassword": {
             "type": "string",
             "required": true
@@ -3370,10 +4421,6 @@
             "required": true
           },
           "host": {
-            "type": "string",
-            "required": true
-          },
-          "userId": {
             "type": "string",
             "required": true
           }
@@ -3528,10 +4575,6 @@
           "complimentaryGift": {
             "type": "string",
             "required": true
-          },
-          "created_by": {
-            "type": "string",
-            "required": true
           }
         }
       },
@@ -3539,10 +4582,6 @@
         "type": "object",
         "properties": {
           "status": {
-            "type": "string",
-            "required": true
-          },
-          "userId": {
             "type": "string",
             "required": true
           },
@@ -3601,10 +4640,6 @@
             "required": true
           },
           "tel2": {
-            "type": "string",
-            "required": true
-          },
-          "userId": {
             "type": "string",
             "required": true
           }
@@ -3707,12 +4742,21 @@
             "type": "string",
             "required": true
           },
-          "userId": {
+          "amount": {
+            "type": "number",
+            "required": true
+          }
+        }
+      },
+      "UpdateFundRaisingWithdrawal": {
+        "type": "object",
+        "properties": {
+          "id": {
             "type": "string",
             "required": true
           },
-          "amount": {
-            "type": "number",
+          "withdrawn": {
+            "type": "boolean",
             "required": true
           }
         }
@@ -3749,10 +4793,6 @@
             "type": "string",
             "required": true
           },
-          "userId": {
-            "type": "string",
-            "required": true
-          },
           "asoebiItem": {
             "type": "string",
             "required": true
@@ -3767,10 +4807,6 @@
         "type": "object",
         "properties": {
           "asoebiId": {
-            "type": "string",
-            "required": true
-          },
-          "userId": {
             "type": "string",
             "required": true
           },
@@ -3789,13 +4825,22 @@
           }
         }
       },
-      "Sourvenir": {
+      "UpdateAsoebiTrans": {
         "type": "object",
         "properties": {
-          "userId": {
+          "id": {
             "type": "string",
             "required": true
           },
+          "delivered": {
+            "type": "boolean",
+            "required": true
+          }
+        }
+      },
+      "Sourvenir": {
+        "type": "object",
+        "properties": {
           "sourvenirItemId": {
             "type": "string",
             "required": true
@@ -3823,11 +4868,6 @@
       "Media": {
         "type": "object",
         "properties": {
-          "userId": {
-            "type": "string",
-            "required": true
-          },
-
           "eventId": {
             "type": "string",
             "required": true
@@ -3845,10 +4885,6 @@
       "ComplimentaryMessage": {
         "type": "object",
         "properties": {
-          "userId": {
-            "type": "string",
-            "required": true
-          },
           "eventId": {
             "type": "string",
             "required": true
@@ -3862,11 +4898,7 @@
       "Marketplace": {
         "type": "object",
         "properties": {
-          "itemId": {
-            "type": "string",
-            "required": true
-          },
-          "userId": {
+          "ItemId": {
             "type": "string",
             "required": true
           },
@@ -3874,8 +4906,7 @@
             "type": "number",
             "required": true
           },
-
-          "amount": {
+          "amountPaid": {
             "type": "number",
             "required": true
           },
@@ -3886,6 +4917,26 @@
           "category": {
             "type": "string",
             "required": true
+          }, 
+          "recieverName": {
+            "type": "string",
+            "required": false
+          },
+          "recieverPhone": {
+            "type": "string",
+            "required": false
+          },
+          "recieverAddress": {
+            "type": "string",
+            "required": false
+          },
+          "isGift": {
+            "type": "boolean",
+            "required": false
+          },
+          "message": {
+            "type": "string",
+            "required": false
           }
         }
       },
@@ -3900,8 +4951,12 @@
             "type": "object",
             "required": true
           },
-          "category": {
-            "type": "string",
+          "altImages": {
+            "type": "object",
+            "required": false
+          },
+          "categories": {
+            "type": "object",
             "required": true
           },
           "details": {
@@ -3929,6 +4984,10 @@
             "type": "object",
             "required": true
           },
+          "altImages": {
+            "type": "object",
+            "required": false
+          },
           "category": {
             "type": "string",
             "required": true
@@ -3954,8 +5013,12 @@
             "type": "object",
             "required": true
           },
-          "category": {
-            "type": "string",
+          "altImages": {
+            "type": "object",
+            "required": false
+          },
+          "categories": {
+            "type": "object",
             "required": true
           },
           "details": {
@@ -3965,16 +5028,144 @@
           "amount": {
             "type": "number",
             "required": true
+          },
+          "weight": {
+            "type": "number",
+            "required": true
           }
         }
       },
       "MarketplaceTransUpdate": {
         "type": "object",
         "properties": {
-          "status": {
+          "delivered": {
+            "type": "boolean",
+            "required": true
+          }
+        }
+      },
+      "Category": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "required": true
+          },
+
+          "parentCategoryId": {
+            "type": "string",
+            "required": false
+          }
+        }
+      },
+      "UpdateCategory": {
+        "type": "object",
+        "properties": {
+          "name": {
             "type": "string",
             "required": true
           }
+        }
+      },
+      "Cart": {
+        "type": "object",
+        "properties": {
+          "itemId": {
+            "type": "string",
+            "required": true
+          },
+          "itemType": {
+            "type": "string",
+            "required": true
+          },
+          "quantity": {
+            "type": "number",
+            "required": true
+          },
+          "amount": {
+            "type": "number",
+            "required": true
+          },
+          "title": {
+            "type": "string",
+            "required": true
+          },
+          "details": {
+            "type": "string",
+            "required": true
+          },
+          "weight": {
+            "type": "number",
+            "required": true
+          },
+          "image": {
+            "type": "string",
+            "required": true
+          }
+        }
+      },
+      "CartUpdate": {
+        "type": "object",
+        "properties": {
+          "quantity": {
+            "type": "number",
+            "required": true
+          }
+        }
+      },
+      "Contact": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "required": true
+          },
+          "email": {
+            "type": "string",
+            "required": true
+          },
+          "phone": {
+            "type": "string",
+            "required": true
+          },
+          "message": {
+            "type": "string",
+            "required": true
+          }
+        }
+      },
+      "SeasonalItem": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "required": true
+          },
+          "image": {
+            "type": "object",
+            "required": true
+          },
+          "categories": {
+            "type": "object",
+            "required": true
+          },
+          "altImages": {
+            "type": "object",
+            "required": false
+          },
+          "details": {
+            "type": "string",
+            "required": false
+          },
+          "amount": {
+            "type": "number",
+            "required": true
+          },
+          "weight": {
+            "type": "number",
+            "required": false
+          }
+          
         }
       }
     }

@@ -3,21 +3,27 @@ const express = require("express");
 const ResponseDTO = require("../../DTO/Response");
 const {
   Login,
-  Create,
-  GoogleSignIn,
-  SetPassword,
-  VerifyOtp,
-  SendVerifyEmail,
-  SendResetPasswordEmail,
   GetAdmin,
   GetAdmins,
-  ChangePassword,
+  Create,
+  UpdateAdmin,
+  DeleteAdmin,
+  SetPassword,
+  Logout,
+  RefreshToken,
 } = require("../../Services/Admin/auth");
-const { AdminAuthenticated } = require("../../Utils/EnsureAuthenticated");
+const {
+  SuperAdminAuthenticated,
+  AdminAuthenticated,
+} = require("../../Utils/EnsureAuthenticated");
+const cloudinary = require("../../config/Cloudinary");
+const { upload, dataUri } = require("../../config/multer");
+const { AdminSetPasswordEmail } = require("../../Utils/Email/EmailService");
+const { GenerateToken } = require("../../Utils/HelperFunctions");
 const router = express.Router();
 const prisma = new PrismaClient();
 
-router.get("/:id", AdminAuthenticated, async (req, res) => {
+router.get("/:id", SuperAdminAuthenticated, async (req, res) => {
   try {
     let data = await GetAdmin(req.params.id);
     if (data) {
@@ -31,16 +37,16 @@ router.get("/:id", AdminAuthenticated, async (req, res) => {
   }
 });
 
-router.get("/admins/GetAll", AdminAuthenticated, async (req, res) => {
-    try {
-      let data = await GetAdmins();
-      return res.status(200).json(data);
-    } catch (err) {
-      console.log(err);
-      await prisma.$disconnect();
-      return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
-    }
-  });
+router.get("/Get/All", SuperAdminAuthenticated, async (req, res) => {
+  try {
+    let data = await GetAdmins();
+    return res.status(200).json(data);
+  } catch (err) {
+    console.log(err);
+    await prisma.$disconnect();
+    return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
+  }
+});
 
 router.post("/login", async (req, res) => {
   try {
@@ -58,69 +64,43 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.post("/register", async (req, res) => {
-  try {
-    let data = await Create(req.body);
-    if (data) {
-      return res.status(201).send(data);
-    }
-    return res.status(400).send(ResponseDTO("Failed", "User already exists"));
-  } catch (err) {
-    console.log(err);
-    await prisma.$disconnect();
-    return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
-  }
-});
+router.post(
+  "/create",
+  upload.single("image"),
+  SuperAdminAuthenticated,
+  async (req, res) => {
+    try {
+      const file = dataUri(req).content;
+      const response = await cloudinary.uploader.upload(file, {
+        folder: "eventcircle/admins",
+      });
 
-router.post("/googleSignin", async (req, res) => {
-  try {
-    let data = await GoogleSignIn(req.body);
-    if (data) {
-      return res.status(200).send(data);
-    }
-    return res.status(400).send(ResponseDTO("Failed", "Admin not found"));
-  } catch (err) {
-    console.log(err);
-    await prisma.$disconnect();
-    return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
-  }
-});
-
-router.post("/setPassword", async (req, res) => {
-  try {
-    let data = await SetPassword(req.body, "SET");
-    if (data) {
+      let data = await Create(req.body, response.url);
+      if (data) {
+        const token = GenerateToken(data.email, data.id, data.role, "24h");
+        const link = `${process.env.ADMIN_FRONTEND_URL}/admin/setPassword?token=${token}`;
+        await AdminSetPasswordEmail(
+          data.firstname,
+          data.email,
+          data.defaultPassword,
+          link,
+        );
+        return res.status(200).send(data);
+      }
       return res
-        .status(201)
-        .send(ResponseDTO("Success", "Password set successfully"));
+        .status(400)
+        .send(ResponseDTO("Failed", "Admin already exists"));
+    } catch (err) {
+      console.log(err);
+      await prisma.$disconnect();
+      return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
     }
-    return res.status(400).send(ResponseDTO("Failed", "Admin not found"));
-  } catch (err) {
-    console.log(err);
-    await prisma.$disconnect();
-    return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
   }
-});
+);
 
-router.post("/resetPassword", async (req, res) => {
+router.put("/setPassword", AdminAuthenticated, async (req, res) => {
   try {
-    let data = await SetPassword(req.body, "RESET");
-    if (data) {
-      return res
-        .status(201)
-        .send(ResponseDTO("Success", "Password reset successfully"));
-    }
-    return res.status(400).send(ResponseDTO("Failed", "Admin not found"));
-  } catch (err) {
-    console.log(err);
-    await prisma.$disconnect();
-    return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
-  }
-});
-
-router.post("/verifyEmail", async (req, res) => {
-  try {
-    let data = await VerifyOtp(req.body);
+    let data = await SetPassword(req.body, req.user.email);
     if (data.status === "Success") {
       return res.status(200).send(data);
     }
@@ -132,13 +112,11 @@ router.post("/verifyEmail", async (req, res) => {
   }
 });
 
-router.post("/sendVerifyEmail", async (req, res) => {
+router.put("/:id", SuperAdminAuthenticated, async (req, res) => {
   try {
-    let data = await SendVerifyEmail(req.body.email);
-    if (data.status) {
-      return res
-        .status(201)
-        .send(ResponseDTO("Success", "Email sent successfully"));
+    let data = await UpdateAdmin(req.body, req.params.id);
+    if (data) {
+      return res.status(200).send(data);
     }
     return res.status(400).send(ResponseDTO("Failed", "Admin not found"));
   } catch (err) {
@@ -148,15 +126,27 @@ router.post("/sendVerifyEmail", async (req, res) => {
   }
 });
 
-router.post("/sendResetEmail", async (req, res) => {
+router.delete("/:id", SuperAdminAuthenticated, async (req, res) => {
   try {
-    let data = await SendResetPasswordEmail(req.body.email);
+    let data = await DeleteAdmin(req.params.id);
     if (data) {
-      return res
-        .status(201)
-        .send(ResponseDTO("Success", "Email sent successfully"));
+      return res.status(200).send(data);
+    }
+    return res.status(400).send(ResponseDTO("Failed", "Admin not found"));
+  } catch (err) {
+    console.log(err);
+    await prisma.$disconnect();
+    return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
+  }
+});
+
+router.post("/refreshToken", async (req, res) => {
+  try {
+    let data = await RefreshToken(req.body);
+    if (data) {
+      return res.status(200).send(data);
     } else {
-      return res.status(400).send(ResponseDTO("Failed", "Admin not found"));
+      return res.status(400).send(ResponseDTO("Failed", "Tokens are invalid"));
     }
   } catch (err) {
     console.log(err);
@@ -165,20 +155,17 @@ router.post("/sendResetEmail", async (req, res) => {
   }
 });
 
-router.post("/changePassword", AdminAuthenticated, async (req, res) => {
-    try {
-      let data = await ChangePassword(req.body);
-      if (data) {
-        res
-          .status(201)
-          .send(ResponseDTO("Success", "Password changed successfully"));
-      }
-      return res.status(400).send(ResponseDTO("Failed", "Password is Incorrect"));
-    } catch (err) {
-      console.log(err);
-      await prisma.$disconnect();
-      return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
-    }
-  });
+router.post("/logout", AdminAuthenticated, async (req, res) => {
+  try {
+    let data = await Logout(req.user.id);
 
+    if (data) {
+      return res.sendStatus(200);
+    }
+  } catch (err) {
+    console.log(err);
+    await prisma.$disconnect();
+    return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
+  }
+});
 module.exports = router;

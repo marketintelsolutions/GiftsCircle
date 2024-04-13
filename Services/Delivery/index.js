@@ -47,7 +47,7 @@ const GetUserDeliveryTrans = async (userId) => {
   return deliveryTrans;
 };
 
-const Create = async (data) => {
+const Create = async (data, userId) => {
   if (data.eventId) {
     const delivery = await prisma.delivery.findFirst({
       where: {
@@ -69,7 +69,7 @@ const Create = async (data) => {
           state: data.state,
           tel: data.tel,
           tel2: data.tel2 ? data.tel2 : "",
-          userId: data.userId,
+          userId: userId,
           eventId: data.eventId,
         },
       });
@@ -87,10 +87,11 @@ const Create = async (data) => {
         state: data.state,
         tel: data.tel,
         tel2: data.tel2 ? data.tel2 : "",
-        userId: data.userId,
+        userId: userId,
         eventId: data.eventId,
       },
     });
+    return Data
   }
 };
 
