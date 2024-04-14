@@ -85,7 +85,7 @@ const Create = async (data, image) => {
         email: data.email,
         lastname: data.lastname,
         firstname: data.firstname,
-        role: "ADMIN",
+        role: "SUPERADMIN",
         image: image,
       },
     });

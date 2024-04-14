@@ -42,6 +42,7 @@ const Create = async (data) => {
   let transaction;
   let result;
   try {
+    let createData = { ...data };
     transaction = await prisma.$transaction(async (prisma) => {
       if (data.referralCode) {
         const referrer = await prisma.user.findFirst({
@@ -50,13 +51,14 @@ const Create = async (data) => {
             referralActive: true,
           },
         });
-        if (referrer) data.referredBy = referrer.id;
+        if (referrer) {
+          createData.refferedBy = referrer.id;
+        }
       }
       const referralCode = Id_Generator(7, true, false, false, false);
       const user = await prisma.user.findFirst({
         where: {
           email: data.email,
-          referralCode: referralCode,
         },
       });
 
@@ -64,11 +66,12 @@ const Create = async (data) => {
         let Data = await prisma.user.create({
           data: {
             password: "",
-            email: data.email,
-            lastname: data.lastname,
-            firstname: data.firstname,
+            email: createData.email,
+            lastname: createData.lastname,
+            firstname: createData.firstname,
             emailVerified: false,
             referralCode: referralCode,
+            referredBy: createData.refferedBy || null,
           },
         });
 
@@ -76,17 +79,16 @@ const Create = async (data) => {
           data: {
             user: {
               connect: {
-                id: user.id,
+                id: Data.id,
               },
             },
           },
         });
 
-        await prisma.$disconnect();
-
         result = Data;
+      } else {
+        result = null;
       }
-      result = null;
     });
     return result;
   } catch (error) {

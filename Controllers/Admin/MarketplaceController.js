@@ -10,7 +10,6 @@ const prisma = new PrismaClient();
 
 router.get("/Get/All", AdminAuthenticated, async (req, res) => {
   try {
-    console.log(req.query.status);
     let data = await GetAllMarketPlaceTrans(req.query.status);
 
     return res.status(200).send(data);

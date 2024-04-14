@@ -7,6 +7,8 @@ const {
 const { SendWebHookEmail } = require("../../Utils/Email/EmailService");
 const prismaGen = new PrismaClient();
 
+const transaction_percent = process.env.COMISSION_PERCENT;
+
 const TransformPayload = (payload) => {
   const { event, data } = payload;
   let payinData = {};
@@ -62,7 +64,6 @@ const PayIn = async (payload) => {
 };
 
 const HandleAsoebiTrans = async (payload) => {
-  const transaction_percent = process.env.COMISSION_PERCENT;
   const referenceId =
     payload.products.length === 1 ? payload.products[0].id : null;
   let prisma = new PrismaClient();
@@ -112,11 +113,12 @@ const HandleAsoebiTrans = async (payload) => {
             where: { user: { id: referrer.id } },
           });
           if (wallet) {
-            const currentBalance =
-              wallet.balance +
-              Number(payload.amount) * (Number(transaction_percent) / 100);
+            const currentBalance = Math.ceil(
+              Number(wallet.balance) +
+                payload.amount * (transaction_percent / 100)
+            );
             await prisma.wallet.update({
-              where: { user: { id: referrer.id } },
+              where: { id: wallet.id },
               data: {
                 balance: currentBalance,
               },
@@ -124,7 +126,6 @@ const HandleAsoebiTrans = async (payload) => {
           }
         }
       }
-
       const asoebiUpdates = [];
 
       for (const ele of payload.products) {
@@ -242,11 +243,12 @@ const HandleGiftTrans = async (payload) => {
             where: { user: { id: referrer.id } },
           });
           if (wallet) {
-            const currentBalance =
-              wallet.balance +
-              Number(payload.amount) * (Number(transaction_percent) / 100);
+            const currentBalance = Math.ceil(
+              Number(wallet.balance) +
+                payload.amount * (transaction_percent / 100)
+            );
             await prisma.wallet.update({
-              where: { user: { id: referrer.id } },
+              where: { id: wallet.id },
               data: {
                 balance: currentBalance,
               },
@@ -386,11 +388,12 @@ const HandleFundRaisingTrans = async (payload) => {
             where: { user: { id: referrer.id } },
           });
           if (wallet) {
-            const currentBalance =
-              wallet.balance +
-              Number(payload.amount) * (Number(transaction_percent) / 100);
+            const currentBalance = Math.ceil(
+              Number(wallet.balance) +
+                payload.amount * (transaction_percent / 100)
+            );
             await prisma.wallet.update({
-              where: { user: { id: referrer.id } },
+              where: { id: wallet.id },
               data: {
                 balance: currentBalance,
               },
@@ -455,6 +458,7 @@ const HandleMarketTrans = async (payload) => {
   let prisma = new PrismaClient();
   let transaction;
   let user;
+
   try {
     transaction = await prisma.$transaction(async (prisma) => {
       user = await prisma.user.findFirst({
@@ -491,11 +495,12 @@ const HandleMarketTrans = async (payload) => {
             where: { user: { id: referrer.id } },
           });
           if (wallet) {
-            const currentBalance =
-              wallet.balance +
-              Number(payload.amount) * (Number(transaction_percent) / 100);
+            const currentBalance = Math.ceil(
+              Number(wallet.balance) +
+                payload.amount * (transaction_percent / 100)
+            );
             await prisma.wallet.update({
-              where: { user: { id: referrer.id } },
+              where: { id: wallet.id },
               data: {
                 balance: currentBalance,
               },

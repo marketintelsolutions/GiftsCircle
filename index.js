@@ -48,6 +48,7 @@ const run = async () => {
       origin: [
         "https://staging.eventcirco.com",
         "http://localhost:5173",
+        "http://localhost:5174",
         "https://eventcircleadmin.netlify.app",
         "https://eventcirco.com",
         "https://eventsadmin.eventcirco.com"

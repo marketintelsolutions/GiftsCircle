@@ -183,7 +183,7 @@ const SendMail = async ({
   sgMail
   .send(msg)
   .then((response) => {
-    console.log(response)
+    console.log(response.body)
   })
   .catch((error) => {
     console.error(error)

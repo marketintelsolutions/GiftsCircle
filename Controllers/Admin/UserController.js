@@ -2,7 +2,7 @@ const { PrismaClient } = require("@prisma/client");
 const express = require("express");
 const ResponseDTO = require("../../DTO/Response");
 const { AdminAuthenticated } = require("../../Utils/EnsureAuthenticated");
-const { GetUsers, DeleteUser } = require("../../Services/Users");
+const { GetUsers, DeleteUser } = require("../../Services/Admin/user");
 const router = express.Router();
 const prisma = new PrismaClient();
 
@@ -19,7 +19,6 @@ router.get("/users/GetAll", AdminAuthenticated, async (req, res) => {
 
 router.delete("/:id", AdminAuthenticated, async (req, res) => {
   try {
-    console.log(req.params.id)
     await DeleteUser(req.params.id);
     return res
       .status(200)
