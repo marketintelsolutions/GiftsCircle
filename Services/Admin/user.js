@@ -16,6 +16,9 @@ const GetUsers = async () => {
   const users = await prisma.user.findMany({
     include:{
       Wallet: true
+    },
+    orderBy: {
+      created_at: "asc"
     }
   });
 
