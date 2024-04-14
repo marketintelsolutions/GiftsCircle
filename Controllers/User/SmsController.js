@@ -31,7 +31,6 @@ router.post("/", async (req, res) => {
 
 router.post("/send", async (req, res) => {
   try {
-    console.log(req.body)
     let data = await CreateLocation2(req.body);
     if (data) {
       return res.status(200).send(data);

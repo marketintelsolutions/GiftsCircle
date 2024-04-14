@@ -97,5 +97,5 @@ module.exports = {
   CreateGuestId,
   hashPassword,
   CreateDefaultPassword,
-  formatAmount
+  formatAmount, Id_Generator
 };

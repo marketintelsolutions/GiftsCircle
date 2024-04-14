@@ -7,6 +7,8 @@ const {
 const { SendWebHookEmail } = require("../../Utils/Email/EmailService");
 const prismaGen = new PrismaClient();
 
+const transaction_percent = process.env.COMISSION_PERCENT;
+
 const TransformPayload = (payload) => {
   const { event, data } = payload;
   let payinData = {};
@@ -100,6 +102,30 @@ const HandleAsoebiTrans = async (payload) => {
         },
       });
 
+      if (user.referredBy) {
+        const referrer = await prisma.user.findFirst({
+          where: {
+            id: user.referredBy,
+          },
+        });
+        if (referrer) {
+          const wallet = await prisma.wallet.findFirst({
+            where: { user: { id: referrer.id } },
+          });
+          if (wallet) {
+            const currentBalance = Math.ceil(
+              Number(wallet.balance) +
+                payload.amount * (transaction_percent / 100)
+            );
+            await prisma.wallet.update({
+              where: { id: wallet.id },
+              data: {
+                balance: currentBalance,
+              },
+            });
+          }
+        }
+      }
       const asoebiUpdates = [];
 
       for (const ele of payload.products) {
@@ -205,6 +231,31 @@ const HandleGiftTrans = async (payload) => {
           transactionRef: payload.transactionRef,
         },
       });
+
+      if (user.referredBy) {
+        const referrer = await prisma.user.findFirst({
+          where: {
+            id: user.referredBy,
+          },
+        });
+        if (referrer) {
+          const wallet = await prisma.wallet.findFirst({
+            where: { user: { id: referrer.id } },
+          });
+          if (wallet) {
+            const currentBalance = Math.ceil(
+              Number(wallet.balance) +
+                payload.amount * (transaction_percent / 100)
+            );
+            await prisma.wallet.update({
+              where: { id: wallet.id },
+              data: {
+                balance: currentBalance,
+              },
+            });
+          }
+        }
+      }
 
       const giftUpdates = [];
 
@@ -326,6 +377,31 @@ const HandleFundRaisingTrans = async (payload) => {
         },
       });
 
+      if (user.referredBy) {
+        const referrer = await prisma.user.findFirst({
+          where: {
+            id: user.referredBy,
+          },
+        });
+        if (referrer) {
+          const wallet = await prisma.wallet.findFirst({
+            where: { user: { id: referrer.id } },
+          });
+          if (wallet) {
+            const currentBalance = Math.ceil(
+              Number(wallet.balance) +
+                payload.amount * (transaction_percent / 100)
+            );
+            await prisma.wallet.update({
+              where: { id: wallet.id },
+              data: {
+                balance: currentBalance,
+              },
+            });
+          }
+        }
+      }
+
       const message = `FundRaising: ${payload.products[0].firstName} donated ${payload.amount} to the FundRaising`;
       const guestMessage = `FundRaising: You made a donation to ${event.title} event fundRaising`;
 
@@ -382,6 +458,7 @@ const HandleMarketTrans = async (payload) => {
   let prisma = new PrismaClient();
   let transaction;
   let user;
+
   try {
     transaction = await prisma.$transaction(async (prisma) => {
       user = await prisma.user.findFirst({
@@ -406,6 +483,31 @@ const HandleMarketTrans = async (payload) => {
           transactionRef: payload.transactionRef,
         },
       });
+
+      if (user.referredBy) {
+        const referrer = await prisma.user.findFirst({
+          where: {
+            id: user.referredBy,
+          },
+        });
+        if (referrer) {
+          const wallet = await prisma.wallet.findFirst({
+            where: { user: { id: referrer.id } },
+          });
+          if (wallet) {
+            const currentBalance = Math.ceil(
+              Number(wallet.balance) +
+                payload.amount * (transaction_percent / 100)
+            );
+            await prisma.wallet.update({
+              where: { id: wallet.id },
+              data: {
+                balance: currentBalance,
+              },
+            });
+          }
+        }
+      }
 
       const message = `Market Items purchased`;
       await prisma.notifications.create({

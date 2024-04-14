@@ -3,6 +3,7 @@ const {
   comparePassword,
   VerifyToken,
   hashPassword,
+  Id_Generator,
 } = require("../../Utils/HelperFunctions");
 const prisma = new PrismaClient();
 
@@ -37,28 +38,68 @@ const UpdateNotifications = async (id) => {
 };
 
 const Create = async (data) => {
-  const user = await prisma.user.findFirst({
-    where: {
-      email: data.email,
-    },
-  });
+  let prisma = new PrismaClient();
+  let transaction;
+  let result;
+  try {
+    let createData = { ...data };
+    transaction = await prisma.$transaction(async (prisma) => {
+      if (data.referralCode) {
+        const referrer = await prisma.user.findFirst({
+          where: {
+            referralCode: data.referralCode,
+            referralActive: true,
+          },
+        });
+        if (referrer) {
+          createData.refferedBy = referrer.id;
+        }
+      }
+      const referralCode = Id_Generator(7, true, false, false, false);
+      const user = await prisma.user.findFirst({
+        where: {
+          email: data.email,
+        },
+      });
 
-  if (!user) {
-    let Data = await prisma.user.create({
-      data: {
-        password: "",
-        email: data.email,
-        lastname: data.lastname,
-        firstname: data.firstname,
-        emailVerified: false,
-      },
+      if (!user) {
+        let Data = await prisma.user.create({
+          data: {
+            password: "",
+            email: createData.email,
+            lastname: createData.lastname,
+            firstname: createData.firstname,
+            emailVerified: false,
+            referralCode: referralCode,
+            referredBy: createData.refferedBy || null,
+          },
+        });
+
+        await prisma.wallet.create({
+          data: {
+            user: {
+              connect: {
+                id: Data.id,
+              },
+            },
+          },
+        });
+
+        result = Data;
+      } else {
+        result = null;
+      }
     });
-
+    return result;
+  } catch (error) {
+    console.log(error);
+    if (transaction) {
+      console.log("Transaction rolled back due to an error.");
+      await prisma.$queryRaw`ROLLBACK;`;
+    }
+  } finally {
     await prisma.$disconnect();
-
-    return Data;
   }
-  return null;
 };
 
 const SetPassword = async (data, type) => {
@@ -128,7 +169,6 @@ const GetUser = async (id) => {
 
   await prisma.$disconnect();
   return user;
-  
 };
 
 const GetUsers = async () => {

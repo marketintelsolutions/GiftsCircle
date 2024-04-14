@@ -34,7 +34,7 @@ router.post("/login", async (req, res) => {
 
 router.post("/register", async (req, res) => {
   try {
-    let data = await Create(req.body);
+    let data = await Create(req.body)
     if (data) {
       return res.status(201).send(data);
     }

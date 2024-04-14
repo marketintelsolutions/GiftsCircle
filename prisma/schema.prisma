@@ -38,6 +38,9 @@ model user {
   password              String                  @db.VarChar(255)
   role                  Role                    @default(USER)
   refreshToken          String?                 @db.VarChar(255)
+  referralCode           String?                 @db.VarChar(7)
+  referralActive         Boolean                 @default(false)
+  referredBy            String?                 @db.VarChar(255)
   created_at            DateTime                @default(now())
   updated_at            DateTime?               @updatedAt
   deleted_at            DateTime?
@@ -52,8 +55,19 @@ model user {
   gift                  gift[]
   Cart                  Cart[]
   Transaction           Transaction[]
+  Wallet                wallet[]
 
   @@index([email])
+}
+
+model wallet {
+  id      String  @id @default(uuid())
+  balance Decimal @db.Decimal(32, 16) @default(0)
+  user    user    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId  String
+  created_at DateTime @default(now())
+
+  @@index([userId])
 }
 
 model Category {
