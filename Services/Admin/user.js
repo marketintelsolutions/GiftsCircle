@@ -13,6 +13,7 @@ const GetUser = async (id) => {
 };
 
 const GetUsers = async () => {
+ 
   const users = await prisma.user.findMany({
     include: {
       Wallet: true,
