@@ -70,9 +70,9 @@ const Create = async (data, image) => {
           image: image,
           weight: parseFloat(data.weight),
           altImages: data.altImages || [],
-          GiftItemCategory: {
+          GiftItemCategory: data.categories && Array.isArray(data.categories) ? {
             create: data.categories.map((c) => ({ categoryId: parseInt(c) })),
-          },
+          } : undefined,
         },
       });
     });

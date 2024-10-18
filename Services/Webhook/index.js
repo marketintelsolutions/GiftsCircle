@@ -390,7 +390,7 @@ const HandleFundRaisingTrans = async (payload) => {
           if (wallet) {
             const currentBalance = Math.ceil(
               Number(wallet.balance) +
-                payload.amount * (transaction_percent / 100)
+                payload.amount * (2.5 / 100)
             );
             await prisma.wallet.update({
               where: { id: wallet.id },
