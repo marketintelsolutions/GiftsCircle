@@ -107,14 +107,22 @@ const VerifyOtp = async (data) => {
     var currentDate = new Date();
     var expires = otp.expires;
     if (currentDate < expires) {
-      await prisma.user.update({
+      const user = await prisma.user.findFirst({
         where: {
           email: otp.user,
         },
-        data: {
-          emailVerified: true,
-        },
       });
+      
+      if (user) {
+        await prisma.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            emailVerified: true,
+          },
+        });
+      }
       return ResponseDTO("Success", "Email has been verified");
     } else {
       return ResponseDTO("Failed", "Otp has Expired");
