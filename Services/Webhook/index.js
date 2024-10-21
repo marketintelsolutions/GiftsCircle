@@ -423,12 +423,15 @@ const HandleFundRaisingTrans = async (payload) => {
         },
       });
 
+      const paystackFeePercentage = 0.015;
+      const amountWithoutPaystackFee = parseInt(payload.amount) / (1 + paystackFeePercentage);
+      const amountPaid = fundRaising.amountPaid + Math.round(amountWithoutPaystackFee);
       await prisma.fundRaising.update({
         where: {
           id: fundRaising.id,
         },
         data: {
-          amountPaid: fundRaising.amountPaid + parseInt(payload.amount),
+          amountPaid: amountPaid,
         },
       });
 
