@@ -4,25 +4,6 @@ const { resolve } = require("path");
 const pug = require("pug");
 const moment = require('moment'); 
 
-const SendVerifyEmail = async (recieverName, recieverEmail, otp) => {
-  const templatePath = resolve(__dirname, "./templates/VerifyEmail.pug");
-
-  const compiledFunction = pug.compileFile(templatePath);
-  const html = compiledFunction({
-    recieverEmail: recieverEmail,
-    recieverName: recieverName,
-    code: otp,
-  });
-
-  return await SendMail({
-    recieverEmail: recieverEmail,
-    recieverName: recieverName,
-    html,
-    subject: "Email Confirmation",
-    customID: "Email Confirmation",
-  });
-};
-
 const ResetPasswordEmail = async (recieverName, recieverEmail, link) => {
   const templatePath = resolve(
     __dirname,
@@ -191,7 +172,6 @@ const SendMail = async ({
 };
 
 module.exports = {
-  SendVerifyEmail,
   AdminSetPasswordEmail,
   SendWebHookEmail,
   ResetPasswordEmail,

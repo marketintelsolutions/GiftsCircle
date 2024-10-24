@@ -92,36 +92,6 @@ router.post("/resetPassword", async (req, res) => {
   }
 });
 
-router.post("/verifyEmail", async (req, res) => {
-  try {
-    let data = await VerifyOtp(req.body);
-    if (data.status === "Success") {
-      return res.status(200).send(data);
-    }
-    return res.status(400).send(data);
-  } catch (err) {
-    console.log(err);
-    await prisma.$disconnect();
-    return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
-  }
-});
-
-router.post("/sendVerifyEmail", async (req, res) => {
-  try {
-    let data = await SendEmailVerification(req.body);
-    if (data) {
-      return res
-        .status(201)
-        .send(ResponseDTO("Success", "Email sent successfully"));
-    }
-    return res.status(400).send(ResponseDTO("Failed", "User already exists"));
-  } catch (err) {
-    console.log(err);
-    await prisma.$disconnect();
-    return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
-  }
-});
-
 router.post("/sendResetEmail", async (req, res) => {
   try {
     let data = await SendResetPasswordEmail(req.body.email);
