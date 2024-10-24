@@ -69,7 +69,7 @@ const Create = async (data) => {
             email: createData.email,
             lastname: createData.lastname,
             firstname: createData.firstname,
-            emailVerified: false,
+            emailVerified: true,
             referralCode: referralCode,
             referredBy: createData.refferedBy || null,
           },

@@ -73,64 +73,6 @@ const GoogleSignIn = async (data) => {
   return null;
 };
 
-const SendEmailVerification = async (data) => {
-  const user = await prisma.user.findFirst({
-    where: {
-      email: data.email,
-    },
-  });
-
-  if (user) {
-    return null;
-  }
-
-  let otp = GenerateOtp();
-  var expires = new Date(Date.now());
-  expires.setMinutes(expires.getMinutes() + 10);
-
-  const Otp = await prisma.otp.create({
-    data: {
-      user: data.email,
-      code: otp,
-      expires: expires,
-    },
-  });
-  await SendVerifyEmail(data.firstname, data.email, otp);
-  return Otp;
-};
-
-const VerifyOtp = async (data) => {
-  const otp = await prisma.otp.findFirst({
-    where: { code: data.code },
-  });
-  if (otp && data.user === otp.user) {
-    var currentDate = new Date();
-    var expires = otp.expires;
-    if (currentDate < expires) {
-      const user = await prisma.user.findFirst({
-        where: {
-          email: otp.user,
-        },
-      });
-      
-      if (user) {
-        await prisma.user.update({
-          where: {
-            id: user.id,
-          },
-          data: {
-            emailVerified: true,
-          },
-        });
-      }
-      return ResponseDTO("Success", "Email has been verified");
-    } else {
-      return ResponseDTO("Failed", "Otp has Expired");
-    }
-  }
-  return ResponseDTO("Failed", "Otp is Invalid");
-};
-
 const SendResetPasswordEmail = async (email) => {
   const user = await prisma.user.findFirst({
     where: {
@@ -187,8 +129,6 @@ const Logout = async (id) => {
 module.exports = {
   Login,
   GoogleSignIn,
-  VerifyOtp,
-  SendEmailVerification,
   SendResetPasswordEmail,
   RefreshToken,
   Logout,
