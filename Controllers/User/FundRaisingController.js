@@ -110,21 +110,21 @@ router.put("/UpdateStatus", UserAuthenticated, async (req, res) => {
   }
 });
 
-router.post("/Donate", UserAuthenticated, async (req, res) => {
-  try {
-    let data = await Donate(req.body,  req.user.id);
-    if (data) {
-      return res.status(200).send(data);
-    }
-    return res
-      .status(400)
-      .send(ResponseDTO("Failed", "Fund raising Details not found"));
-  } catch (err) {
-    console.log(err);
-    await prisma.$disconnect();
-    return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
-  }
-});
+// router.post("/Donate", UserAuthenticated, async (req, res) => {
+//   try {
+//     let data = await Donate(req.body,  req.user.id);
+//     if (data) {
+//       return res.status(200).send(data);
+//     }
+//     return res
+//       .status(400)
+//       .send(ResponseDTO("Failed", "Fund raising Details not found"));
+//   } catch (err) {
+//     console.log(err);
+//     await prisma.$disconnect();
+//     return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
+//   }
+// });
 
 router.get("/CoHost/GetFundDonors/:id", EnsureAuthenticated, async (req, res) => {
   try {

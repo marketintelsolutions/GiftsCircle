@@ -116,7 +116,7 @@ const UpdateAmount = async (data) => {
   return null;
 };
 
-const Donate = async (data, userId) => {
+const Donate = async (data) => {
   const fundRaising = await prisma.fundRaising.findUnique({
     where: {
       id: data.fundId,
@@ -133,7 +133,7 @@ const Donate = async (data, userId) => {
       phone: data.tel,
       amount: parseInt(data.amount),
       fundId: data.fundId,
-      created_by: userId,
+      created_by: data.userId,
     },
   });
 
