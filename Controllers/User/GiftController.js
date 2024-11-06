@@ -144,21 +144,21 @@ router.post("/createMany", UserAuthenticated, async (req, res) => {
   }
 });
 
-router.post("/Buy", UserAuthenticated, async (req, res) => {
-  try {
-    let data = await Buy(req.body, req.user.id);
-    if (data) {
-      return res.status(200).send(data);
-    }
-    return res
-      .status(400)
-      .send(ResponseDTO("Failed", "Asoebi Details not found"));
-  } catch (err) {
-    console.log(err);
-    await prisma.$disconnect();
-    return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
-  }
-});
+// router.post("/Buy", UserAuthenticated, async (req, res) => {
+//   try {
+//     let data = await Buy(req.body, req.user.id);
+//     if (data) {
+//       return res.status(200).send(data);
+//     }
+//     return res
+//       .status(400)
+//       .send(ResponseDTO("Failed", "Asoebi Details not found"));
+//   } catch (err) {
+//     console.log(err);
+//     await prisma.$disconnect();
+//     return res.status(400).send(ResponseDTO("Failed", "Request Failed"));
+//   }
+// });
 
 router.put("/EnableContribution", UserAuthenticated, async (req, res) => {
   try {

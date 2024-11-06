@@ -6,6 +6,9 @@ const {
 } = require("@prisma/client");
 const { SendWebHookEmail } = require("../../Utils/Email/EmailService");
 const prismaGen = new PrismaClient();
+const { Buy } = require("../asoebi");
+const { Buy: BuyGift } = require("../Gift");
+const { Donate } = require("../FundRaising");
 
 const transaction_percent = process.env.COMISSION_PERCENT;
 
@@ -148,6 +151,15 @@ const HandleAsoebiTrans = async (payload) => {
               },
             })
           );
+
+          const createAseobiTransactionData = {
+            amount: parseInt(ele.amount),
+            eventId: event.id,
+            quantity: 1,
+            asoebiId: asoebi.id,
+            isPaid: true,
+          };
+          await Buy(createAseobiTransactionData, user.id);
         }
       }
 
@@ -258,6 +270,7 @@ const HandleGiftTrans = async (payload) => {
       }
 
       const giftUpdates = [];
+      const giftTransactions = [];
 
       for (const ele of payload.products) {
         const gift = await prisma.gift.findUnique({
@@ -280,14 +293,30 @@ const HandleGiftTrans = async (payload) => {
               data: {
                 purchased: check,
                 status: ele.status,
-                complimentaryGift: ele.complimentaryGift,
+                complimentaryGift: ele.complimentaryGift
+                  ? ele.complimentaryGift
+                  : "none",
                 amountPaid: parseInt(gift.amountPaid) + parseInt(ele.amount),
                 updated_at: new Date(Date.now()),
               },
             })
           );
+
+          const createGiftTransactionData = {
+            amount: parseInt(payload.amount),
+            eventId: event.id,
+            quantity: 1,
+            giftId: gift.id,
+            isPaid: true,
+            delivered: false,
+            userId: user.id,
+            complimentarygiftId: ele.complimentaryGift,
+          };
+          giftTransactions.push(createGiftTransactionData);
         }
       }
+
+      await BuyGift(giftTransactions);
 
       await Promise.all(giftUpdates);
 
@@ -389,8 +418,7 @@ const HandleFundRaisingTrans = async (payload) => {
           });
           if (wallet) {
             const currentBalance = Math.ceil(
-              Number(wallet.balance) +
-                payload.amount * (2.5 / 100)
+              Number(wallet.balance) + payload.amount * (2.5 / 100)
             );
             await prisma.wallet.update({
               where: { id: wallet.id },
@@ -401,6 +429,35 @@ const HandleFundRaisingTrans = async (payload) => {
           }
         }
       }
+
+      const paystackFeePercentage = 0.015;
+      const amountWithoutPaystackFee =
+        parseInt(payload.amount) / (1 + paystackFeePercentage);
+      const amountPaid =
+        fundRaising.amountPaid + Math.round(amountWithoutPaystackFee);
+
+      if (Number(amountPaid) < Number(fundRaising.amount)) {
+        await prisma.fundRaising.update({
+          where: {
+            id: fundRaising.id,
+          },
+          data: {
+            amountPaid: amountPaid,
+          },
+        });
+      }
+
+      const fundRaisingData = {
+        amount: payload.amount,
+        userId: user.id,
+        fundId: fundRaising.id,
+        firstName: payload.products[0].firstName,
+        lastName: payload.products[0].lastName,
+        email: payload.products[0].email,
+        tel: payload.products[0].tel,
+      };
+
+      await Donate(fundRaisingData);
 
       const message = `FundRaising: ${payload.products[0].firstName} donated ${payload.amount} to the FundRaising`;
       const guestMessage = `FundRaising: You made a donation to ${event.title} event fundRaising`;
@@ -422,20 +479,6 @@ const HandleFundRaisingTrans = async (payload) => {
           referenceEvent: event.id,
         },
       });
-
-      const paystackFeePercentage = 0.015;
-      const amountWithoutPaystackFee = parseInt(payload.amount) / (1 + paystackFeePercentage);
-      const amountPaid = fundRaising.amountPaid + Math.round(amountWithoutPaystackFee);
-      await prisma.fundRaising.update({
-        where: {
-          id: fundRaising.id,
-        },
-        data: {
-          amountPaid: amountPaid,
-        },
-      });
-
-      console.log("Payment   completed");
     });
     await SendWebHookEmail(
       user.firstname,
