@@ -343,6 +343,7 @@ model FundRaisingDonation {
   email      String      @db.VarChar(50)
   phone      String      @db.VarChar(50)
   amount     Int
+  isPaid     Boolean     @default(false)
   created_at DateTime    @default(now())
   updated_at DateTime?   @updatedAt
   deleted_at DateTime?
@@ -390,6 +391,7 @@ model giftTransaction {
   purchasedBy         user               @relation(fields: [userId], references: [id], onDelete: Cascade)
   quantity            Int
   delivered           Boolean            @default(false)
+  isPaid              Boolean            @default(false)
   eventId             String             @db.VarChar(50)
   userId              String             @db.VarChar(255)
   complimentarygiftId String?            @db.VarChar(255)
@@ -477,6 +479,7 @@ model asoebiTransaction {
   purchasedBy  user        @relation(fields: [userId], references: [id], onDelete: Cascade)
   quantity     Int
   delivered    Boolean     @default(false)
+  isPaid       Boolean     @default(false)
   eventId      String      @db.VarChar(50)
   asoebiitem   asoebiitem? @relation(fields: [asoebiitemId], references: [id], onDelete: SetNull)
   asoebiitemId String?     @db.VarChar(255)
@@ -583,16 +586,6 @@ model otp {
   created_by String?   @db.VarChar(255)
 
   @@index([id])
-}
-
-model Sms {
-  id         String   @id @default(uuid())
-  latitude   String   @db.VarChar
-  longitude  String   @db.VarChar
-  sender     String   @db.VarChar(20)
-  created_at DateTime @default(now())
-
-  @@index([sender])
 }
 
 model Cart {

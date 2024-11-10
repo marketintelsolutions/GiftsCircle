@@ -95,6 +95,7 @@ const Buy = async (data, userId) => {
       eventId: data.eventId,
       quantity: data.quantity,
       delivered: false,
+      isPaid: data.isPaid,
       asoebiitem: {
         connect: {
           id: asoebi.asoebiItem,
@@ -119,6 +120,7 @@ const GetAsoebiBuyers = async (id) => {
   let buyers = await prisma.asoebiTransaction.findMany({
     where: {
       eventId: id,
+      isPaid: true,
     },
     select: {
       amount: true,
